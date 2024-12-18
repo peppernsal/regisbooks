@@ -1,0 +1,12 @@
+.content {
+	margin-left: 250px;
+	padding: 20px;
+}
+
+.scrollable-container {
+	max-height: 400px;
+}
+
+.large-scrollable-container {
+	max-height: 600px;
+}

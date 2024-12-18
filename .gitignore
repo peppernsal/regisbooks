@@ -4,3 +4,4 @@ venv
 bin
 obj
 *.egg-info
+.env

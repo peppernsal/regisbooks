@@ -1,8 +1,10 @@
 from dataclasses import dataclass, field
 from http.client import BAD_REQUEST
-from typing import TypeVar
+from typing import TypeVar, TypedDict
 from flask import jsonify, request, Response
 from flask_sqlalchemy import SQLAlchemy
+import httpx
+from sqlalchemy import null
 from traitlets import default
 from webpy import App
 from propelauth_flask import init_auth, current_user
@@ -100,10 +102,10 @@ def register_internal_api_routes():
 
 		if (type(book_id) is not str) or (type(author_id) is not str): return BAD_REQUEST
 
-		book = Book.by_id(book_id)
+		Book.ensure_in_db(book_id)
 		author = User.by_id(author_id)
 
-		if (book is None) or (author is None): return BAD_REQUEST
+		if author is None: return BAD_REQUEST
 
 		new_listing = Listing(
 			book_id=book_id,
@@ -132,10 +134,10 @@ def register_internal_api_routes():
 
 		if (type(book_id) is not str) or (type(author_id) is not str): return BAD_REQUEST
 
-		book = Book.by_id(book_id)
+		Book.ensure_in_db(book_id)
 		author = User.by_id(author_id)
 
-		if (book is None) or (author is None): return BAD_REQUEST
+		if author is None: return BAD_REQUEST
 
 		req = PreRequest(
 			book_id=book_id,
@@ -176,12 +178,8 @@ def register_internal_api_routes():
 		isbn = request.json.get("isbn")
 
 		if type(isbn) is not str: return BAD_REQUEST
-
-		existing_book = Book.by_id(isbn) # TODO: make more efficient by not completing the query
-		if existing_book is not None: return BAD_REQUEST
-
-		new_book = Book(id=isbn)
-		db_add(new_book)
+		
+		Book.ensure_in_db(isbn)
 
 		return RESP_OK
 
@@ -372,11 +370,14 @@ def init_db_api():
 		open_requests: Mapped[list[PreRequest]] = db.relationship("prerequest", backref=db.backref("book"), lazy=True)
 		title: str = db.Column(db.String, nullable=False)
 		author: str = db.Column(db.String, nullable=False)
-		edition: str = db.Column(db.String, nullable=False)
-		# cover_img: TODO: cover image
+		publisher: str = db.Column(db.String, nullable=False)
+		publish_date: str = db.Column(db.String, nullable=False)
 
 		@property
 		def isbn(self): return self.id
+
+		@property
+		def openlib_cover_image_url(self): return f"https://covers.openlibrary.org/b/isbn/{self.isbn}-L.jpg"
 
 		@property
 		def as_dict(self) -> dict:
@@ -385,8 +386,10 @@ def init_db_api():
 				"listings": self.listings,
 				"title": self.title,
 				"author": self.author,
-				"edition": self.edition,
-				"isbn": self.isbn
+				"published": self.publisher,
+				"publishDate": self.publish_date,
+				"isbn": self.isbn,
+				"coverImageURL": self.openlib_cover_image_url
 			}
 			
 		@staticmethod
@@ -396,3 +399,28 @@ def init_db_api():
 		@staticmethod
 		def get_all(): return query_all_of(Book)
 
+		@staticmethod
+		def ensure_in_db(isbn: str) -> "Book":
+			already = Book.by_id(isbn)
+
+			if already is None:
+				book = Book.from_isbn(isbn)
+				db_add(book)
+				return book
+			
+			return already
+
+		@staticmethod
+		def from_isbn(isbn: str) -> "Book":
+			info = httpx.get(f"https://openlibrary.org/isbn/{isbn}.json").json()
+			author_path: str = info["authors"][0]["key"]
+
+			author: str = httpx.get(f"https://openlibrary.org{author_path}.json").json()["name"]
+
+			return Book(
+				id=isbn,
+				title=info["title"],
+				author=author,
+				publisher=info["publishers"][0],
+				publish_date=info["publish_date"]
+			)

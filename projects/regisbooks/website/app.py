@@ -1,5 +1,6 @@
 from dataclasses import dataclass, field
 from http.client import BAD_REQUEST
+from json import JSONDecodeError
 from typing import TypeVar, TypedDict
 from flask import jsonify, request, Response
 from flask_sqlalchemy import SQLAlchemy
@@ -37,92 +38,102 @@ def webpy_setup(app: App):
 def register_external_api_routes(): pass # TODO, also have an efficient system to manage verification of API keys (research) |||| extract & reuse logic from register_internal_api_routes
 
 def register_internal_api_routes():
-	@app.route("/api/internal/getuser")
+	@app.route("/api/internal/get-user")
 	@auth.require_user
 	def getuser_internal():
+		ensure_user()
+
 		user = User.by_id(request.args.get("id"))
 
 		if user is None: return BAD_REQUEST
 		return jsonify(user.as_dict)
 	
-	@app.route("/api/internal/getlisting")
+	@app.route("/api/internal/get-listing")
 	@auth.require_user
 	def getlisting_internal():
+		ensure_user()
+
 		listing = Listing.by_id(request.args.get("id"))
 
 		if listing is None: return BAD_REQUEST
 		return jsonify(listing.as_dict)
 	
-	@app.route("/api/internal/getbook")
+	@app.route("/api/internal/get-book")
 	@auth.require_user
 	def getbook_internal():
+		ensure_user()
+
 		book = Book.by_id(request.args.get("id"))
 
 		if book is None: return BAD_REQUEST
 
 		return jsonify(book.as_dict)
 
-	@app.route("/api/internal/getlistings")
+	@app.route("/api/internal/get-listings")
 	@auth.require_user
 	def getlistings_internal():
+		ensure_user()
+
 		listings = Listing.get_all()
 
 		return jsonify([listing.as_dict for listing in listings])
 
-	@app.route("/api/internal/getopenreqs")
+	@app.route("/api/internal/get-open-reqs")
 	@auth.require_user
 	def getopenreqs_internal():
+		ensure_user()
+
 		requests = PreRequest.get_all()
 
 		return jsonify([request.as_dict for request in requests])
 
-	@app.route("/api/internal/getbooks")
+	@app.route("/api/internal/get-books")
 	@auth.require_user
 	def getbooks_internal():
+		ensure_user()
+		
 		books = Book.get_all()
 				
 		return jsonify([book.as_dict for book in books])
 	
-	@app.route("/api/internal/addlisting", methods=["POST"])
+	@app.route("/api/internal/add-listing", methods=["POST"])
 	@auth.require_user
 	def addlisting_internal():
+		author = ensure_user()
 		get = request.json.get
 
 		book_id = get("bookID")
-		author_id = get("authorID")
 		notes = get("notes")
 		pickup_locations = get("pickupLocations")
 		usage_level = get("usageLevel")
 
-		if (type(usage_level) is not int) or (0 <= usage_level <= 2): return BAD_REQUEST
+		if (type(usage_level) is not int) or not (0 <= usage_level <= 2): return BAD_REQUEST
 		
 		if (type(notes) is not str): return BAD_REQUEST
 		
 		if (type(pickup_locations) is not list) or any(type(loc) is not str for loc in pickup_locations): return BAD_REQUEST
 
-		if (type(book_id) is not str) or (type(author_id) is not str): return BAD_REQUEST
+		if (type(book_id) is not str): return BAD_REQUEST
 
 		Book.ensure_in_db(book_id)
-		author = User.by_id(author_id)
-
-		if author is None: return BAD_REQUEST
 
 		new_listing = Listing(
 			book_id=book_id,
 			notes=notes,
 			usage_level=usage_level,
-			author_id=author_id
+			author_id=author.id,
+			pickup_locations=pickup_locations
 		)
-
-		new_listing.pickup_locations = pickup_locations
 
 		db_add(new_listing)
 
 		return RESP_OK
 
-	@app.route("/api/internal/addprereq", methods=["POST"])
+	@app.route("/api/internal/add-pre-req", methods=["POST"])
 	@auth.require_user
 	def addprereq_internal():
+		ensure_user()
+
 		get = request.json.get
 
 		book_id = get("bookID")
@@ -149,9 +160,11 @@ def register_internal_api_routes():
 		db_add(req)
 		return RESP_OK
 
-	@app.route("/api/internal/remlisting", methods=["DELETE"])
+	@app.route("/api/internal/rem-listing")
 	@auth.require_user
 	def remlisting_internal():
+		ensure_user()
+
 		listing_id = request.args.get("id")
 
 		if type(listing_id) is not str: return BAD_REQUEST
@@ -161,9 +174,11 @@ def register_internal_api_routes():
 		return RESP_OK
 
 
-	@app.route("/api/internal/remprereq", methods=["DELETE"])
+	@app.route("/api/internal/rem-pre-req")
 	@auth.require_user
 	def remprereq_internal():
+		ensure_user()
+
 		req_id = request.args.get("id")
 
 		if type(req_id) is not str: return BAD_REQUEST
@@ -172,20 +187,23 @@ def register_internal_api_routes():
 
 		return RESP_OK
 
-	@app.route("/api/internal/addbook", methods=["POST"])
+	@app.route("/api/internal/add-book")
 	@auth.require_user
 	def addbook_internal():
-		isbn = request.json.get("isbn")
+		ensure_user()
+
+		isbn = request.args.get("isbn")
 
 		if type(isbn) is not str: return BAD_REQUEST
 		
-		Book.ensure_in_db(isbn)
+		try: return jsonify(Book.ensure_in_db(isbn).as_dict)
+		except JSONDecodeError: return BAD_REQUEST
 
-		return RESP_OK
-
-	@app.route("/api/internal/rembook", methods=["DELETE"])
+	@app.route("/api/internal/rem-book")
 	@auth.require_user
 	def rembook_internal():
+		ensure_user()
+
 		book_id = request.args.get("id")
 
 		if type(book_id) is not str: return BAD_REQUEST
@@ -205,14 +223,16 @@ def init_db_api():
 				id=current_user.user_id,
 				first_name=current_user.user.first_name,
 				last_name=current_user.user.last_name,
-				email=current_user.user.email
+				email=current_user.user.email,
+				username=current_user.user.username
 			)
 
 			db.session.add(user)
 
 			db.session.commit()
 
-			return user
+		return user
+	
 		
 	def db_add(model):
 		db.session.add(model)
@@ -237,15 +257,15 @@ def init_db_api():
 			books_given: int = field(default=0)
 			books_recieved: int = field(default=0)
 
-		__tablename__ = "user"
+		__tablename__ = "users"
 		
 		id: str = db.Column(db.String, primary_key=True, unique=True, nullable=False)
 		first_name: str = db.Column(db.String, unique=True, nullable=False)
 		last_name: str = db.Column(db.String, unique=True, nullable=False)
 		username: str = db.Column(db.String, unique=True, nullable=False)
 		email: str = db.Column(db.String, unique=True, nullable=False)
-		listings: Mapped[list["Listing"]] = db.relationship("listing", backref=db.backref("author"), lazy=True)
-		requests: Mapped[list["PreRequest"]] = db.relationship("prerequest", backref=db.backref("creator"))
+		listings: Mapped[list["Listing"]] = db.relationship("Listing", backref="author", lazy=True)
+		requests: Mapped[list["PreRequest"]] = db.relationship("PreRequest", backref="creator", lazy=True)
 		stats: Stats = db.Column(db.PickleType, nullable=False, default=Stats)
 
 		@staticmethod
@@ -282,7 +302,6 @@ def init_db_api():
 			AVAILABLE = 0
 			REQUESTED = 1
 			TAKEN = 2
-			COMPLETE = 3
 		
 		class Classes: # TODO: decide if this should be in listing or books
 			FRESHMAN = 0
@@ -290,23 +309,15 @@ def init_db_api():
 			JUNIOR = 2
 			SENIOR = 3
 
-		__tablename__ = "listing"
+		__tablename__ = "listings"
 
 		id: str = db.Column(db.String, primary_key=True, unique=True, nullable=False, default=genid.genid)
-		book_id: Mapped[str] = db.relationship(db.String, db.ForeignKey('book.id'))
+		book_id: Mapped[str] = db.Column(db.String, db.ForeignKey('books.id'))
 		usage_level: int = db.Column(db.Integer, nullable=False)
 		notes: str = db.Column(db.String, nullable=False)
-		status: int = db.Column(db.Integer, nullable=False)
-		pickup_locations_str: str = db.Column(db.String, nullable=False, default="") # dollar-separated
-		author_id: Mapped[str] = db.relationship(db.String, db.ForeignKey('user.id'))
-
-		@property
-		def pickup_locations(self) -> list[str]:
-			return self.pickup_locations_str.split('$')
-
-		@pickup_locations.setter
-		def pickup_locations(self, locations: list[str]):
-			self.pickup_locations_str = '$'.join(locations)
+		status: int = db.Column(db.Integer, nullable=False, default=Status.AVAILABLE)
+		pickup_locations: list[str] = db.Column(db.PickleType, nullable=False)
+		author_id: Mapped[str] = db.Column(db.String, db.ForeignKey('users.id'))
 		
 		@property
 		def as_dict(self) -> dict:
@@ -335,23 +346,15 @@ def init_db_api():
 			return query_all_of(Listing)
 		
 	class PreRequest(db.Model):
-		__tablename__ = "prerequest"
+		__tablename__ = "prerequests"
 
 		id: str = db.Column(db.String, primary_key=True, unique=True, nullable=False, default=genid.genid)
-		book_id: Mapped[str] = db.relationship(db.String, db.ForeignKey('book.id'))
-		preferred_pickup_locations_str: str = db.Column(db.String, nullable=False, default="") # dollar-separated
-		creator_id: Mapped[str] = db.relationship(db.String, db.ForeignKey('user.id'))
+		book_id: Mapped[str] = db.Column(db.String, db.ForeignKey('books.id'))
+		preferred_pickup_locations: list[str] = db.Column(db.PickleType, nullable=False, default=[])
+		creator_id: Mapped[str] = db.Column(db.String, db.ForeignKey('users.id'))
 
 		@property
 		def requester(self): return self.creator
-
-		@property
-		def preferred_pickup_locations(self) -> list[str]:
-			return self.preferred_pickup_locations_str.split('$')
-
-		@preferred_pickup_locations.setter
-		def preferred_pickup_locations(self, locations: list[str]):
-			self.preferred_pickup_locations_str = '$'.join(locations)
 
 		@staticmethod
 		def by_id(listing_id: str):
@@ -362,34 +365,32 @@ def init_db_api():
 			return query_all_of(PreRequest)
 
 	class Book(db.Model):
-		__tablename__ = "book"
+		__tablename__ = "books"
 
 		# same as ISBN
 		id: str = db.Column(db.String, primary_key=True, unique=True, nullable=False)
-		listings: Mapped[list[Listing]] = db.relationship("listing", backref=db.backref("book"), lazy=True)
-		open_requests: Mapped[list[PreRequest]] = db.relationship("prerequest", backref=db.backref("book"), lazy=True)
+		listings: Mapped[list[Listing]] = db.relationship("Listing", backref="book", lazy=True)
+		open_requests: Mapped[list[PreRequest]] = db.relationship("PreRequest", backref="book", lazy=True)
 		title: str = db.Column(db.String, nullable=False)
 		author: str = db.Column(db.String, nullable=False)
 		publisher: str = db.Column(db.String, nullable=False)
 		publish_date: str = db.Column(db.String, nullable=False)
+		cover_image_url: str = db.Column(db.String, nullable=False)
 
 		@property
 		def isbn(self): return self.id
 
 		@property
-		def openlib_cover_image_url(self): return f"https://covers.openlibrary.org/b/isbn/{self.isbn}-L.jpg"
-
-		@property
 		def as_dict(self) -> dict:
 			return {
 				"id": self.id,
-				"listings": self.listings,
+				"listings": [listing.id for listing in self.listings],
 				"title": self.title,
 				"author": self.author,
-				"published": self.publisher,
+				"publisher": self.publisher,
 				"publishDate": self.publish_date,
 				"isbn": self.isbn,
-				"coverImageURL": self.openlib_cover_image_url
+				"coverImageURL": self.cover_image_url
 			}
 			
 		@staticmethod
@@ -412,15 +413,20 @@ def init_db_api():
 
 		@staticmethod
 		def from_isbn(isbn: str) -> "Book":
-			info = httpx.get(f"https://openlibrary.org/isbn/{isbn}.json").json()
+			info = httpx.get(f"https://openlibrary.org/isbn/{isbn}.json", follow_redirects=True).json()
 			author_path: str = info["authors"][0]["key"]
 
-			author: str = httpx.get(f"https://openlibrary.org{author_path}.json").json()["name"]
+			author: str = httpx.get(f"https://openlibrary.org{author_path}.json", follow_redirects=True).json()["name"]
+
+			# get cover from google
+			google_info = httpx.get(f"https://www.googleapis.com/books/v1/volumes?q=isbn:{isbn}", follow_redirects=True).json()
+			
 
 			return Book(
 				id=isbn,
 				title=info["title"],
 				author=author,
 				publisher=info["publishers"][0],
-				publish_date=info["publish_date"]
+				publish_date=info["publish_date"],
+				cover_image_url=google_info["items"][0]["volumeInfo"]["imageLinks"]["thumbnail"]
 			)

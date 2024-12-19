@@ -15,45 +15,68 @@ async function getJSONInfoFromAPICall(endpoint, body, method, headers) {
 	return await (await makeAPICall(endpoint, body, method, headers)).json()
 }
 
-function getUserInfo(userID) {
-	if (!userID) return getJSONInfoFromAPICall("/api/get-self");
+async function getUserInfo(userID) {
+	if (!userID) return await getJSONInfoFromAPICall(`/api/internal/get-user?id=${await getAuthInfo().userId}`);
 
-	return getJSONInfoFromAPICall(`/api/get-user?id=${userID}`);
+	return await getJSONInfoFromAPICall(`/api/internal/get-user?id=${userID}`);
 }
 
-function getThreadInfo(threadID) {
-	return getJSONInfoFromAPICall(`/api/get-thread?id=${threadID}`);
+function getListingInfo(listingID) {
+	return getJSONInfoFromAPICall(`/api/internal/get-listing?id=${listingID}`);
 }
 
-function getChannelInfo(channelID) {
-	return getJSONInfoFromAPICall(`/api/get-channel-info?id=${channelID}`);
+function getBookInfo(bookID) {
+	return getJSONInfoFromAPICall(`/api/internal/get-book?id=${bookID}`);
 }
 
-function getMessageInfo(messageID) {
-	return getJSONInfoFromAPICall(`/api/get-message?id=${messageID}`);
+function getBooks() {
+	return getJSONInfoFromAPICall(`/api/internal/get-books`);
 }
 
-function updateUserInfo(qualIDs) {
-	return getJSONInfoFromAPICall(`/api/update-user-roles?roles=${qualIDs.join(',')}`);
+function getListings() {
+	return getJSONInfoFromAPICall(`/api/internal/get-listings`);
 }
 
-function getChannels() {
-	return getJSONInfoFromAPICall(`/api/get-channels`);
+function getOpenReqs() {
+	return getJSONInfoFromAPICall(`/api/internal/get-open-reqs`);
 }
 
-function createThreadAPI(channel, title, description) {
-	return getJSONInfoFromAPICall(`/api/create-thread`, JSON.stringify({
-		channel, title, description
-	}), "POST", {
+function addListing(listingInfo) {
+	return getJSONInfoFromAPICall(`/api/internal/add-listing`, JSON.stringify(listingInfo), "POST", {
 		"Content-Type": "application/json"
 	});
 }
 
-function sendMessageToServer(threadID, messageContent) {
-	return getJSONInfoFromAPICall(`/api/send-message`, JSON.stringify({
-		threadID,
-		content: messageContent
-	}), "POST", {
+function addBook(bookISBN) {
+	return getJSONInfoFromAPICall(`/api/internal/add-book?isbn=${bookISBN}`);
+}
+
+function addPreReq(preReqInfo) {
+	return getJSONInfoFromAPICall(`/api/internal/add-pre-req`, JSON.stringify(preReqInfo), "POST", {
 		"Content-Type": "application/json"
 	});
 }
+
+function remBook(listingID) {
+	return getJSONInfoFromAPICall(`/api/internal/rem-listing?id=${listingID}`);
+}
+
+function remPreReq(preReqID) {
+	return getJSONInfoFromAPICall(`/api/internal/rem-pre-req?id=${preReqID}`);
+}
+
+function remBook(bookID) {
+	return getJSONInfoFromAPICall(`/api/internal/rem-book?id=${bookID}`);
+}
+
+const listingUsageRepr = {
+	0: "new",
+	1: "lightly used",
+	2: "used"
+};
+
+const listingStatusRepr = {
+	0: "available",
+	1: "requested",
+	2: "taken"
+};

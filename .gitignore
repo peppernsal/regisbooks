@@ -5,3 +5,4 @@ bin
 obj
 *.egg-info
 .env
+database.db

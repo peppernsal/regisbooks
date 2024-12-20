@@ -5,34 +5,51 @@ const listingsContainer = document.getElementById("listings-container");
 	
 	for (const listingInfo of listings) {
 		const summaryDiv = document.createElement("div");
+		summaryDiv.className = "col-md-6";
 
 		const bookInfo = await getBookInfo(listingInfo.bookID);
 
-		const anchor = textElem('a', bookInfo.title);
+		const titleContainer = document.createElement("h4");
+		titleContainer.append(
+			textElem('i', bookInfo.title),
+			textElem("span", ` by ${bookInfo.author}`),
+		);
+
+		const anchor = document.createElement("a");
 		anchor.className = "btn btn-success my-1  d-block text-center"
 		anchor.href = `/view-listing?id=${listingInfo.id}`;
+
+		anchor.appendChild(titleContainer);
 
 		summaryDiv.appendChild(anchor);
 
 		const usageString = listingUsageRepr[listingInfo.usageLevel];
 		const statusString = listingStatusRepr[listingInfo.status];
 
-		summaryDiv.append(
-			textElem('h4', `Status: ${statusString}`),
-			textElem('h5', `Condition: ${usageString}`),
+		anchor.append(
+			textElem('h6', `Status: ${statusString}`),
+			textElem('h6', `Condition: ${usageString}`),
 		);
 
 		if (listingInfo.pickupLocations.length > 2) {
-			const numMore = listingInfo.pickupLocations.length - 2;
+			if (listingInfo.pickupLocations.length === 3) {
+				anchor.append(
+					textElem('h6', `Pickup at ${listingInfo.pickupLocations.slice(0, 2).join(", ")}, and 1 other location`)
+				);
+			}
+			else
+			{
+				const numMore = listingInfo.pickupLocations.length - 2;
 
-			summaryDiv.append(
-				textElem('h5', `Pickup locations: ${listingInfo.pickupLocations.slice(0, 2).join(", ")}, and ${numMore} others`)
-			);
+				anchor.append(
+					textElem('h6', `Pickup at ${listingInfo.pickupLocations.slice(0, 2).join(", ")}, and ${numMore} other locations`)
+				);
+			}
 		}
 		else
 		{
-			summaryDiv.append(
-				textElem('h5', `Pickup locations: ${listingInfo.pickupLocations.join(", ")}`)
+			anchor.append(
+				textElem('h6', `Pickup at ${listingInfo.pickupLocations.join(", ")}`)
 			);
 		}
 

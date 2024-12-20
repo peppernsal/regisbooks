@@ -1,5 +1,5 @@
 from dataclasses import dataclass, field
-from http.client import BAD_REQUEST
+from http.client import BAD_REQUEST, FORBIDDEN
 from json import JSONDecodeError
 from typing import TypeVar, TypedDict
 from flask import jsonify, request, Response
@@ -22,6 +22,7 @@ app = App(__name__, template_folder="html")
 
 BAD_REQUEST = Response(status=400)
 RESP_OK = Response(status=200)
+FORBIDDEN = Response(status=403)
 
 def webpy_setup(app: App):
 	global auth, db
@@ -163,13 +164,18 @@ def register_internal_api_routes():
 	@app.route("/api/internal/rem-listing")
 	@auth.require_user
 	def remlisting_internal():
-		ensure_user()
+		user = ensure_user()
 
 		listing_id = request.args.get("id")
 
 		if type(listing_id) is not str: return BAD_REQUEST
 		
-		Listing.query.filter(Listing.id == listing_id).delete()
+		listing: Listing = Listing.query.filter(Listing.id == listing_id)
+		
+		if (listing.author_id != user.id): return FORBIDDEN
+		
+		listing.delete()
+		db.session.commit()
 
 		return RESP_OK
 
@@ -177,13 +183,18 @@ def register_internal_api_routes():
 	@app.route("/api/internal/rem-pre-req")
 	@auth.require_user
 	def remprereq_internal():
-		ensure_user()
+		user = ensure_user()
 
 		req_id = request.args.get("id")
 
 		if type(req_id) is not str: return BAD_REQUEST
 		
-		PreRequest.query.filter(PreRequest.id == req_id).delete()
+		req: PreRequest = PreRequest.query.filter(PreRequest.id == req_id)
+
+		if req.creator_id != user.id: return FORBIDDEN
+		
+		req.delete()
+		db.session.commit()
 
 		return RESP_OK
 
@@ -199,16 +210,20 @@ def register_internal_api_routes():
 		try: return jsonify(Book.ensure_in_db(isbn).as_dict)
 		except JSONDecodeError: return BAD_REQUEST
 
-	@app.route("/api/internal/rem-book")
+	@app.route("/api/internal/rem-book", method=["POST"])
 	@auth.require_user
 	def rembook_internal():
-		ensure_user()
+		admin_key = request.json.get("key")
 
-		book_id = request.args.get("id")
+		if admin_key != secret_keys.ADMIN_KEY: return FORBIDDEN
+
+		book_id = request.json.get("bookID")
 
 		if type(book_id) is not str: return BAD_REQUEST
 
 		Book.query.filter(Book.id == book_id).delete()
+
+		db.session.commit()
 
 		return RESP_OK
 	

@@ -42,7 +42,7 @@ function getOpenReqs() {
 }
 
 function addListing(listingInfo) {
-	return getJSONInfoFromAPICall(`/api/internal/add-listing`, JSON.stringify(listingInfo), "POST", {
+	return makeAPICall(`/api/internal/add-listing`, JSON.stringify(listingInfo), "POST", {
 		"Content-Type": "application/json"
 	});
 }

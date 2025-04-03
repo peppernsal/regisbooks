@@ -21,8 +21,10 @@ if (!bookISBN) location.href = "/enter-isbn";
 		
 		if (bookInfo.coverImageURL != "<no-url>") {
 			document.getElementById("book-cover-img").src = bookInfo.coverImageURL;
+			document.getElementById("cover-disclaimer").textContent = "Note: cover image and publisher may not match physical book.";
 		} else {
 			document.getElementById("book-cover-img").remove();
+			document.getElementById("cover-disclaimer").remove();
 		}
 
 		clearInterval(loaderAnimation);

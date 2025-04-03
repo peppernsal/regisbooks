@@ -17,6 +17,7 @@
 		<script src="/static/js/element.js"></script>
 		<script src="/static/js/add-listing.js" defer></script>
 		<link rel="stylesheet" href="/static/css/theme.css">
+		<link rel="stylesheet" href="/static/css/add-listing.css">
 	</head>
 	
 	<body class="bg-success text-white">
@@ -31,6 +32,7 @@
 					<div class="col-md-11">
 						<div class="card bg-light text-dark">
 							<div class="card-body text-center">
+								<h2 id="waiting-message"></h3>
 								<img id="book-cover-img"/>
 								<h1 id="book-title"></h1>
 								<h2 id="book-author"></h2>
@@ -67,7 +69,7 @@
 									</div>
 
 									<div class="row">
-										<button type="button" onclick="addPickupLocation()" class="btn btn-primary">Add Another Pickup Location</button>
+										<button type="button" onclick="addPickupLocation()" class="btn btn-primary">Add A Pickup Location</button>
 									</div>
 									
 									<div class="row pt-3">

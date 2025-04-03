@@ -1,2 +1,4 @@
 webpy-framework
 propelauth-flask
+httpx
+python-dotenv

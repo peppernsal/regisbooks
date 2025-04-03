@@ -1,12 +1,9 @@
 from dataclasses import dataclass, field
 from http.client import BAD_REQUEST, FORBIDDEN
 from json import JSONDecodeError
-from typing import TypeVar, TypedDict
+from typing import TypeVar
 from flask import jsonify, request, Response
-from flask_sqlalchemy import SQLAlchemy
 import httpx
-from sqlalchemy import null
-from traitlets import default
 from webpy import App
 from propelauth_flask import init_auth, current_user
 from propelauth_flask.user import LoggedInUser
@@ -210,7 +207,7 @@ def register_internal_api_routes():
 		try: return jsonify(Book.ensure_in_db(isbn).as_dict)
 		except JSONDecodeError: return BAD_REQUEST
 
-	@app.route("/api/internal/rem-book", method=["POST"])
+	@app.route("/api/internal/rem-book", methods=["POST"])
 	@auth.require_user
 	def rembook_internal():
 		admin_key = request.json.get("key")

@@ -1,6 +1,8 @@
 from dataclasses import dataclass, field
 from http.client import BAD_REQUEST, FORBIDDEN
 from json import JSONDecodeError
+import json
+import sys
 from typing import TypeVar
 from flask import jsonify, request, Response
 import httpx
@@ -425,20 +427,31 @@ def init_db_api():
 
 		@staticmethod
 		def from_isbn(isbn: str) -> "Book":
-			info = httpx.get(f"https://openlibrary.org/isbn/{isbn}.json", follow_redirects=True).json()
-			author_path: str = info["authors"][0]["key"]
+			book_info = httpx.get(f"https://openlibrary.org/isbn/{isbn}.json", follow_redirects=True).json()
+
+			work_path: str = book_info["works"][0]["key"]
+
+			work_info = httpx.get(f"https://openlibrary.org{work_path}.json", follow_redirects=True).json()
+
+			author_path: str = work_info["authors"][0]["author"]["key"]
 
 			author: str = httpx.get(f"https://openlibrary.org{author_path}.json", follow_redirects=True).json()["name"]
 
-			# get cover from google
+			# first try to get cover from google, then openlib, then give up
 			google_info = httpx.get(f"https://www.googleapis.com/books/v1/volumes?q=isbn:{isbn}", follow_redirects=True).json()
 			
+			try: cover_url = google_info["items"][0]["volumeInfo"]["imageLinks"]["thumbnail"]
+			except KeyError:
+				cover_url = f"https://covers.openlibrary.org/b/isbn/{isbn}-L.jpg"
+
+				if httpx.get(cover_url, follow_redirects=True).is_error:
+					cover_url = "<no-url>"
 
 			return Book(
 				id=isbn,
-				title=info["title"],
+				title=work_info["title"],
 				author=author,
-				publisher=info["publishers"][0],
-				publish_date=info["publish_date"],
-				cover_image_url=google_info["items"][0]["volumeInfo"]["imageLinks"]["thumbnail"]
+				publisher=book_info["publishers"][0],
+				publish_date=book_info["publish_date"],
+				cover_image_url=cover_url
 			)

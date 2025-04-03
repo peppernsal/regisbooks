@@ -210,7 +210,7 @@ def register_internal_api_routes():
 		try: return jsonify(Book.ensure_in_db(isbn).as_dict)
 		except JSONDecodeError: return BAD_REQUEST
 
-	@app.route("/api/internal/rem-book", method=["POST"])
+	@app.route("/api/internal/rem-book", methods=["POST"])
 	@auth.require_user
 	def rembook_internal():
 		admin_key = request.json.get("key")

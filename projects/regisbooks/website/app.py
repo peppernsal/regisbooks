@@ -78,6 +78,15 @@ def register_internal_api_routes():
 
 		return jsonify([listing.as_dict for listing in listings])
 
+	@app.route("/api/internal/my-listings")
+	@auth.require_user
+	def mylistings_internal():
+		ensure_user()
+
+		listings: list[Listing] = Listing.query.filter(Listing.author_id == current_user.user_id).all()
+
+		return jsonify([listing.as_dict for listing in listings])
+
 	@app.route("/api/internal/get-open-reqs")
 	@auth.require_user
 	def getopenreqs_internal():
@@ -298,7 +307,7 @@ def init_db_api():
 				"lastName": self.last_name,
 				"username": self.username,
 				"email": self.email,
-				"listings": self.listings,
+				"listings": [listing.id for listing in self.listings],
 				"stats": {
 					"listingsMade": self.stats.listings_made,
 					"booksGiven": self.stats.books_given,
@@ -317,7 +326,7 @@ def init_db_api():
 			REQUESTED = 1
 			TAKEN = 2
 		
-		class Classes: # TODO: decide if this should be in listing or books
+		class Class: # TODO: decide if this should be in listing or books
 			FRESHMAN = 0
 			SOPHOMORE = 1
 			JUNIOR = 2

@@ -33,7 +33,7 @@ if (!bookISBN) location.href = "/enter-isbn";
 		alert("Invalid ISBN!");
 		location.href = "/enter-isbn";
 	}
-})()
+})();
 
 function createListing() {
 	const usageLevel = document.getElementById("usage-level").value;

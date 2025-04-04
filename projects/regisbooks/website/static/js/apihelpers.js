@@ -1,4 +1,6 @@
 // authInfo should be defined prior to loading this library
+const listingUsageRepr = ["New", "Lightly Used", "Used"];
+const listingStatusRepr = ["Available", "Requested", "Given Away"];
 
 async function makeAPICall(endpoint, body, method, extraHeaders) {
 	return await fetch(endpoint, {
@@ -37,6 +39,10 @@ function getListings() {
 	return getJSONInfoFromAPICall(`/api/internal/get-listings`);
 }
 
+function getMyListings() {
+	return getJSONInfoFromAPICall(`/api/internal/my-listings`);
+}
+
 function getOpenReqs() {
 	return getJSONInfoFromAPICall(`/api/internal/get-open-reqs`);
 }
@@ -68,15 +74,3 @@ function remPreReq(preReqID) {
 function remBook(bookID) {
 	return getJSONInfoFromAPICall(`/api/internal/rem-book?id=${bookID}`);
 }
-
-const listingUsageRepr = {
-	0: "new",
-	1: "lightly used",
-	2: "used"
-};
-
-const listingStatusRepr = {
-	0: "available",
-	1: "requested",
-	2: "taken"
-};

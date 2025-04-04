@@ -2,6 +2,7 @@ from dataclasses import dataclass, field
 from http.client import BAD_REQUEST, FORBIDDEN
 from json import JSONDecodeError
 import json
+from re import S
 import sys
 from typing import TypeVar
 from flask import jsonify, request, Response
@@ -235,6 +236,72 @@ def register_internal_api_routes():
 
 		return RESP_OK
 	
+	# requesting existing listings
+	@app.route("/api/internal/req-listing")
+	@auth.require_user
+	def reqlisting_internal():
+		ensure_user()
+
+		listing_id = request.args.get("id")
+
+		if type(listing_id) is not str: return BAD_REQUEST
+
+		listing: Listing = Listing.query.filter(Listing.id == listing_id).first()
+
+		if listing is None: return BAD_REQUEST
+		
+		if listing.is_requested: return BAD_REQUEST
+		if listing.author_id == current_user.user_id: return BAD_REQUEST
+
+		listing.status = Listing.Status.REQUESTED
+		listing.requester_id = current_user.user_id
+
+		db.session.commit()
+		return RESP_OK
+
+	@app.route("/api/internal/fulfill-listing")
+	@auth.require_user
+	def fulfilllisting_internal():
+		ensure_user()
+
+		listing_id = request.args.get("id")
+
+		if type(listing_id) is not str: return BAD_REQUEST
+
+		listing: Listing = Listing.query.filter(Listing.id == listing_id).first()
+
+		if listing is None: return BAD_REQUEST
+
+		if listing.author_id != current_user.user_id: return FORBIDDEN
+		if listing.is_requested: return BAD_REQUEST
+
+		listing.status = Listing.Status.TAKEN
+
+		db.session.commit()
+		return RESP_OK
+	
+	@app.route("/api/internal/reject-listing-request")
+	@auth.require_user
+	def rejectlistingrequest_internal():
+		ensure_user()
+
+		listing_id = request.args.get("id")
+
+		if type(listing_id) is not str: return BAD_REQUEST
+
+		listing: Listing = Listing.query.filter(Listing.id == listing_id).first()
+
+		if listing is None: return BAD_REQUEST
+
+		if listing.author_id != current_user.user_id: return FORBIDDEN
+		if not listing.is_requested: return BAD_REQUEST
+
+		listing.status = Listing.Status.AVAILABLE
+		listing.requester_id = None
+
+		db.session.commit()
+		return RESP_OK
+
 def init_db_api():
 	global User, Listing, Book, PreRequest, query_by_id, query_all_of, ensure_user, db_add
 
@@ -341,7 +408,8 @@ def init_db_api():
 		status: int = db.Column(db.Integer, nullable=False, default=Status.AVAILABLE)
 		pickup_locations: list[str] = db.Column(db.PickleType, nullable=False)
 		author_id: Mapped[str] = db.Column(db.String, db.ForeignKey('users.id'))
-		
+		requester_id: Mapped[str] = db.Column(db.String, default=None)
+
 		@property
 		def as_dict(self) -> dict:
 			return {
@@ -351,7 +419,8 @@ def init_db_api():
 				"notes": self.notes,
 				"status": self.status,
 				"pickupLocations": self.pickup_locations,
-				"authorID": self.author_id
+				"authorID": self.author_id,
+				"requesterID": self.requester_id
 			}
 		
 		@property
@@ -360,6 +429,15 @@ def init_db_api():
 		@property
 		def poster(self) -> User: return self.author
 
+		@property
+		def is_requested(self) -> bool:
+			return self.status != Listing.Status.AVAILABLE
+
+		@property
+		def requester(self) -> User:
+			if self.requester_id is None: return None
+			return User.by_id(self.requester_id)
+
 		@staticmethod
 		def by_id(listing_id: str):
 			return query_by_id(Listing, listing_id)
@@ -367,17 +445,44 @@ def init_db_api():
 		@staticmethod
 		def get_all():
 			return query_all_of(Listing)
-		
+
 	class PreRequest(db.Model):
+		class Status:
+			OPEN = 0
+			ATTACHED = 1
+			FULFILLED = 2
+
 		__tablename__ = "prerequests"
 
 		id: str = db.Column(db.String, primary_key=True, unique=True, nullable=False, default=genid.genid)
 		book_id: Mapped[str] = db.Column(db.String, db.ForeignKey('books.id'))
 		preferred_pickup_locations: list[str] = db.Column(db.PickleType, nullable=False, default=[])
 		creator_id: Mapped[str] = db.Column(db.String, db.ForeignKey('users.id'))
+		status: int = db.Column(db.Integer, nullable=False, default=0)
+		attached_listing_id: Mapped[str] = db.Column(db.String, default=None)
 
 		@property
 		def requester(self): return self.creator
+
+		@property
+		def as_dict(self) -> dict:
+			return {
+				"id": self.id,
+				"bookID": self.book_id,
+				"preferredPickupLocations": self.preferred_pickup_locations,
+				"creatorID": self.creator_id,
+				"status": self.status,
+				"attachedListingID": self.attached_listing_id
+			}
+		
+		@property
+		def attached_listing(self) -> Listing:
+			if self.attached_listing_id is None: return None
+			return Listing.by_id(self.attached_listing_id)
+		
+		@property
+		def is_open(self) -> bool:
+			return self.status == PreRequest.Status.OPEN
 
 		@staticmethod
 		def by_id(listing_id: str):

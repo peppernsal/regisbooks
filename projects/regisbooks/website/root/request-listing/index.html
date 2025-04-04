@@ -13,7 +13,7 @@
 		<script src="/static/js/auth.js"></script>
 		<script src="/static/js/apihelpers.js"></script>
 		<script src="/static/js/element.js"></script>
-		<script src="/static/js/view-listing.js" defer></script>
+		<script src="/static/js/request-listing.js" defer></script>
 
 		<link rel="stylesheet" href="/static/css/theme.css">
 		<link rel="stylesheet" href="/static/css/add-listing.css">
@@ -58,10 +58,16 @@
 								<hr>
 
 								<div id="pickup-locations-container" class="container mb-4 p-3 bg-light rounded border"></div>
+								
+								<div class="row align-items-center text-center">
+									<div class="col-md-6">
+										<a id="email-info-btn" class="btn btn-success btn-lg fw-bold">Show Lister Email</a>
+									</div>
 
-								<div class="text-center">
-									<a id="request-listing" class="btn btn-success btn-lg fw-bold">Request This Book</a>
-								</div>
+									<div class="col-md-6">
+										<a id="email-info" class="d-none"><h3></h3></a>
+									</div>
+								</div>	
 							</div>
 						</div>
 					</div>

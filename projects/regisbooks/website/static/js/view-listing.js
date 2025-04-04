@@ -5,13 +5,20 @@ const listingID = new URLSearchParams(location.search).get("id");
 		const listing = await getListingInfo(listingID);
 		const book = await getBookInfo(listing.bookID);
 		const author = await getUserInfo(listing.authorID);
+		const currUserId = (await getUser()).userId;
 
 		document.getElementById("book-title").textContent = book.title;
 		document.getElementById("book-author").textContent = book.author;
 		document.getElementById("book-isbn").textContent = `ISBN: ${book.isbn}`;
 		document.getElementById("book-publishing-info").textContent = `${book.publisher}, ${book.publishDate}`;
 
-		document.getElementById("listing-author").textContent = `Listed by: ${author.firstName} ${author.lastName}`;
+
+		if (author.id != currUserId) {
+			document.getElementById("listing-author").textContent = `Listed by: ${author.firstName} ${author.lastName}`;
+		} else {
+			document.getElementById("listing-author").textContent = `Listed by you`;
+		}
+
 		document.getElementById("listing-usage-level").textContent = `Condition: ${listingUsageRepr[listing.usageLevel]}`;
 		document.getElementById("listing-status").textContent = `Status: ${listingStatusRepr[listing.status]}`;
 		document.getElementById("listing-notes").textContent = listing.notes || "No notes provided by poster.";
@@ -35,19 +42,47 @@ const listingID = new URLSearchParams(location.search).get("id");
 			coverImg.src = book.coverImageURL;
 			coverCaption.textContent = "Note: cover image and publisher may not match physical book. Check ISBN to match versions.";
 		}
-
-		if (listing.status == 1) {
-			const reqBtn = document.getElementById("request-listing");
-			reqBtn.classList.add("disabled");
-			reqBtn.innerHTML = "<em>This Listing Has Already Been Requested By Someone</em>";
-		} else if (listing.status == 2) {
-			const reqBtn = document.getElementById("request-listing");
-			reqBtn.classList.add("disabled");
-			reqBtn.innerHTML = "<em>This Listing Is No Longer Available</em>";
+		if (author.id != currUserId) {
+			if (listing.status == 1) {
+				const reqBtn = document.getElementById("request-listing");
+				reqBtn.classList.add("disabled");
+				reqBtn.innerHTML = "<em>This Listing Has Already Been Requested By Someone</em>";
+			} else if (listing.status == 2) {
+				const reqBtn = document.getElementById("request-listing");
+				reqBtn.classList.add("disabled");
+				reqBtn.innerHTML = "<em>This Listing Is No Longer Available</em>";
+			} else {
+				const reqBtn = document.getElementById("request-listing");
+				
+				reqBtn.href = `/request-listing?id=${listingID}`;
+			}
 		} else {
-			const reqBtn = document.getElementById("request-listing");
-			
-			reqBtn.href = `/request-listing?id=${listingID}`;
+			if (listing.status == 0) {
+				const reqBtn = document.getElementById("request-listing");
+				reqBtn.classList.add("disabled");
+				reqBtn.innerHTML = "<em>You Cannot Request Your Own Listing</em>";
+			} else if (listing.status == 1) {
+				const listingRequester = await getUserInfo(listing.requesterID);
+				const reqBtn = document.getElementById("request-listing");
+
+				const infoDiv = document.createElement("h3");
+				infoDiv.appendChild(document.createTextNode(`This listing was requested by ${listingRequester.firstName} ${listingRequester.lastName} (`));
+
+				const emailLink = document.createElement("a");
+				emailLink.href = `mailto:${listingRequester.email}?subject=RegisBooks: Regarding Your Request for ${book.title}`;
+				emailLink.textContent = listingRequester.email;
+				infoDiv.appendChild(emailLink);
+				infoDiv.appendChild(document.createTextNode(")"));
+
+				reqBtn.replaceWith(infoDiv);
+			} else { // listing.status == 2
+				const listingRequester = await getUserInfo(listing.requesterID);
+
+				const reqBtn = document.getElementById("request-listing");
+				reqBtn.replaceWith(
+					textElem("h3", `This listing was taken by ${listingRequester.firstName} ${listingRequester.lastName}`)
+				);
+			}
 		}
 
 	} catch (error) {

@@ -250,7 +250,7 @@ def register_internal_api_routes():
 
 		if listing is None: return BAD_REQUEST
 		
-		if listing.is_requested: return BAD_REQUEST
+		if listing.is_requested and listing.requester_id != current_user.user_id: return BAD_REQUEST
 		if listing.author_id == current_user.user_id: return BAD_REQUEST
 
 		listing.status = Listing.Status.REQUESTED

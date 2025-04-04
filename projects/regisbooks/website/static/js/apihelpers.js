@@ -74,3 +74,15 @@ function remPreReq(preReqID) {
 function remBook(bookID) {
 	return getJSONInfoFromAPICall(`/api/internal/rem-book?id=${bookID}`);
 }
+
+function reqListing(listingID) {
+	return makeAPICall(`/api/internal/req-listing?id=${listingID}`);
+}
+
+function rejectListingReq(listingID) {
+	return makeAPICall(`/api/internal/reject-listing-req?id=${listingID}`);
+}
+
+function fulfillRequestFor(listingID) {
+	return makeAPICall(`/api/internal/fulfill-req?id=${listingID}`);
+}

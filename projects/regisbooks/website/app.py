@@ -259,7 +259,7 @@ def register_internal_api_routes():
 		db.session.commit()
 		return RESP_OK
 
-	@app.route("/api/internal/fulfill-listing")
+	@app.route("/api/internal/fulfill-req")
 	@auth.require_user
 	def fulfilllisting_internal():
 		ensure_user()
@@ -280,9 +280,9 @@ def register_internal_api_routes():
 		db.session.commit()
 		return RESP_OK
 	
-	@app.route("/api/internal/reject-listing-request")
+	@app.route("/api/internal/reject-listing-req")
 	@auth.require_user
-	def rejectlistingrequest_internal():
+	def rejectlistingreq_internal():
 		ensure_user()
 
 		listing_id = request.args.get("id")

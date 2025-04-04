@@ -3,6 +3,7 @@ from http.client import BAD_REQUEST, FORBIDDEN
 from json import JSONDecodeError
 import json
 from re import S
+import re
 import sys
 from typing import TypeVar
 from flask import jsonify, request, Response
@@ -70,15 +71,49 @@ def register_internal_api_routes():
 
 		return jsonify(book.as_dict)
 
-	@app.route("/api/internal/get-listings")
+	@app.route("/api/internal/get-listings", methods=["GET", "POST"])
 	@auth.require_user
 	def getlistings_internal():
 		ensure_user()
 
-		listings = Listing.get_all()
+		if request.method == "GET":
+			listings = Listing.get_all()
 
-		return jsonify([listing.as_dict for listing in listings])
+			return jsonify([listing.as_dict for listing in listings])
+		
+		options: dict[str, str | int | list[str]] = request.json
+				
+		name_filter: str = options.get("name")
+		isbn_filter: str = options.get("isbn")
+		location_filters: list[str] = options.get("locations", [])
+		status_filter: str = options.get("status")
+		usage_filter: int = options.get("usage")
 
+		query = Listing.query
+
+		if name_filter is not None:
+			query = query.filter(Listing.book.name.ilike(f"%{name_filter}%"))
+
+		if isbn_filter is not None:
+			query = query.filter(Listing.book_id.ilike(""))
+
+		if status_filter is not None:
+			query = query.filter(Listing.status == status_filter)
+
+		if usage_filter is not None:
+			query = query.filter(Listing.usage_level == usage_filter)
+
+		def filter_pickup_loc(listing: Listing, target: list[str]): # this is kind of slow, maybe fix sometime before prod?
+			for target in target:
+				for location in listing.pickup_locations:
+					if re.match(f".*{target}.*", location): return True
+
+			return False
+
+		filtered: list[Listing] = [listing for listing in query.all() if filter_pickup_loc(listing, location_filters)]
+
+		return jsonify([listing.as_dict for listing in filtered])
+	
 	@app.route("/api/internal/my-listings")
 	@auth.require_user
 	def mylistings_internal():

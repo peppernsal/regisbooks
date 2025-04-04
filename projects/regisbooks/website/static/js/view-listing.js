@@ -46,11 +46,21 @@ const listingID = new URLSearchParams(location.search).get("id");
 			if (listing.status == 1) {
 				const reqBtn = document.getElementById("request-listing");
 				reqBtn.classList.add("disabled");
-				reqBtn.innerHTML = "<em>This Listing Has Already Been Requested By Someone</em>";
+
+				if (listing.requesterID == currUserId) {
+					reqBtn.innerHTML = "<em>You Have Already Requested This Listing!</em>";
+				} else {
+					reqBtn.innerHTML = "<em>This Listing Has Already Been Requested By Someone!</em>";
+				}
 			} else if (listing.status == 2) {
 				const reqBtn = document.getElementById("request-listing");
 				reqBtn.classList.add("disabled");
-				reqBtn.innerHTML = "<em>This Listing Is No Longer Available</em>";
+
+				if (listing.requesterID == currUserId) {
+					reqBtn.innerHTML = "<em>You Have Already Claimed This Item!</em>";
+				} else {
+					reqBtn.innerHTML = "<em>This Listing Is No Longer Available!</em>";
+				}
 			} else {
 				const reqBtn = document.getElementById("request-listing");
 				
@@ -65,16 +75,43 @@ const listingID = new URLSearchParams(location.search).get("id");
 				const listingRequester = await getUserInfo(listing.requesterID);
 				const reqBtn = document.getElementById("request-listing");
 
-				const infoDiv = document.createElement("h3");
-				infoDiv.appendChild(document.createTextNode(`This listing was requested by ${listingRequester.firstName} ${listingRequester.lastName} (`));
+				const replacementDiv = document.createElement("div");
+				replacementDiv.classList.add("row", "align-items-center", "text-center")
+				
+				const reqInfoDiv = document.createElement("div");
+				reqInfoDiv.classList.add("col-md-6");
+
+				const reqInfo = document.createElement("h3");
+				reqInfo.appendChild(document.createTextNode(`This listing was requested by ${listingRequester.firstName} ${listingRequester.lastName} (`));
 
 				const emailLink = document.createElement("a");
 				emailLink.href = `mailto:${listingRequester.email}?subject=RegisBooks: Regarding Your Request for ${book.title}`;
 				emailLink.textContent = listingRequester.email;
-				infoDiv.appendChild(emailLink);
-				infoDiv.appendChild(document.createTextNode(")"));
+				reqInfo.appendChild(emailLink);
+				reqInfo.appendChild(document.createTextNode(")"));
 
-				reqBtn.replaceWith(infoDiv);
+				const fulfillDiv = document.createElement("div");
+				fulfillDiv.classList.add("col-md-6");
+
+				const fulfillBtn = textElem("button", "I Sent The Book");
+				fulfillBtn.classList.add("btn", "btn-success");
+				fulfillBtn.onclick = () => {
+					if (window.confirm("Are you sure you want to mark this request as fulfilled?\nOnly select this if you have sent the book to the requester.")) {
+						fulfillRequestFor(listingID).then(() => {
+							location.reload();
+						}).catch(() => {
+							alert("Could not fulfill the request!");
+						});
+					}
+				}
+
+				fulfillDiv.appendChild(fulfillBtn);
+				reqInfoDiv.appendChild(reqInfo);
+
+				replacementDiv.appendChild(reqInfoDiv);
+				replacementDiv.appendChild(fulfillDiv);
+
+				reqBtn.replaceWith(replacementDiv);
 			} else { // listing.status == 2
 				const listingRequester = await getUserInfo(listing.requesterID);
 

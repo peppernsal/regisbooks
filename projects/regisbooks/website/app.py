@@ -77,7 +77,7 @@ def register_internal_api_routes():
 		ensure_user()
 
 		if request.method == "GET":
-			listings = Listing.get_all()
+			listings = Listing.get_all() # TODO: add pagination
 
 			return jsonify([listing.as_dict for listing in listings])
 		
@@ -92,10 +92,10 @@ def register_internal_api_routes():
 		query = Listing.query
 
 		if name_filter is not None:
-			query = query.filter(Listing.book.name.ilike(f"%{name_filter}%"))
+			query = query.join(Book).filter(Book.title.ilike(f"%{name_filter}%")).reset_joinpoint()
 
 		if isbn_filter is not None:
-			query = query.filter(Listing.book_id.ilike(""))
+			query = query.filter(Listing.book_id.ilike(f"%{isbn_filter}%"))
 
 		if status_filter is not None:
 			query = query.filter(Listing.status == status_filter)
@@ -104,6 +104,8 @@ def register_internal_api_routes():
 			query = query.filter(Listing.usage_level == usage_filter)
 
 		def filter_pickup_loc(listing: Listing, target: list[str]): # this is kind of slow, maybe fix sometime before prod?
+			if len(target) == 0: return True
+
 			for target in target:
 				for location in listing.pickup_locations:
 					if re.match(f".*{target}.*", location): return True
@@ -370,7 +372,7 @@ def init_db_api():
 	
 	def query_all_of(model_type: type[T]) -> list[T]:
 		return list(
-				db.session.execute(
+			db.session.execute(
 				db.select(model_type)
 			).scalars().all()
 		)

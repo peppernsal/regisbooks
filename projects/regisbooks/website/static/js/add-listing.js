@@ -61,7 +61,7 @@ function createListing() {
 
 	console.log(listingInfo);
 	
-	addListing(listingInfo).then(() => location.href = "/my-listings");
+	addListing(listingInfo).then(() => location.href = "/view-listings");
 }
 
 const locationsContainer = document.getElementById("pickup-locations-container");;

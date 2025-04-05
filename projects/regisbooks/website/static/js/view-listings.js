@@ -104,64 +104,73 @@ async function populateListings() {
 		listings = await getMyListings();
 	}
 	
-	for (const listingInfo of listings) {
-		const summaryDiv = document.createElement("div");
-		summaryDiv.className = "col-md-6";
+	for (let i = 0; i < listings.length; i+=2) {
+		const group = listings.slice(i, i+2);
 
-		const bookInfo = await getBookInfo(listingInfo.bookID);
+		const row = document.createElement("div");
+		row.className = "row";
 
-		const titleContainer = document.createElement("h4");
-		titleContainer.append(
-			textElem('i', bookInfo.title),
-			textElem("span", ` by ${bookInfo.author}`),
-		);
+		for (const listingInfo of group) {
+			const summaryDiv = document.createElement("div");
+			summaryDiv.className = "col-md-6 listing-preview-parent";
 
-		const anchor = document.createElement("a");
-		anchor.className = "btn btn-success my-1 d-block text-center"
-		anchor.href = `/view-listing?id=${listingInfo.id}`;
+			const bookInfo = await getBookInfo(listingInfo.bookID);
 
-		if (bookInfo.coverImageURL !== "<no-url>") {
-			const coverImg = document.createElement("img");
-			coverImg.className = "img-fluid scaled-cover-image";
-			coverImg.src = bookInfo.coverImageURL;
+			const titleContainer = document.createElement("h4");
+			titleContainer.append(
+				textElem('i', bookInfo.title),
+				textElem("span", ` by ${bookInfo.author}`),
+			);
 
-			anchor.append(coverImg);
-		}
+			const anchor = document.createElement("a");
+			anchor.className = "btn btn-success my-1 d-block text-center listing-preview"
+			anchor.href = `/view-listing?id=${listingInfo.id}`;
 
-		anchor.appendChild(titleContainer);
+			if (bookInfo.coverImageURL !== "<no-url>") {
+				const coverImg = document.createElement("img");
+				coverImg.className = "img-fluid scaled-cover-image";
+				coverImg.src = bookInfo.coverImageURL;
 
-		summaryDiv.appendChild(anchor);
+				anchor.append(coverImg);
+			}
 
-		const usageString = listingUsageRepr[listingInfo.usageLevel];
-		const statusString = listingStatusRepr[listingInfo.status];
+			anchor.appendChild(titleContainer);
 
-		anchor.append(
-			textElem('h6', `Status: ${statusString}`),
-			textElem('h6', `Condition: ${usageString}`),
-		);
+			summaryDiv.appendChild(anchor);
 
-		if (listingInfo.pickupLocations.length > 2) {
-			if (listingInfo.pickupLocations.length === 3) {
-				anchor.append(
-					textElem('h6', `Pickup at ${listingInfo.pickupLocations.slice(0, 2).join(", ")}, and 1 other location`)
-				);
+			const usageString = listingUsageRepr[listingInfo.usageLevel];
+			const statusString = listingStatusRepr[listingInfo.status];
+
+			anchor.append(
+				textElem('h6', `Status: ${statusString}`),
+				textElem('h6', `Condition: ${usageString}`),
+			);
+
+			if (listingInfo.pickupLocations.length > 2) {
+				if (listingInfo.pickupLocations.length === 3) {
+					anchor.append(
+						textElem('h6', `Pickup at ${listingInfo.pickupLocations.slice(0, 2).join(", ")}, and 1 other location`)
+					);
+				}
+				else
+				{
+					const numMore = listingInfo.pickupLocations.length - 2;
+
+					anchor.append(
+						textElem('h6', `Pickup at ${listingInfo.pickupLocations.slice(0, 2).join(", ")}, and ${numMore} other locations`)
+					);
+				}
 			}
 			else
 			{
-				const numMore = listingInfo.pickupLocations.length - 2;
-
 				anchor.append(
-					textElem('h6', `Pickup at ${listingInfo.pickupLocations.slice(0, 2).join(", ")}, and ${numMore} other locations`)
+					textElem('h6', `Pickup at ${listingInfo.pickupLocations.join(", ")}`)
 				);
 			}
-		}
-		else
-		{
-			anchor.append(
-				textElem('h6', `Pickup at ${listingInfo.pickupLocations.join(", ")}`)
-			);
+
+			row.appendChild(summaryDiv);
 		}
 
-		listingsContainer.appendChild(summaryDiv);
+		listingsContainer.appendChild(row);
 	}
 }

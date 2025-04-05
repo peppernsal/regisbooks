@@ -162,7 +162,7 @@ def register_internal_api_routes():
 
 		if (type(book_id) is not str): return BAD_REQUEST
 
-		Book.ensure_in_db(book_id)
+		if Book.by_id(book_id) is None: return BAD_REQUEST
 
 		new_listing = Listing(
 			book_id=book_id,
@@ -252,6 +252,7 @@ def register_internal_api_routes():
 		isbn = request.args.get("isbn")
 
 		if type(isbn) is not str: return BAD_REQUEST
+		if not isbn.isdigit(): return BAD_REQUEST
 		
 		try: return jsonify(Book.ensure_in_db(isbn).as_dict)
 		except JSONDecodeError: return BAD_REQUEST
@@ -577,7 +578,7 @@ def init_db_api():
 			return already
 
 		@staticmethod
-		def from_isbn(isbn: str) -> "Book":
+		def from_isbn(isbn: str) -> "Book": # TODO: add validation for isbns			
 			book_info = httpx.get(f"https://openlibrary.org/isbn/{isbn}.json", follow_redirects=True).json()
 
 			work_path: str = book_info["works"][0]["key"]

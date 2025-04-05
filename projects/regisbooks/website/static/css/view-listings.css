@@ -3,3 +3,11 @@
 	padding-top: 5px;
 	padding-bottom: 15px;
 }
+
+.listing-preview {
+	height: 100%;
+}
+
+.listing-preview-parent {
+	margin-top: 10px;
+}

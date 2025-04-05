@@ -48,7 +48,8 @@ const listingID = new URLSearchParams(location.search).get("id");
 				reqBtn.classList.add("disabled");
 
 				if (listing.requesterID == currUserId) {
-					reqBtn.innerHTML = "<em>You Have Already Requested This Listing!</em>";
+					reqBtn.remove();
+					displayRequestInfo(book, listing);
 				} else {
 					reqBtn.innerHTML = "<em>This Listing Has Already Been Requested By Someone!</em>";
 				}
@@ -56,15 +57,11 @@ const listingID = new URLSearchParams(location.search).get("id");
 				const reqBtn = document.getElementById("request-listing");
 				reqBtn.classList.add("disabled");
 
-				if (listing.requesterID == currUserId) {
-					reqBtn.innerHTML = "<em>You Have Already Claimed This Item!</em>";
+				if (listing.requesterID == currUserId) { // display request info
+					reqBtn.innerHTML = "<em>You Have Already Claimed This Book!</em>";
 				} else {
 					reqBtn.innerHTML = "<em>This Listing Is No Longer Available!</em>";
 				}
-			} else {
-				const reqBtn = document.getElementById("request-listing");
-				
-				reqBtn.href = `/request-listing?id=${listingID}`;
 			}
 		} else {
 			if (listing.status == 0) {
@@ -96,7 +93,7 @@ const listingID = new URLSearchParams(location.search).get("id");
 				const fulfillBtn = textElem("button", "I Sent The Book");
 				fulfillBtn.classList.add("btn", "btn-success");
 				fulfillBtn.onclick = () => {
-					if (window.confirm("Are you sure you want to mark this request as fulfilled?\nOnly select this if you have sent the book to the requester.")) {
+					if (window.confirm("Are you sure you want to mark this request as fulfilled?\nOnly select this if you have sent the book to the requester. This action cannot be undone.")) {
 						fulfillRequestFor(listingID).then(() => {
 							location.reload();
 						}).catch(() => {
@@ -128,3 +125,40 @@ const listingID = new URLSearchParams(location.search).get("id");
 		location.href = "/view-listings";
 	}
 })();
+
+function requestThisListing() {
+	reqListing(listingID).then(() => {
+		location.reload();
+	}).catch(() => {
+		alert("Uh Oh! Something went wrong while trying to request this listing. Please try again later.");
+	});
+}
+
+async function displayRequestInfo(book, listing) {
+	const poster = await getUserInfo(listing.authorID);
+
+	const emailBtn = document.getElementById("email-info-btn");
+	const emailLink = document.getElementById("email-info");
+
+	emailLink.textContent = poster.email;
+	emailLink.href = `mailto:${poster.email}?subject=RegisBooks: Request for ${book.title}`;
+
+	emailBtn.onclick = () => {
+		emailLink.classList.toggle("d-none");
+		emailBtn.textContent = emailLink.classList.contains("d-none") ? "Show Lister Email" : "Hide Lister Email";
+	};
+
+	document.getElementById("success-message").textContent = "You have successfully requested this listing!";
+
+	document.getElementById("rem-listing-btn").onclick = () => {
+		rejectListingReq(listingID).then(() => {
+			alert("You have successfully removed your request!");
+			location.href = `/view-listing?id=${listingID}`;
+		}).catch(() => {
+			alert("Uh Oh! Something went wrong while trying to remove your request. Please try again later.");
+			location.href = `/view-listing?id=${listingID}`;
+		});
+	};
+
+	document.getElementById("req-info").classList.remove("d-none");
+}

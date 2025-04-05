@@ -328,8 +328,8 @@ def register_internal_api_routes():
 
 		if listing is None: return BAD_REQUEST
 
-		if listing.author_id != current_user.user_id: return FORBIDDEN
-		if not listing.is_requested: return BAD_REQUEST
+		if listing.status != Listing.Status.REQUESTED: return BAD_REQUEST
+		if listing.author_id != current_user.user_id and listing.requester_id != current_user.user_id: return FORBIDDEN
 
 		listing.status = Listing.Status.AVAILABLE
 		listing.requester_id = None

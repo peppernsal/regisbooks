@@ -1,10 +1,6 @@
 from dataclasses import dataclass, field
-from http.client import BAD_REQUEST, FORBIDDEN
 from json import JSONDecodeError
-import json
-from re import S
 import re
-import sys
 from typing import TypeVar
 from flask import jsonify, request, Response
 import httpx
@@ -32,7 +28,7 @@ def webpy_setup(app: App):
 
 	auth = init_auth(secret_keys.AUTH_URL, secret_keys.AUTH_API_KEY)
 
-	db = app.sqlalchemy.init("sqlite:///database.db")
+	db = app.sqlalchemy.init(secret_keys.DB_URI)
 
 	init_db_api()
 	register_internal_api_routes()

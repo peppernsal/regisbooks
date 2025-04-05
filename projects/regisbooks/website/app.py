@@ -303,12 +303,12 @@ def register_internal_api_routes():
 
 		if type(listing_id) is not str: return BAD_REQUEST
 
-		listing: Listing = Listing.query.filter(Listing.id == listing_id).first()
+		listing: Listing = Listing.by_id(listing_id)
 
 		if listing is None: return BAD_REQUEST
 
 		if listing.author_id != current_user.user_id: return FORBIDDEN
-		if listing.is_requested: return BAD_REQUEST
+		if listing.status != Listing.Status.REQUESTED: return BAD_REQUEST
 
 		listing.status = Listing.Status.TAKEN
 

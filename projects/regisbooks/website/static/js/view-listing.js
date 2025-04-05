@@ -76,7 +76,7 @@ const listingID = new URLSearchParams(location.search).get("id");
 				replacementDiv.classList.add("row", "align-items-center", "text-center")
 				
 				const reqInfoDiv = document.createElement("div");
-				reqInfoDiv.classList.add("col-md-6");
+				reqInfoDiv.classList.add("col-md-7");
 
 				const reqInfo = document.createElement("h3");
 				reqInfo.appendChild(document.createTextNode(`This listing was requested by ${listingRequester.firstName} ${listingRequester.lastName} (`));
@@ -88,16 +88,21 @@ const listingID = new URLSearchParams(location.search).get("id");
 				reqInfo.appendChild(document.createTextNode(")"));
 
 				const fulfillDiv = document.createElement("div");
-				fulfillDiv.classList.add("col-md-6");
+				fulfillDiv.classList.add("col-md-5");
 
-				const fulfillBtn = textElem("button", "I Sent The Book");
+				const fulfillBtn = document.createElement("button");
+				fulfillBtn.appendChild(textElem("h4", `I sent ${listingRequester.firstName} the book`));
+
+
 				fulfillBtn.classList.add("btn", "btn-success");
 				fulfillBtn.onclick = () => {
 					if (window.confirm("Are you sure you want to mark this request as fulfilled?\nOnly select this if you have sent the book to the requester. This action cannot be undone.")) {
-						fulfillRequestFor(listingID).then(() => {
+						fulfillRequestFor(listingID).then((resp) => {
+							if (resp.status != 200) {
+								alert("Could not fulfill the request!");
+								return;
+							}
 							location.reload();
-						}).catch(() => {
-							alert("Could not fulfill the request!");
 						});
 					}
 				}
@@ -127,10 +132,12 @@ const listingID = new URLSearchParams(location.search).get("id");
 })();
 
 function requestThisListing() {
-	reqListing(listingID).then(() => {
+	reqListing(listingID).then((resp) => {
+		if (resp.status != 200) {
+			alert("Uh Oh! Something went wrong while trying to request this listing. Please try again later.");
+			return;
+		}
 		location.reload();
-	}).catch(() => {
-		alert("Uh Oh! Something went wrong while trying to request this listing. Please try again later.");
 	});
 }
 
@@ -151,12 +158,15 @@ async function displayRequestInfo(book, listing) {
 	document.getElementById("success-message").textContent = "You have successfully requested this listing!";
 
 	document.getElementById("rem-listing-btn").onclick = () => {
-		rejectListingReq(listingID).then(() => {
+		rejectListingReq(listingID).then((resp) => {
+			if (resp.status != 200) {
+				alert("Uh Oh! Something went wrong while trying to remove your request. Please try again later.");
+				location.reload();
+				return;
+			}
+			
 			alert("You have successfully removed your request!");
-			location.href = `/view-listing?id=${listingID}`;
-		}).catch(() => {
-			alert("Uh Oh! Something went wrong while trying to remove your request. Please try again later.");
-			location.href = `/view-listing?id=${listingID}`;
+			location.reload();
 		});
 	};
 

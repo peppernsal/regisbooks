@@ -1,5 +1,5 @@
-useAuth((user) => {
-	const greeting = document.getElementById("greeting");
+useAuth(async (user) => {
+	const userInfo = await getUserInfo(user.userId);
 
-	greeting.textContent = `Hello, ${user.firstName} (${user.username})`
+	console.log(userInfo);
 })

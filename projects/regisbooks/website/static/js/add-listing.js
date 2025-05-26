@@ -21,7 +21,7 @@ if (!bookISBN) location.href = "/enter-isbn";
 		
 		if (bookInfo.coverImageURL != "<no-url>") {
 			document.getElementById("book-cover-img").src = bookInfo.coverImageURL;
-			document.getElementById("cover-disclaimer").textContent = "Note: cover image and publisher may not match physical book.";
+			document.getElementById("cover-disclaimer").textContent = "Note: cover image and publisher may not match physical book. Check ISBN to match versions.";
 		} else {
 			document.getElementById("book-cover-img").remove();
 			document.getElementById("cover-disclaimer").remove();
@@ -124,7 +124,7 @@ function addPickupLocation() {
 				inputElem.placeholder = nextExample; // ensure set
 			}, 50 * nextExample.length);
 		}
-	}, 4000);
+	}, 3000);
 
 	inputElem.className = "form-control pickup-location";
 

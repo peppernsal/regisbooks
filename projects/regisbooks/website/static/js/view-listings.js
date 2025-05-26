@@ -40,14 +40,6 @@ const myListingsCheckbox = document.getElementById("show-my-listings");
 const filterSet = document.getElementById("filter-set");
 
 myListingsCheckbox.onchange = () => {
-	if (myListingsCheckbox.checked) {
-		filterSet.setAttribute("disabled", "");
-		const locationTags = document.getElementById("location-tags");
-		if (locationTags) locationTags.innerHTML = "";
-	} else {
-		filterSet.removeAttribute("disabled");
-	}
-
 	populateListings();
 }
 
@@ -85,24 +77,22 @@ async function populateListings() {
 
 	let listings;
 	
-	if (!myListingsCheckbox.checked) {
-		const usageLevel = parseInt(document.getElementById("filter-usage").value);
-		const statusLevel = parseInt(document.getElementById("filter-status").value);
-		const locationTags = document.getElementById("location-tags");
-		const locations = Array.from(locationTags.children).map((tag) => tag.textContent.slice(9).trim());
+	const usageLevel = parseInt(document.getElementById("filter-usage").value);
+	const statusLevel = parseInt(document.getElementById("filter-status").value);
+	const locationTags = document.getElementById("location-tags");
+	const locations = Array.from(locationTags.children).map((tag) => tag.textContent.slice(9).trim());
+	const myListings = myListingsCheckbox.checked ? true : undefined;
 
-		const options = {
-			name: document.getElementById("filter-name").value ?? undefined,
-			isbn: document.getElementById("filter-isbn").value ?? undefined,
-			locations,
-			usage: usageLevel === 0 ? usageLevel : (usageLevel ?? undefined),
-			status: statusLevel === 0 ? statusLevel : (statusLevel ?? undefined),
-		};
+	const options = {
+		name: document.getElementById("filter-name").value ?? undefined,
+		isbn: document.getElementById("filter-isbn").value ?? undefined,
+		locations,
+		usage: usageLevel === 0 ? usageLevel : (usageLevel ?? undefined),
+		status: statusLevel === 0 ? statusLevel : (statusLevel ?? undefined),
+		myListings
+	};
 
-		listings = await getListings(options);
-	} else {
-		listings = await getMyListings();
-	}
+	listings = await getListings(options);
 	
 	for (let i = 0; i < listings.length; i+=2) {
 		const group = listings.slice(i, i+2);

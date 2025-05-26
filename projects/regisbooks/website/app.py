@@ -7,6 +7,7 @@ import httpx
 from webpy import App
 from propelauth_flask import init_auth, current_user
 from propelauth_flask.user import LoggedInUser
+from sqlalchemy.orm.attributes import flag_modified
 from sqlalchemy.orm import Mapped
 
 import secret_keys
@@ -84,6 +85,7 @@ def register_internal_api_routes():
 		location_filters: list[str] = options.get("locations", [])
 		status_filter: str = options.get("status")
 		usage_filter: int = options.get("usage")
+		mine_only: bool = options.get("myListings", False)
 
 		query = Listing.query
 
@@ -99,6 +101,9 @@ def register_internal_api_routes():
 		if usage_filter is not None:
 			query = query.filter(Listing.usage_level == usage_filter)
 
+		if mine_only:
+			query = query.filter(Listing.author_id == current_user.user_id)
+
 		def filter_pickup_loc(listing: Listing, target: list[str]): # this is kind of slow, maybe fix sometime before prod?
 			if len(target) == 0: return True
 
@@ -111,15 +116,6 @@ def register_internal_api_routes():
 		filtered: list[Listing] = [listing for listing in query.all() if filter_pickup_loc(listing, location_filters)]
 
 		return jsonify([listing.as_dict for listing in filtered])
-	
-	@app.route("/api/internal/my-listings")
-	@auth.require_user
-	def mylistings_internal():
-		ensure_user()
-
-		listings: list[Listing] = Listing.query.filter(Listing.author_id == current_user.user_id).all()
-
-		return jsonify([listing.as_dict for listing in listings])
 
 	@app.route("/api/internal/get-open-reqs")
 	@auth.require_user
@@ -168,7 +164,13 @@ def register_internal_api_routes():
 			pickup_locations=pickup_locations
 		)
 
+		author.stats.listings_made += 1
+
+		flag_modified(author, "stats") # ensure stats is updated in db
+		
 		db_add(new_listing)
+
+		db.session.commit()
 
 		return RESP_OK
 
@@ -310,6 +312,12 @@ def register_internal_api_routes():
 		if listing.status != Listing.Status.REQUESTED: return BAD_REQUEST
 
 		listing.status = Listing.Status.TAKEN
+		listing.author.stats.books_given += 1
+		listing.requester.stats.books_recieved += 1
+
+		flag_modified(listing.author, "stats") # ensure stats is updated in db
+		flag_modified(listing.requester, "stats")
+
 
 		db.session.commit()
 		return RESP_OK

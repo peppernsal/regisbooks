@@ -1,59 +1,82 @@
-const userID = new URLSearchParams(location.search).get("id");
-const qualificationsContainer = document.getElementById("my-qualifications");
-const qualSelect = document.getElementById("select-qual");
+const userID = new URLSearchParams(location.search).get('id');
 
-execWithUserData((selfInfo) => {
-	if (selfInfo.id == userID) location.href = "/self-profile";
-});
+useAuth(async (user) => {
+	if (userID == user.id) location.href = '/dash';
 
-(async () => {
-	const userData = await getUserInfo(userID);
+	const userInfo = await getUserInfo(userID);
+	if (!userInfo) location.href = '/dash';
 
-	const greeting = document.getElementById("greeting");
+	// Update page title with user's name
+	const h1 = document.querySelector('h1');
+	h1.textContent = '';
+	const icon = elem('i', '');
+	icon.className = 'bi bi-person-circle me-2';
+	h1.appendChild(icon);
+	h1.appendChild(textElem('span', `${userInfo.firstName}'s Profile`));
+	// Fill in profile items using userInfo
+	document.getElementById('full-name').textContent = `${userInfo.firstName} ${userInfo.lastName}`;
+	document.getElementById('username').textContent = userInfo.username;
+	document.getElementById('email').textContent = userInfo.email;
 
-	greeting.textContent = `${userData.name}'s Profile`;
+	// Update section headings with user's name
+	document.querySelectorAll('h3').forEach(heading => {
+		if (heading.textContent.includes('Stats')) {
+			heading.textContent = '';
+			const icon = elem('i', '');
+			icon.className = 'bi bi-bar-chart-fill me-2';
+			heading.appendChild(icon);
+			heading.appendChild(textElem('span', `${userInfo.firstName}'s Stats`));
+		} else if (heading.textContent.includes('Listings')) {
+			heading.textContent = '';
+			const icon = elem('i', '');
+			icon.className = 'bi bi-journal-text me-2';
+			heading.appendChild(icon);
+			heading.appendChild(textElem('span', `${userInfo.firstName}'s Listings`));
+		}
+	});
 
-	const myThreadsContainer = document.getElementById("my-threads-container");
+	// Fill in stats
+	document.getElementById('stat-listings-made').textContent = userInfo.stats?.listingsMade ?? 0;
+	document.getElementById('stat-books-given').textContent = userInfo.stats?.booksGiven ?? 0;
+	document.getElementById('stat-books-received').textContent = userInfo.stats?.booksReceived ?? 0;	// Fill in user listings using utils
+	const listingsContainer = document.getElementById('user-listings');
+	listingsContainer.textContent = '';
 
-	for (const threadID of userData.threads) {
-		const threadInfo = await getThreadInfo(threadID);
-		const channelName = (await getChannelInfo(threadInfo.channel)).name;
-
-		const threadDiv = document.createElement("a");
-
-		threadDiv.className = "thread-summary btn btn-success d-block text-center my-1";
-
-		threadDiv.append(
-			textElem("h4", threadInfo.title),
-			textElem("h6", `in ${channelName}`)
-		);
-
-		threadDiv.href = `/view-thread?id=${threadID}`;
-
-		myThreadsContainer.appendChild(threadDiv);
-	}
-
-	const authorizedChannels = userData.authorizedChannels;
-
-	for (const channelID of authorizedChannels) {
-		const channelName = (await getChannelInfo(channelID)).name;
-
-		addQualificationManually(channelName, channelID);
-	}
-})();
-
-function addQualificationManually(channelName, channelID) {
-	const qualDiv = document.createElement("div");
+	const listings = await getListings({ myListings: false });
+	const userListings = listings.filter(listing => listing.authorID === userID && listing.status !== 2);
 	
-	qualDiv.className = "d-flex align-items-center";
-
-	const qualHeading = textElem("h3", channelName);
-	qualHeading.className = "qual-heading"
-	qualHeading.id = channelID;
-	
-	qualDiv.append(
-		qualHeading
-	);
-
-	qualificationsContainer.appendChild(qualDiv);
-}
+	if (userListings.length > 0) {
+		for (const listing of userListings) {
+			const book = await getBookInfo(listing.bookID);
+			const container = document.createElement('div');
+			container.className = 'col-12 mb-2';
+			
+			const link = document.createElement('a');
+			link.href = `/view-listing?id=${listing.id}`;
+			link.className = 'text-decoration-none';
+			
+			const summary = document.createElement('div');
+			summary.className = 'p-3 rounded border border-success bg-light d-flex justify-content-between align-items-center';
+			
+			const title = textElem('span', book.title);
+			title.className = 'text-success';
+			
+			const status = listing.status === 0 ? 'Available' : 'Requested';
+			const badge = textElem('span', status);
+			badge.className = `badge bg-${listing.status === 0 ? 'success' : 'warning'} ms-2`;
+			
+			summary.appendChild(title);
+			summary.appendChild(badge);
+			link.appendChild(summary);
+			container.appendChild(link);
+			listingsContainer.appendChild(container);
+		}
+	} else {
+		const alert = document.createElement('div');
+		alert.className = 'col-12';
+		const alertInner = textElem('div', 'No active listings found.');
+		alertInner.className = 'alert alert-secondary';
+		alert.appendChild(alertInner);
+		listingsContainer.appendChild(alert);
+	}
+})

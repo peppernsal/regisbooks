@@ -1,0 +1,10 @@
+.user-link {
+    cursor: pointer;
+    text-decoration: none;
+	font-style: italic;
+    color: var();
+}
+
+.user-link:hover {
+    text-decoration: underline;
+}

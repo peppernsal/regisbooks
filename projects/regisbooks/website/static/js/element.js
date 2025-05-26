@@ -13,3 +13,10 @@ function textElem(tag, text) {
 
 	return elem;
 }
+
+function createUserLink(user) {
+    const link = textElem('a', `${user.firstName} ${user.lastName}`);
+    link.href = `/view-profile?id=${user.id}`;
+    link.className = 'user-link';
+    return link;
+}

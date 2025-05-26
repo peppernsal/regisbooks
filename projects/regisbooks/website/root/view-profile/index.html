@@ -15,13 +15,13 @@
 		<script src="/static/js/auth.js"></script>
 		<script src="/static/js/apihelpers.js"></script>
 		<script src="/static/js/element.js"></script>
-		<script src="/static/js/dashboard.js" defer></script>
+		<script src="/static/js/view-profile.js" defer></script>
 
 		<link rel="stylesheet" href="/static/css/theme.css">
 		<link rel="stylesheet" href="/static/css/dashboard.css">
 	</head>
-	<body class="bg-success text-light">
-		<div class="sidebar">
+
+	<body class="bg-success text-light">		<div class="sidebar">
 			<a href="/view-listings">View Listings</a>
 			<a href="/enter-isbn">Add Listing</a>
 			<a href="/dash">Profile</a>
@@ -40,7 +40,7 @@
 					<h5><i class="bi bi-envelope-fill me-2"></i>Email: <span id="email"></span></h5>
 				</div>
 
-				<h3 class="mt-4"><i class="bi bi-bar-chart-fill me-2"></i>Your Stats</h3>
+				<h3 class="mt-4"><i class="bi bi-bar-chart-fill me-2"></i>Stats:</h3>
 				<div class="row row-cols-1 row-cols-md-3 g-3 mt-2">
 					<div class="col">
 						<div class="card text-center border-success">
@@ -68,7 +68,7 @@
 					</div>
 				</div>
 
-				<h3 class="mt-5"><i class="bi bi-journal-text me-2"></i>Your Listings</h3>
+				<h3 class="mt-5"><i class="bi bi-journal-text me-2"></i>Listings:</h3>
 				<div id="user-listings" class="row row-cols-1 row-cols-md-2 g-3">
 				</div>
 

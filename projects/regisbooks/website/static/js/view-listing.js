@@ -12,11 +12,13 @@ const listingID = new URLSearchParams(location.search).get("id");
 		document.getElementById("book-isbn").textContent = `ISBN: ${book.isbn}`;
 		document.getElementById("book-publishing-info").textContent = `${book.publisher}, ${book.publishDate}`;
 
-
+		const authorElement = document.getElementById("listing-author");
+		
 		if (author.id != currUserId) {
-			document.getElementById("listing-author").textContent = `Listed by: ${author.firstName} ${author.lastName}`;
+			authorElement.innerHTML = 'Listed by: ';
+			authorElement.appendChild(createUserLink(author));
 		} else {
-			document.getElementById("listing-author").textContent = `Listed by you`;
+			authorElement.textContent = 'Listed by you';
 		}
 
 		document.getElementById("listing-usage-level").textContent = `Condition: ${listingUsageRepr[listing.usageLevel]}`;

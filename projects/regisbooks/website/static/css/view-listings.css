@@ -6,8 +6,41 @@
 
 .listing-preview {
 	height: 100%;
+	background-color: var(--primary-light);
+	color: var(--text-on-primary);
+	border: 1px solid var(--primary);
+	border-radius: 0.5rem;
+	transition: transform 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
+}
+
+.listing-preview:hover {
+	background-color: rgba(13, 110, 253, 0.1); /* Lighter blue on hover */
+	transform: translateY(-4px);
+	box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
 .listing-preview-parent {
 	margin-top: 10px;
+}
+
+.badge {
+	background-color: var(--primary);
+	color: var(--text-on-primary);
+}
+
+.btn-primary {
+	background-color: var(--primary);
+	border-color: var(--primary-dark);
+	color: var(--text-on-primary);
+	transition: background-color 0.2s ease, border-color 0.2s ease;
+}
+
+.btn-primary:hover {
+	background-color: rgba(13, 110, 253, 0.8);
+	border-color: rgba(10, 88, 202, 0.8);
+}
+
+.btn-primary:active {
+	background-color: rgba(13, 110, 253, 0.6);
+	border-color: rgba(10, 88, 202, 0.6);
 }

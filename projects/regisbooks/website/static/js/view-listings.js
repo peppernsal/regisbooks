@@ -50,7 +50,10 @@ function addLocation() {
 	const locationTags = document.getElementById("location-tags");
 
 	const location = locationInput.value.trim();
-	if (location === "") return;
+	if (location === "") {
+		alert("Please enter a location before clicking the + icon!");
+		return;
+	}
 
 	const badge = document.createElement("span");
 	badge.className = "badge bg-success text-light me-2 mb-1";
@@ -113,7 +116,7 @@ async function populateListings() {
 			);
 
 			const anchor = document.createElement("a");
-			anchor.className = "btn btn-success my-1 d-block text-center listing-preview"
+			anchor.className = "btn my-1 d-block text-center listing-preview"
 			anchor.href = `/view-listing?id=${listingInfo.id}`;
 
 			if (bookInfo.coverImageURL !== "<no-url>") {

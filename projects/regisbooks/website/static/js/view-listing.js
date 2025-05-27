@@ -96,7 +96,7 @@ const listingID = new URLSearchParams(location.search).get("id");
 				fulfillBtn.appendChild(textElem("h4", `I sent ${listingRequester.firstName} the book`));
 
 
-				fulfillBtn.classList.add("btn", "btn-success");
+				fulfillBtn.classList.add("btn", "btn-primary");
 				fulfillBtn.onclick = () => {
 					if (window.confirm("Are you sure you want to mark this request as fulfilled?\nOnly select this if you have sent the book to the requester. This action cannot be undone.")) {
 						fulfillRequestFor(listingID).then((resp) => {

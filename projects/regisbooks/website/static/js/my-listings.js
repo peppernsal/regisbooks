@@ -16,7 +16,7 @@ const listingsContainer = document.getElementById("listings-container");
 		);
 
 		const anchor = document.createElement("a");
-		anchor.className = "btn btn-success my-1  d-block text-center"
+		anchor.className = "btn btn-primary my-1 d-block text-center"
 		anchor.href = `/view-listing?id=${listingInfo.id}`;
 
 		anchor.appendChild(titleContainer);

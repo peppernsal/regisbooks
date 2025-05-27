@@ -420,7 +420,7 @@ def init_db_api():
 				"stats": {
 					"listingsMade": self.stats.listings_made,
 					"booksGiven": self.stats.books_given,
-					"booksRecieved": self.stats.books_recieved,
+					"booksReceived": self.stats.books_recieved,
 				}
 			}
 

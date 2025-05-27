@@ -2,48 +2,53 @@ useAuth(async (user) => {
 	const userInfo = await getUserInfo(user.userId);
 
 	// Fill in dashboard items using userInfo
-	document.getElementById('full-name').textContent = userInfo.name || '';
-	document.getElementById('username').textContent = userInfo.username || '';
-	document.getElementById('email').textContent = userInfo.email || '';
+	document.getElementById('full-name').textContent =  `${userInfo.firstName} ${userInfo.lastName}`;
+	document.getElementById('username').textContent = userInfo.username;
+	document.getElementById('email').textContent = userInfo.email;
 
 	// Fill in stats
-	document.getElementById('stat-listings-made').textContent = userInfo.stats?.listingsMade ?? 0;
-	document.getElementById('stat-books-given').textContent = userInfo.stats?.booksGiven ?? 0;
-	document.getElementById('stat-books-received').textContent = userInfo.stats?.booksReceived ?? 0;
+	document.getElementById('stat-listings-made').textContent = userInfo.stats.listingsMade;
+	document.getElementById('stat-books-given').textContent = userInfo.stats.booksGiven;
+	document.getElementById('stat-books-received').textContent = userInfo.stats.booksReceived;
 
-	// Fill in user listings using utils
 	const listingsContainer = document.getElementById('user-listings');
-	listingsContainer.innerHTML = '';
-	if (Array.isArray(userInfo.listings) && userInfo.listings.length > 0) {
-		userInfo.listings.forEach(listing => {
-			const col = document.createElement('div');
-			col.className = 'col';
+	listingsContainer.textContent = '';
 
-			const card = document.createElement('div');
-			card.className = 'card border-success';
+	const listings = await getListings({ posterID: userInfo.id});
+	const userListings = listings.filter(listing => listing.status !== 2);
 
-			const cardBody = document.createElement('div');
-			cardBody.className = 'card-body';
-
-			const title = textElem('h5', listing.title);
-			title.className = 'card-title';
-
-			const desc = textElem('p', listing.description || '');
-			desc.className = 'card-text';
-
-			const badge = textElem('span', listing.status || '');
-			badge.className = 'badge bg-success';
-
-			cardBody.appendChild(title);
-			cardBody.appendChild(desc);
-			cardBody.appendChild(badge);
-			card.appendChild(cardBody);
-			col.appendChild(card);
-			listingsContainer.appendChild(col);
-		});
+	if (userListings.length > 0) {
+		for (const listing of userListings	) {
+			const book = await getBookInfo(listing.bookID);
+			const container = document.createElement('div');
+			container.className = 'col-12 mb-2';
+			
+			const link = document.createElement('a');
+			link.href = `/view-listing?id=${listing.id}`;
+			link.className = 'text-decoration-none';
+			
+			const summary = document.createElement('div');
+			summary.className = 'p-3 rounded border border-success bg-light d-flex justify-content-between align-items-center';
+			
+			const title = textElem('span', book.title);
+			title.className = 'text-success';
+			
+			const status = listing.status === 0 ? 'Available' : 'Requested';
+			const badge = textElem('span', status);
+			badge.className = `badge bg-${listing.status === 0 ? 'success' : 'warning'} ms-2`;
+			
+			summary.appendChild(title);
+			summary.appendChild(badge);
+			link.appendChild(summary);
+			container.appendChild(link);
+			listingsContainer.appendChild(container);
+		}
 	} else {
-		listingsContainer.appendChild(
-			elem('div', `<div class="alert alert-secondary">No listings found.</div>`)
-		).className = 'col';
+		const alert = document.createElement('div');
+		alert.className = 'col-12';
+		const alertInner = textElem('div', 'No active listings found.');
+		alertInner.className = 'alert alert-secondary';
+		alert.appendChild(alertInner);
+		listingsContainer.appendChild(alert);
 	}
 })

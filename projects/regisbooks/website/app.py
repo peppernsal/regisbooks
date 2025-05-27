@@ -83,9 +83,9 @@ def register_internal_api_routes():
 		name_filter: str = options.get("name")
 		isbn_filter: str = options.get("isbn")
 		location_filters: list[str] = options.get("locations", [])
-		status_filter: str = options.get("status")
+		status_filter: int = options.get("status")
 		usage_filter: int = options.get("usage")
-		mine_only: bool = options.get("myListings", False)
+		poster_id: str = options.get("posterID")
 
 		query = Listing.query
 
@@ -101,8 +101,8 @@ def register_internal_api_routes():
 		if usage_filter is not None:
 			query = query.filter(Listing.usage_level == usage_filter)
 
-		if mine_only:
-			query = query.filter(Listing.author_id == current_user.user_id)
+		if poster_id is not None:
+			query = query.filter(Listing.author_id == poster_id)
 
 		def filter_pickup_loc(listing: Listing, target: list[str]): # this is kind of slow, maybe fix sometime before prod?
 			if len(target) == 0: return True

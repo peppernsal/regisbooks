@@ -18,7 +18,6 @@ useAuth(async (user) => {
 	document.getElementById('username').textContent = userInfo.username;
 	document.getElementById('email').textContent = userInfo.email;
 
-	// Update section headings with user's name
 	document.querySelectorAll('h3').forEach(heading => {
 		if (heading.textContent.includes('Stats')) {
 			heading.textContent = '';
@@ -35,16 +34,16 @@ useAuth(async (user) => {
 		}
 	});
 
-	// Fill in stats
-	document.getElementById('stat-listings-made').textContent = userInfo.stats?.listingsMade ?? 0;
-	document.getElementById('stat-books-given').textContent = userInfo.stats?.booksGiven ?? 0;
-	document.getElementById('stat-books-received').textContent = userInfo.stats?.booksReceived ?? 0;	// Fill in user listings using utils
+	document.getElementById('stat-listings-made').textContent = userInfo.stats.listingsMade;
+	document.getElementById('stat-books-given').textContent = userInfo.stats.booksGiven;
+	document.getElementById('stat-books-received').textContent = userInfo.stats.booksReceived;
+	
 	const listingsContainer = document.getElementById('user-listings');
 	listingsContainer.textContent = '';
 
-	const listings = await getListings({ myListings: false });
-	const userListings = listings.filter(listing => listing.authorID === userID && listing.status !== 2);
-	
+	const listings = await getListings({ posterID: listing.authorID});
+	const userListings = listings.filter(listing => listing.status !== 2);
+
 	if (userListings.length > 0) {
 		for (const listing of userListings) {
 			const book = await getBookInfo(listing.bookID);

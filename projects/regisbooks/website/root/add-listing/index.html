@@ -16,68 +16,74 @@
 		<script src="/static/js/apihelpers.js"></script>
 		<script src="/static/js/element.js"></script>
 		<script src="/static/js/add-listing.js" defer></script>
+		<script src="/static/js/sidebar.js"></script>
 		<link rel="stylesheet" href="/static/css/theme.css">
 		<link rel="stylesheet" href="/static/css/add-listing.css">
 	</head>
 	
-	<body class="bg-success text-white">
-		<div class="sidebar">
-			<a href="/view-listings">View Listings</a>
-			<a href="/dash">Profile</a>
-			<a href="/logout">Logout</a>
+	<body class="bg-light text-dark">
+		<div class="sidebar bg-primary text-white py-4">
+			<button class="sidebar-toggle btn btn-primary" onclick="toggleSidebar()" aria-label="Toggle sidebar">
+				&#9776;
+			</button>
+			<nav class="d-flex flex-column align-items-center">
+				<a href="/view-listings" class="text-white mb-3">View Listings</a>
+				<a href="/enter-isbn" class="text-white mb-3">Add Listing</a>
+				<a href="/dash" class="text-white mb-3">Profile</a>
+				<a href="/logout" class="text-white">Logout</a>
+			</nav>
 		</div>
-		<div class="content">
-			<div class="container">
-				<div class="row justify-content-center">
-					<div class="col-md-11">
-						<div class="card bg-light text-dark">
-							<div class="card-body text-center">
-								<h2 id="waiting-message"></h3>
-								<figure>
-									<img id="book-cover-img"/>
-									<figcaption id="cover-disclaimer"></figcaption>
-								</figure>
-								<h1 id="book-title"></h1>
-								<h2 id="book-author"></h2>
-								<h3 id="book-isbn"></h3>
-								<h3 id="book-publishing-info"></h4>
+
+		<div class="content container py-5">
+			<div class="row justify-content-center">
+				<div class="col-md-11">
+					<div class="card bg-light text-dark">
+						<div class="card-body text-center">
+							<h2 id="waiting-message"></h3>
+							<figure>
+								<img id="book-cover-img"/>
+								<figcaption id="cover-disclaimer"></figcaption>
+							</figure>
+							<h1 id="book-title"></h1>
+							<h2 id="book-author"></h2>
+							<h3 id="book-isbn"></h3>
+							<h3 id="book-publishing-info"></h4>
+							
+							<div class="container pt-4">
+								<div class="row">
+									<div class="col-3">
+										<h4>Usage Level</h4>
+									</div>
+									<div class="col-9">
+										<select id="usage-level" class="form-control">
+											<option value="0">New</option>
+											<option value="1">Lightly Used</option>
+											<option value="2">Used</option>
+										</select>
+									</div>
+								</div>
+
+								<div class="row pt-3">
+									<div class="col-3 align-self-center">
+										<h4>Notes</h4>
+									</div>
+									<div class="col-9 align-self-center">
+										<textarea id="notes" class="form-control" rows="2"></textarea>
+									</div>
+								</div>
+
+								<div class="row">
+									<div id="pickup-locations-container" class="container mb-4">
+
+									</div>
+								</div>
+
+								<div class="row">
+									<button type="button" onclick="addPickupLocation()" class="btn btn-primary">Add A Pickup Location</button>
+								</div>
 								
-								<div class="container pt-4">
-									<div class="row">
-										<div class="col-3">
-											<h4>Usage Level</h4>
-										</div>
-										<div class="col-9">
-											<select id="usage-level" class="form-control">
-												<option value="0">New</option>
-												<option value="1">Lightly Used</option>
-												<option value="2">Used</option>
-											</select>
-										</div>
-									</div>
-
-									<div class="row pt-3">
-										<div class="col-3 align-self-center">
-											<h4>Notes</h4>
-										</div>
-										<div class="col-9 align-self-center">
-											<textarea id="notes" class="form-control" rows="2"></textarea>
-										</div>
-									</div>
-
-									<div class="row">
-										<div id="pickup-locations-container" class="container mb-4">
-
-										</div>
-									</div>
-
-									<div class="row">
-										<button type="button" onclick="addPickupLocation()" class="btn btn-primary">Add A Pickup Location</button>
-									</div>
-									
-									<div class="row pt-3">
-										<button type="button" onclick="createListing()" class="btn btn-success">Create</button>
-									</div>
+								<div class="row pt-3">
+									<button type="button" onclick="createListing()" class="btn btn-success">Create</button>
 								</div>
 							</div>
 						</div>

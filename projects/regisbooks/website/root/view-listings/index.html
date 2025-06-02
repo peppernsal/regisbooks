@@ -14,6 +14,7 @@
 		<script src="/static/js/auth.js"></script>
 		<script src="/static/js/apihelpers.js"></script>
 		<script src="/static/js/element.js"></script>
+		<script src="/static/js/sidebar.js"></script>
 		<script src="/static/js/view-listings.js" defer></script>
 
 		<link rel="stylesheet" href="/static/css/theme.css">
@@ -21,6 +22,10 @@
 	</head>
 	<body class="bg-light text-dark">
 		<div class="sidebar bg-primary text-white py-4">
+			<button class="sidebar-toggle btn btn-primary" onclick="toggleSidebar()" aria-label="Toggle sidebar">
+				&#9776;
+			</button>
+			
 			<nav class="d-flex flex-column align-items-center">
 				<a href="/view-listings" class="text-white mb-3">View Listings</a>
 				<a href="/enter-isbn" class="text-white mb-3">Add Listing</a>
@@ -33,9 +38,9 @@
 			<div id="wrapper" class="bg-white shadow-sm rounded p-4">
 				<h1 id="header" class="text-center text-primary mb-4">Book Listings</h1>
 
-				<a id="new-listing" href="/enter-isbn" class="btn btn-primary mb-4 d-block text-center">List a New Book</a>
+				<a id="new-listing" href="/enter-isbn" class="btn search-btn-primary btn-primary mb-4 d-block text-center">List a New Book</a>
 
-				<button id="toggle-filters" class="btn btn-primary mb-4">Show Filters</button>
+				<button id="toggle-filters" class="btn search-btn-primary btn-primary mb-4">Show Filters</button>
 
 				<div class="filters mb-4" style="display: none;">
 					<div class="form-check form-switch mb-3">
@@ -74,7 +79,7 @@
 
 							<div class="col-md-4 d-flex">
 								<input type="text" class="form-control me-2" id="location-input" placeholder="Add Location">
-								<button class="btn btn-primary" id="add-location" onclick="addLocation()">+</button>
+								<button class="btn search-btn-primary btn-primary" id="add-location" onclick="addLocation()">+</button>
 							</div>
 						</div>
 
@@ -86,18 +91,5 @@
 				</div>
 			</div>
 		</div>
-
-		<script>
-			document.getElementById('toggle-filters').addEventListener('click', function() {
-				const filters = document.querySelector('.filters');
-				if (filters.style.display === 'none' || filters.style.display === '') {
-					filters.style.display = 'block';
-					this.textContent = 'Hide Filters';
-				} else {
-					filters.style.display = 'none';
-					this.textContent = 'Show Filters';
-				}
-			});
-		</script>
 	</body>
 </html>

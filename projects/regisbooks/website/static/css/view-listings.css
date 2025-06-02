@@ -28,19 +28,19 @@
 	color: var(--text-on-primary);
 }
 
-.btn-primary {
+.search-btn-primary {
 	background-color: var(--primary);
 	border-color: var(--primary-dark);
 	color: var(--text-on-primary);
 	transition: background-color 0.2s ease, border-color 0.2s ease;
 }
 
-.btn-primary:hover {
+.search-btn-primary:hover {
 	background-color: rgba(13, 110, 253, 0.8);
 	border-color: rgba(10, 88, 202, 0.8);
 }
 
-.btn-primary:active {
+.search-btn-primary:active {
 	background-color: rgba(13, 110, 253, 0.6);
 	border-color: rgba(10, 88, 202, 0.6);
 }

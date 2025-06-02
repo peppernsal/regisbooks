@@ -4,8 +4,15 @@
 	position: fixed;
 	top: 0;
 	left: 0;
-	background-color: #982f4b;
 	padding-top: 20px;
+	background-color: var(--bs-primary);
+	box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+	transition: width 0.7s ease;
+}
+
+.sidebar.collapsed {
+	width: 80px;
+	background-color: var(--bs-primary);
 }
 
 .sidebar a {
@@ -14,9 +21,46 @@
 	font-size: 18px;
 	color: #ffffff;
 	display: block;
+	border-radius: 10px;
+	opacity: 0;
+	transition: opacity 0.2s ease 0.5s;
 }
 
 .sidebar a:hover {
-	background-color: #bb0b3a;
+	background-color: #2b7efc;
 	color: #d4edda;
+}
+
+.sidebar:not(.collapsed) a {
+	opacity: 1;
+}
+
+.sidebar.collapsed a {
+	font-size: 0;
+	padding: 0;
+}
+
+.sidebar-toggle {
+	position: relative;
+	left: calc(100% + 10px); /* Move outside the sidebar */
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	background-color: var(--bs-primary);
+	color: #ffffff;
+	border: none;
+	border-radius: 50%;
+	width: 30px;
+	height: 30px;
+	cursor: pointer;
+	box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+	transition: left 0.3s ease;
+}
+
+.sidebar.collapsed .sidebar-toggle {
+	left: calc(80px + 10px); /* Adjust position for collapsed menu */
+}
+
+.sidebar-toggle:hover {
+	background-color: #2b7efc;
 }

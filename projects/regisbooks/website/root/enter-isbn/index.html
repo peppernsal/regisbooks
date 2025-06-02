@@ -16,34 +16,40 @@
 		<script src="/static/js/apihelpers.js"></script>
 		<script src="/static/js/element.js"></script>
 		<script src="/static/js/enter-isbn.js" defer></script>
+		<script src="/static/js/sidebar.js"></script>
 		<link rel="stylesheet" href="/static/css/theme.css">
 	</head>
 	
-	<body class="bg-success text-white">		<div class="sidebar">
-			<a href="/view-listings">View Listings</a>
-			<a href="/enter-isbn">Add Listing</a>
-			<a href="/dash">Profile</a>
-			<a href="/logout">Logout</a>
+	<body class="bg-light text-dark">
+		<div class="sidebar bg-primary text-white py-4">
+			<button class="sidebar-toggle btn btn-primary" onclick="toggleSidebar()" aria-label="Toggle sidebar">
+				&#9776;
+			</button>
+			<nav class="d-flex flex-column align-items-center">
+				<a href="/view-listings" class="text-white mb-3">View Listings</a>
+				<a href="/enter-isbn" class="text-white mb-3">Add Listing</a>
+				<a href="/dash" class="text-white mb-3">Profile</a>
+				<a href="/logout" class="text-white">Logout</a>
+			</nav>
 		</div>
-		<div class="content">
-			<div class="container py-5">
-				<div class="row justify-content-center">
-					<div class="col-md-8">
-						<div class="card bg-light text-dark">
-							<div class="card-body">
-								<h1 id="heading" class="card-title text-center mb-4"></h1>
+
+		<div class="content container py-5">
+			<div class="row justify-content-center">
+				<div class="col-md-8">
+					<div class="card bg-light text-dark">
+						<div class="card-body">
+							<h1 id="heading" class="card-title text-center mb-4"></h1>
+							
+							<form>
+								<div class="mb-3">
+									<label for="isbn-entry" class="form-label">Book ISBN</label>
+									<input type="text" id="isbn-entry" class="form-control" required>
+								</div>
 								
-								<form>
-									<div class="mb-3">
-										<label for="isbn-entry" class="form-label">Book ISBN</label>
-										<input type="text" id="isbn-entry" class="form-control" required>
-									</div>
-									
-									<div class="d-grid">
-										<button type="button" onclick="propagateISBN()" class="btn btn-success">Next</button>
-									</div>
-								</form>
-							</div>
+								<div class="d-grid">
+									<button type="button" onclick="propagateISBN()" class="btn btn-success">Next</button>
+								</div>
+							</form>
 						</div>
 					</div>
 				</div>

@@ -167,3 +167,14 @@ async function populateListings() {
 		listingsContainer.appendChild(row);
 	}
 }
+
+document.getElementById('toggle-filters').addEventListener('click', function() {
+	const filters = document.querySelector('.filters');
+	if (filters.style.display === 'none' || filters.style.display === '') {
+		filters.style.display = 'block';
+		this.textContent = 'Hide Filters';
+	} else {
+		filters.style.display = 'none';
+		this.textContent = 'Show Filters';
+	}
+});

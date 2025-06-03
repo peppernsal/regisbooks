@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8">
+		<title>View Listings</title>
+
+		<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+		<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+		<script 
+			src="https://www.unpkg.com/@propelauth/javascript@2.0.11/dist/javascript.min.js" 
+			integrity="sha384-FENNH2f7QuQvkZJBL7jebLr0OtYKgTA2iq+C5g3VXXX7SBwWmeMMoc+pBBtcn76G" 
+			crossorigin="anonymous"></script>
+			
+		<script src="/static/js/auth.js"></script>
+		<script src="/static/js/apihelpers.js"></script>
+		<script src="/static/js/element.js"></script>
+		<script src="/static/js/sidebar.js"></script>
+		<script src="/static/js/help.js" defer></script>
+
+		<link rel="stylesheet" href="/static/css/theme.css">
+		<link rel="stylesheet" href="/static/css/help.css">
+	</head>
+	<body class="bg-light text-dark">
+		<div class="sidebar bg-primary text-white py-4">
+			<button class="sidebar-toggle btn btn-primary" onclick="toggleSidebar()" aria-label="Toggle sidebar">
+				&#9776;
+			</button>
+			
+			<nav class="d-flex flex-column align-items-center">
+				<a href="/view-listings" class="text-white mb-3">View Listings</a>
+				<a href="/enter-isbn" class="text-white mb-3">Add Listing</a>
+				<a href="/dash" class="text-white mb-3">Profile</a>
+				<a href="/help" class="text-white mb-3">Help</a>
+				<a href="/logout" class="text-white">Logout</a>
+			</nav>
+		</div>
+
+		<div class="content container py-5">
+			<h1 class="mb-4">Help &amp; Documentation</h1>
+
+			<div class="accordion" id="helpAccordion">
+				<div class="accordion-item">
+					<h2 class="accordion-header" id="view-listings">
+						<button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapse-view-listings" aria-expanded="true" aria-controls="collapse-view-listings">
+							View Listings
+						</button>
+					</h2>
+					<div id="collapse-view-listings" class="accordion-collapse collapse show" aria-labelledby="view-listings" data-bs-parent="#helpAccordion">
+						<div class="accordion-body">
+							<p>Browse all available book listings. You can filter, sort, and view details for each listing.</p>
+							<ul>
+								<li>Navigate to <strong>View Listings</strong> from the sidebar.</li>
+								<li>Use the search and filter options to find specific books.</li>
+								<li>Click on a listing to see more details.</li>
+							</ul>
+						</div>
+					</div>
+				</div>
+				<div class="accordion-item">
+					<h2 class="accordion-header" id="enter-isbn">
+						<button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse-enter-isbn" aria-expanded="false" aria-controls="collapse-enter-isbn">
+							Enter ISBN
+						</button>
+					</h2>
+					<div id="collapse-enter-isbn" class="accordion-collapse collapse" aria-labelledby="enter-isbn" data-bs-parent="#helpAccordion">
+						<div class="accordion-body">
+							<p>Add a new book listing by entering its ISBN or scanning its barcode.</p>
+							<ul>
+								<li>Select <strong>Add Listing</strong> from the sidebar.</li>
+								<li>Enter the ISBN and click the button OR scan the barcode of your book.</li>
+								<li>You will be redirected to the Add Listing Info page.</li>
+							</ul>
+						</div>
+					</div>
+				</div>
+				<div class="accordion-item">
+					<h2 class="accordion-header" id="add-listing">
+						<button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse-add-listing" aria-expanded="false" aria-controls="collapse-add-listing">
+							Add Listing Info
+						</button>
+					</h2>
+					<div id="collapse-add-listing" class="accordion-collapse collapse" aria-labelledby="add-listing" data-bs-parent="#helpAccordion">
+						<div class="accordion-body">
+							<p>Add a new book listing by entering pickup details.</p>
+							<ul>
+								<li>You will reach this page after entering a Book's ISBN from the <strong>Add Listing</strong> page in the sidebar.</li>
+								<li>Select the book's usage level, add notes, and specify at least one pickup location.</li>
+								<li>Submit the form to post your listing.</li>
+							</ul>
+						</div>
+					</div>
+				</div>
+				<div class="accordion-item">
+					<h2 class="accordion-header" id="dash">
+						<button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse-dash" aria-expanded="false" aria-controls="collapse-dash">
+							Profile
+						</button>
+					</h2>
+					<div id="collapse-dash" class="accordion-collapse collapse" aria-labelledby="dash" data-bs-parent="#helpAccordion">
+						<div class="accordion-body">
+							<p>View and manage your profile information and your own listings.</p>
+							<ul>
+								<li>Go to <strong>Profile</strong> from the sidebar.</li>
+								<li>View your personal information, stats, and unclaimed posted listings.</li>
+							</ul>
+						</div>
+					</div>
+				</div>
+				<div class="accordion-item">
+					<h2 class="accordion-header" id="view-listing">
+						<button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse-view-listing" aria-expanded="false" aria-controls="collapse-view-listing">
+							Requesting a Listing
+						</button>
+					</h2>
+					<div id="collapse-view-listing" class="accordion-collapse collapse" aria-labelledby="view-listing" data-bs-parent="#helpAccordion">
+						<div class="accordion-body">
+							<p>Request a new book listing to be added to the platform.</p>
+							<ul>
+								<li>Navigate to <strong>View Listings</strong> from the sidebar.</li>
+								<li>Click on the listing you would like to request.</li>
+								<li>Click on the "Request This Listing" button to open your request.</li>
+								<li>Use the lister's email to communicate book exchange logistics.</li>
+							</ul>
+						</div>
+					</div>
+				</div>
+				<div class="accordion-item">
+					<h2 class="accordion-header" id="logout">
+						<button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse-logout" aria-expanded="false" aria-controls="collapse-logout">
+							Logout
+						</button>
+					</h2>
+					<div id="collapse-logout" class="accordion-collapse collapse" aria-labelledby="logout" data-bs-parent="#helpAccordion">
+						<div class="accordion-body">
+							<p>Log out of your account.</p>
+							<ul>
+								<li>Click <strong>Logout</strong> in the sidebar to end your session.</li>
+							</ul>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		
+		<footer class="text-end mt-4" style="position: fixed; bottom: 0; right: 0; padding: 10px; padding-right: 20px;">
+			<p>&copy; 2025 Carl Furtado. All rights reserved.</p>
+		</footer>
+	</body>
+</html>

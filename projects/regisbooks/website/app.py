@@ -34,8 +34,35 @@ def webpy_setup(app: App):
 	init_db_api()
 	register_internal_api_routes()
 
-def register_external_api_routes(): pass # TODO, also have an efficient system to manage verification of API keys (research) |||| extract & reuse logic from register_internal_api_routes
+def register_external_api_routes(): # TODO, also have an efficient system to manage verification of API keys (research) |||| extract & reuse logic from register_internal_api_routes
+	@app.route("/api/external/rem-book", methods=["POST"])
+	def rembook_external():
+		admin_key = request.json.get("key")
 
+		if admin_key != secret_keys.ADMIN_KEY: return FORBIDDEN
+
+		book_id = request.json.get("bookID")
+
+		if type(book_id) is not str: return BAD_REQUEST
+
+		Book.query.filter(Book.id == book_id).delete()
+
+		db.session.commit()
+
+		return RESP_OK
+	
+	@app.route("/api/external/clear-taken-listings", methods=["POST"])
+	def cleartakenlistings_external():
+		admin_key = request.json.get("key")
+
+		if admin_key != secret_keys.ADMIN_KEY: return FORBIDDEN
+
+		Listing.query.filter(Listing.status == Listing.Status.TAKEN).delete()
+
+		db.session.commit()
+
+		return RESP_OK
+	
 def register_internal_api_routes():
 	@app.route("/api/internal/get-user")
 	@auth.require_user
@@ -265,23 +292,6 @@ def register_internal_api_routes():
 		
 		try: return jsonify(Book.ensure_in_db(isbn).as_dict)
 		except JSONDecodeError: return BAD_REQUEST
-
-	@app.route("/api/internal/rem-book", methods=["POST"])
-	@auth.require_user
-	def rembook_internal():
-		admin_key = request.json.get("key")
-
-		if admin_key != secret_keys.ADMIN_KEY: return FORBIDDEN
-
-		book_id = request.json.get("bookID")
-
-		if type(book_id) is not str: return BAD_REQUEST
-
-		Book.query.filter(Book.id == book_id).delete()
-
-		db.session.commit()
-
-		return RESP_OK
 	
 	# requesting existing listings
 	@app.route("/api/internal/req-listing")

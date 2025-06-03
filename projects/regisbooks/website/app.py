@@ -40,7 +40,8 @@ def register_internal_api_routes():
 	@app.route("/api/internal/get-user")
 	@auth.require_user
 	def getuser_internal():
-		ensure_user()
+		try: ensure_user()
+		except PermissionError: return FORBIDDEN
 
 		user = User.by_id(request.args.get("id"))
 
@@ -50,7 +51,8 @@ def register_internal_api_routes():
 	@app.route("/api/internal/get-listing")
 	@auth.require_user
 	def getlisting_internal():
-		ensure_user()
+		try: ensure_user()
+		except PermissionError: return FORBIDDEN
 
 		listing = Listing.by_id(request.args.get("id"))
 
@@ -60,7 +62,8 @@ def register_internal_api_routes():
 	@app.route("/api/internal/get-book")
 	@auth.require_user
 	def getbook_internal():
-		ensure_user()
+		try: ensure_user()
+		except PermissionError: return FORBIDDEN
 
 		book = Book.by_id(request.args.get("id"))
 
@@ -71,7 +74,8 @@ def register_internal_api_routes():
 	@app.route("/api/internal/get-listings", methods=["GET", "POST"])
 	@auth.require_user
 	def getlistings_internal():
-		ensure_user()
+		try: ensure_user()
+		except PermissionError: return FORBIDDEN
 
 		if request.method == "GET":
 			listings = Listing.get_all() # TODO: add pagination
@@ -120,7 +124,8 @@ def register_internal_api_routes():
 	@app.route("/api/internal/get-open-reqs")
 	@auth.require_user
 	def getopenreqs_internal():
-		ensure_user()
+		try: ensure_user()
+		except PermissionError: return FORBIDDEN
 
 		requests = PreRequest.get_all()
 
@@ -129,7 +134,8 @@ def register_internal_api_routes():
 	@app.route("/api/internal/get-books")
 	@auth.require_user
 	def getbooks_internal():
-		ensure_user()
+		try: ensure_user()
+		except PermissionError: return FORBIDDEN
 		
 		books = Book.get_all()
 				
@@ -138,7 +144,8 @@ def register_internal_api_routes():
 	@app.route("/api/internal/add-listing", methods=["POST"])
 	@auth.require_user
 	def addlisting_internal():
-		author = ensure_user()
+		try: author = ensure_user()
+		except PermissionError: return FORBIDDEN
 		get = request.json.get
 
 		book_id = get("bookID")
@@ -177,7 +184,8 @@ def register_internal_api_routes():
 	@app.route("/api/internal/add-pre-req", methods=["POST"])
 	@auth.require_user
 	def addprereq_internal():
-		ensure_user()
+		try: ensure_user()
+		except PermissionError: return FORBIDDEN
 
 		get = request.json.get
 
@@ -208,7 +216,8 @@ def register_internal_api_routes():
 	@app.route("/api/internal/rem-listing")
 	@auth.require_user
 	def remlisting_internal():
-		user = ensure_user()
+		try: user = ensure_user()
+		except PermissionError: return FORBIDDEN
 
 		listing_id = request.args.get("id")
 
@@ -227,7 +236,8 @@ def register_internal_api_routes():
 	@app.route("/api/internal/rem-pre-req")
 	@auth.require_user
 	def remprereq_internal():
-		user = ensure_user()
+		try: user = ensure_user()
+		except PermissionError: return FORBIDDEN
 
 		req_id = request.args.get("id")
 
@@ -245,7 +255,8 @@ def register_internal_api_routes():
 	@app.route("/api/internal/add-book")
 	@auth.require_user
 	def addbook_internal():
-		ensure_user()
+		try: ensure_user()
+		except PermissionError: return FORBIDDEN
 
 		isbn = request.args.get("isbn")
 
@@ -276,7 +287,8 @@ def register_internal_api_routes():
 	@app.route("/api/internal/req-listing")
 	@auth.require_user
 	def reqlisting_internal():
-		ensure_user()
+		try: ensure_user()
+		except PermissionError: return FORBIDDEN
 
 		listing_id = request.args.get("id")
 
@@ -298,7 +310,8 @@ def register_internal_api_routes():
 	@app.route("/api/internal/fulfill-req")
 	@auth.require_user
 	def fulfilllisting_internal():
-		ensure_user()
+		try: ensure_user()
+		except PermissionError: return FORBIDDEN
 
 		listing_id = request.args.get("id")
 
@@ -325,7 +338,8 @@ def register_internal_api_routes():
 	@app.route("/api/internal/reject-listing-req")
 	@auth.require_user
 	def rejectlistingreq_internal():
-		ensure_user()
+		try: ensure_user()
+		except PermissionError: return FORBIDDEN
 
 		listing_id = request.args.get("id")
 
@@ -351,6 +365,10 @@ def init_db_api():
 		user = query_by_id(User, current_user.user_id)
 
 		if user is None:
+			if not current_user.user.email.endswith("@regis.org"):
+				auth.delete_user(current_user.user_id)
+				raise PermissionError()
+
 			user = User(
 				id=current_user.user_id,
 				first_name=current_user.user.first_name,

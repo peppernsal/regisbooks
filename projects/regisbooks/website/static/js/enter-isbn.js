@@ -31,6 +31,8 @@ setInterval(() => {
 	const barcodeButtons = document.getElementById("barcode-reader").querySelectorAll("button");
 	console.log(barcodeButtons);
 	barcodeButtons.forEach(button => {
+		if (button.classList.contains("btn")) return;
+		
 		button.classList.add("btn", "body-btn-primary", "btn-primary");
 	});
 }, 1000);

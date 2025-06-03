@@ -41,7 +41,7 @@ useAuth(async (user) => {
 	const listingsContainer = document.getElementById('user-listings');
 	listingsContainer.textContent = '';
 
-	const listings = await getListings({ posterID: listing.authorID});
+	const listings = await getListings({ posterID: userInfo.id});
 	const userListings = listings.filter(listing => listing.status !== 2);
 
 	if (userListings.length > 0) {

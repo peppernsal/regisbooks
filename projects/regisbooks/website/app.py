@@ -104,12 +104,12 @@ def register_internal_api_routes():
 		if poster_id is not None:
 			query = query.filter(Listing.author_id == poster_id)
 
-		def filter_pickup_loc(listing: Listing, target: list[str]): # this is kind of slow, maybe fix sometime before prod?
-			if len(target) == 0: return True
+		def filter_pickup_loc(listing: Listing, targets: list[str]): # NOTE: this is kind of slow, maybe fix sometime before prod?
+			if len(targets) == 0: return True
 
-			for target in target:
+			for target in targets:
 				for location in listing.pickup_locations:
-					if re.match(f".*{target}.*", location): return True
+					if re.match(f".*{target.lower()}.*", location.lower()): return True
 
 			return False
 

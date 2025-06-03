@@ -2,7 +2,7 @@ from dataclasses import dataclass, field
 from json import JSONDecodeError
 import re
 from typing import TypeVar
-from flask import jsonify, request, Response
+from flask import jsonify, render_template, request, Response
 import httpx
 from webpy import App
 from propelauth_flask import init_auth, current_user
@@ -31,6 +31,8 @@ def webpy_setup(app: App):
 
 	init_db_api()
 	register_internal_api_routes()
+	register_external_api_routes()
+	reigster_404_handler()
 
 def register_external_api_routes(): # TODO, also have an efficient system to manage verification of API keys (research) |||| extract & reuse logic from register_internal_api_routes
 	@app.route("/api/external/rem-book", methods=["POST"])
@@ -366,7 +368,7 @@ def register_internal_api_routes():
 		db.session.commit()
 		return RESP_OK
 
-def init_db_api():
+def init_db_api():	
 	global User, Listing, Book, PreRequest, query_by_id, query_all_of, ensure_user, db_add
 
 	def ensure_user() -> "User":		
@@ -637,3 +639,8 @@ def init_db_api():
 				publish_date=book_info["publish_date"],
 				cover_image_url=cover_url
 			)
+		
+def reigster_404_handler():
+	@app.errorhandler(404)
+	def not_found(e):
+		return render_template("404.html"), 404

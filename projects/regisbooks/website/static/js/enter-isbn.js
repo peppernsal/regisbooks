@@ -12,3 +12,25 @@ isbnEntry.addEventListener("keypress", function(event) {
 		propagateISBN();
 	}
 });
+
+const html5QrCodeScanner = new Html5QrcodeScanner("barcode-reader", { fps: 10, qrbox: 250 });
+html5QrCodeScanner.render(onScanSuccess);
+
+function onScanSuccess(decodedText, decodedResult) {
+	if (decodedText) {
+		const isbn = decodedText.replace(/\D/g,'');
+		if (isbn.length >= 10 && isbn.length <= 13) {
+			window.location.href = `/add-listing?book=${isbn}`;
+		} else {
+			alert("Scanned code is not a valid ISBN.");
+		}
+	}
+}
+
+setInterval(() => {
+	const barcodeButtons = document.getElementById("barcode-reader").querySelectorAll("button");
+	console.log(barcodeButtons);
+	barcodeButtons.forEach(button => {
+		button.classList.add("btn", "body-btn-primary", "btn-primary");
+	});
+}, 1000);

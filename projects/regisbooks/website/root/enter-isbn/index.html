@@ -11,6 +11,11 @@
 			src="https://www.unpkg.com/@propelauth/javascript@2.0.11/dist/javascript.min.js" 
 			integrity="sha384-FENNH2f7QuQvkZJBL7jebLr0OtYKgTA2iq+C5g3VXXX7SBwWmeMMoc+pBBtcn76G" 
 			crossorigin="anonymous"></script>
+		<script
+			src="https://cdnjs.cloudflare.com/ajax/libs/html5-qrcode/2.3.8/html5-qrcode.min.js"
+			integrity="sha512-r6rDA7W6ZeQhvl8S7yRVQUKVHdexq+GAlNkNNqVC7YyIV+NwqCTJe2hDWCiffTyRNOeGEzRRJ9ifvRm/HCzGYg=="
+			crossorigin="anonymous"
+			referrerpolicy="no-referrer"></script>
 
 		<script src="/static/js/auth.js"></script>
 		<script src="/static/js/apihelpers.js"></script>
@@ -50,6 +55,15 @@
 									<button type="button" onclick="propagateISBN()" class="btn body-btn-primary btn-primary">Next</button>
 								</div>
 							</form>
+
+							<div class="text-center my-3">
+								<span class="fs-4 fw-bold">OR</span>
+							</div>
+
+							<div class="text-center mb-4">
+								<span >Scan book barcode below</span>
+							</div>
+							<div id="barcode-reader" class="mt-4"></div>
 						</div>
 					</div>
 				</div>

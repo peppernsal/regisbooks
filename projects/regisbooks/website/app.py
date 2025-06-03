@@ -51,6 +51,22 @@ def register_external_api_routes(): # TODO, also have an efficient system to man
 
 		return RESP_OK
 	
+	@app.route("/api/external/rem-listing", methods=["POST"])
+	def remlisting_external():
+		admin_key = request.json.get("key")
+
+		if admin_key != secret_keys.ADMIN_KEY: return FORBIDDEN
+
+		listing_id = request.json.get("listingID")
+
+		if type(listing_id) is not str: return BAD_REQUEST
+
+		Listing.query.filter(Listing.id == listing_id).delete()
+
+		db.session.commit()
+
+		return RESP_OK
+
 	@app.route("/api/external/clear-taken-listings", methods=["POST"])
 	def cleartakenlistings_external():
 		admin_key = request.json.get("key")

@@ -2,3 +2,4 @@ webpy-framework
 propelauth-flask
 httpx
 python-dotenv
+flask-sqlalchemy

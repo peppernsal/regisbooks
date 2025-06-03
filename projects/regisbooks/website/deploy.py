@@ -10,4 +10,4 @@ webpy_setup(app)
 parse_fs_routes(app, "root", {}, {})
 print("Setup complete, starting server...")
 
-serve(app, host=config["host"], port=config["port"])
+serve(app, host=config["host"], port=config["port"], threads=8)

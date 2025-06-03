@@ -84,7 +84,9 @@ async function populateListings() {
 	const statusLevel = parseInt(document.getElementById("filter-status").value);
 	const locationTags = document.getElementById("location-tags");
 	const locations = Array.from(locationTags.children).map((tag) => tag.textContent.slice(9).trim());
-	const myListings = myListingsCheckbox.checked ? true : undefined;
+	const myListingsOnly = myListingsCheckbox.checked;
+
+	const posterID = myListingsOnly ? (await getUser()).userId : undefined;
 
 	const options = {
 		name: document.getElementById("filter-name").value ?? undefined,
@@ -92,7 +94,7 @@ async function populateListings() {
 		locations,
 		usage: usageLevel === 0 ? usageLevel : (usageLevel ?? undefined),
 		status: statusLevel === 0 ? statusLevel : (statusLevel ?? undefined),
-		myListings
+		posterID
 	};
 
 	listings = await getListings(options);

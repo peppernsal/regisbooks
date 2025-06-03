@@ -1,5 +1,12 @@
 useAuth(async (user) => {
-	const userInfo = await getUserInfo(user.userId);
+	let userInfo;
+	
+	try {
+		userInfo = await getUserInfo(user.userId);
+	} catch (err) {
+		alert("Forbidden user")
+		location.href = authUrl;
+	}
 
 	// Fill in dashboard items using userInfo
 	document.getElementById('full-name').textContent =  `${userInfo.firstName} ${userInfo.lastName}`;

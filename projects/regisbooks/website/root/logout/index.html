@@ -33,11 +33,13 @@
 			<a href="/logout" class="text-white">Logout</a>
 		</nav>
 	</div>
-		<div id="wrapper" class="container mt-5 p-4 text-center bg-light text-success rounded border border-success">
-			<h2>Confirm Logout</h2>
-			<p>Are you sure you want to log out?</p>
-			<button class="btn btn-success my-1" onclick="confirmLogout()">Log Out</button>
-			<button class="btn btn-success my-1" onclick="cancelLogout()">Cancel</button>
+		<div class="content container py-5">	
+			<div id="wrapper" class="container d-flex flex-column align-items-center justify-content-center mt-5 p-4 text-center text-primary rounded border border-primary" style="margin-left: auto; margin-right: auto;">
+				<h2>Confirm Logout</h2>
+				<p>Are you sure you want to log out?</p>
+				<button class="btn body-btn-primary btn-primary my-1" onclick="confirmLogout()">Log Out</button>
+				<button class="btn body-btn-primary btn-primary my-1" onclick="cancelLogout()">Cancel</button>
+			</div>
 		</div>
 	</body>
 </html>

@@ -365,7 +365,7 @@ def init_db_api():
 		user = query_by_id(User, current_user.user_id)
 
 		if user is None:
-			if not current_user.user.email.endswith("@regis.org") and not (current_user.user.email not in secret_keys.EMAIL_WHITELIST):
+			if not current_user.user.email.endswith("@regis.org") and (current_user.user.email not in secret_keys.EMAIL_WHITELIST):
 				auth.delete_user(current_user.user_id)
 				raise PermissionError()
 

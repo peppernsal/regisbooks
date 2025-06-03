@@ -25,8 +25,6 @@ FORBIDDEN = Response(status=403)
 def webpy_setup(app: App):
 	global auth, db
 
-	app.debug = True
-
 	auth = init_auth(secret_keys.AUTH_URL, secret_keys.AUTH_API_KEY)
 
 	db = app.sqlalchemy.init(secret_keys.DB_URI)

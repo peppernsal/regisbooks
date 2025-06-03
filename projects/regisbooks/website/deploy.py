@@ -1,3 +1,4 @@
+import os
 from waitress import serve
 from app import app, webpy_setup
 from json import load
@@ -8,6 +9,10 @@ with open("config.json", 'r') as f:
 
 webpy_setup(app)
 parse_fs_routes(app, "root", {}, {})
+
+with app.app_context():
+	app.sqlalchemy.db.create_all()
+
 print("Setup complete, starting server...")
 
 serve(app, host=config["host"], port=config["port"], threads=8)

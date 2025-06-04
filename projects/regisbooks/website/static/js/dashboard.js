@@ -1,6 +1,6 @@
 useAuth(async (user) => {
+	if (!user) return;
 
-	alert(user)
 	let userInfo;
 	
 	try {

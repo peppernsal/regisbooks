@@ -9,7 +9,10 @@ async function getUser() {
 	const authInfo = await getAuthInfo();
 
 	if (authInfo) return authInfo.user;
-	else location.href = authUrl;
+	else {
+		location.href = authUrl;
+		return null;
+	}
 }
 
 let userPromise = getUser();

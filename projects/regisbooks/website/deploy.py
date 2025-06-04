@@ -13,10 +13,11 @@ parse_fs_routes(app, "root", {}, {})
 with app.app_context():
 	app.sqlalchemy.db.create_all()
 
-	with op.batch_alter_table('users') as batch_op:
-		batch_op.drop_constraint('users_first_name_key', type_='unique')
-		batch_op.drop_constraint('users_last_name_key', type_='unique')
-		batch_op.drop_constraint('users_username_key', type_='unique')
+	with app.sqlalchemy.db.engine.connect() as conn:
+		conn.execute("ALTER TABLE users DROP CONSTRAINT IF EXISTS users_first_name_unique;")
+		conn.execute("ALTER TABLE users DROP CONSTRAINT IF EXISTS users_last_name_unique;")
+		conn.execute("ALTER TABLE users DROP CONSTRAINT IF EXISTS users_username_unique;")
+		conn.commit()
 
 print("Setup complete, starting server...")
 

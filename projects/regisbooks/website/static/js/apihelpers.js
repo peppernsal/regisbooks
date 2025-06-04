@@ -23,6 +23,11 @@ async function getUserInfo(userID) {
 	return await getJSONInfoFromAPICall(`/api/internal/get-user?id=${userID}`);
 }
 
+async function getAllUsers() {
+	return await getJSONInfoFromAPICall(`/api/internal/get-users`);
+}
+
+
 function getListingInfo(listingID) {
 	return getJSONInfoFromAPICall(`/api/internal/get-listing?id=${listingID}`);
 }

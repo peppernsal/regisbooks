@@ -90,7 +90,17 @@ def register_internal_api_routes():
 
 		if user is None: return BAD_REQUEST
 		return jsonify(user.as_dict)
-	
+
+	@app.route("/api/internal/get-users")
+	@auth.require_user
+	def getusers_internal():
+		try: ensure_user()
+		except PermissionError: return FORBIDDEN
+
+		users = User.get_all()
+
+		return jsonify([user.id for user in users])
+
 	@app.route("/api/internal/get-listing")
 	@auth.require_user
 	def getlisting_internal():

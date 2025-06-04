@@ -14,9 +14,9 @@ with app.app_context():
 	app.sqlalchemy.db.create_all()
 
 	with app.sqlalchemy.db.engine.connect() as conn:
-		conn.execute(text("ALTER TABLE users DROP CONSTRAINT users_first_name_key_unique;"))
-		conn.execute(text("ALTER TABLE users DROP CONSTRAINT users_first_name_key_unique;"))
-		conn.execute(text("ALTER TABLE users DROP CONSTRAINT users_first_name_key_unique;")) 	
+		conn.execute(text("ALTER TABLE users DROP CONSTRAINT users_first_name_key;"))
+		conn.execute(text("ALTER TABLE users DROP CONSTRAINT users_last_name_key;"))
+		conn.execute(text("ALTER TABLE users DROP CONSTRAINT users_username_key;")) 	
 		conn.commit()
 
 print("Setup complete, starting server...")

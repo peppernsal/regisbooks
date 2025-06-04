@@ -1,4 +1,6 @@
 useAuth(async (user) => {
+
+	alert(user)
 	let userInfo;
 	
 	try {

@@ -3,3 +3,4 @@ propelauth-flask
 httpx
 python-dotenv
 psycopg2
+alembic

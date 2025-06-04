@@ -436,9 +436,9 @@ def init_db_api():
 		__tablename__ = "users"
 		
 		id: str = db.Column(db.String, primary_key=True, unique=True, nullable=False)
-		first_name: str = db.Column(db.String, unique=True, nullable=False)
-		last_name: str = db.Column(db.String, unique=True, nullable=False)
-		username: str = db.Column(db.String, unique=True, nullable=False)
+		first_name: str = db.Column(db.String, nullable=False)
+		last_name: str = db.Column(db.String, nullable=False)
+		username: str = db.Column(db.String, nullable=False)
 		email: str = db.Column(db.String, unique=True, nullable=False)
 		listings: Mapped[list["Listing"]] = db.relationship("Listing", backref="author", lazy=True)
 		requests: Mapped[list["PreRequest"]] = db.relationship("PreRequest", backref="creator", lazy=True)

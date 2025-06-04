@@ -1,5 +1,7 @@
 useAuth(async (user) => {
 	let userInfo;
+
+	console.log(user)
 	
 	try {
 		userInfo = await getUserInfo(user.userId);

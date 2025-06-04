@@ -28,8 +28,13 @@ document.addEventListener("DOMContentLoaded", async () => {
 			rankSpan.textContent = `#${index + 1}`;
 
 			const nameSpan = document.createElement("span");
-			nameSpan.textContent = `${user.firstName} ${user.lastName} (@${user.username})`;
+			nameSpan.appendChild(document.createTextNode(`${user.firstName} ${user.lastName} `));
 
+			const usernameLink = document.createElement("a");
+			usernameLink.href = `/view-profile?id=${user.id}`;
+			usernameLink.textContent = `@${user.username}`;
+			nameSpan.appendChild(usernameLink);
+			
 			const pointsSpan = document.createElement("span");
 			pointsSpan.className = "text-primary";
 			pointsSpan.textContent = `${user.stats.listingsMade} Listings Made, ${user.stats.booksGiven} Books Given`;

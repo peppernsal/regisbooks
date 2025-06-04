@@ -13,26 +13,11 @@ parse_fs_routes(app, "root", {}, {})
 with app.app_context():
 	app.sqlalchemy.db.create_all()
 
-	with app.sqlalchemy.db.engine.connect() as conn:
-		result = conn.execute(text("""
-			SELECT conname AS constraint_name, contype AS constraint_type
-			FROM pg_constraint
-			JOIN pg_class ON pg_constraint.conrelid = pg_class.oid
-			WHERE pg_class.relname = 'users';
-		"""))
-		
-		constraints = result.fetchall()
-
-	# Print constraint names and types
-	for row in constraints:
-		print(f"Constraint Name: {row[0]}, Constraint Type: {row[1]}")
-
-
-	with app.sqlalchemy.db.engine.connect() as conn:
-		conn.execute(text("ALTER TABLE users DROP CONSTRAINT users_first_name_key;"))
-		conn.execute(text("ALTER TABLE users DROP CONSTRAINT users_last_name_key;"))
-		conn.execute(text("ALTER TABLE users DROP CONSTRAINT users_username_key;")) 	
-		conn.commit()
+	# with app.sqlalchemy.db.engine.connect() as conn:
+	# 	conn.execute(text("ALTER TABLE users DROP CONSTRAINT users_first_name_key;"))
+	# 	conn.execute(text("ALTER TABLE users DROP CONSTRAINT users_last_name_key;"))
+	# 	conn.execute(text("ALTER TABLE users DROP CONSTRAINT users_username_key;")) 	
+	# 	conn.commit()
 
 print("Setup complete, starting server...")
 

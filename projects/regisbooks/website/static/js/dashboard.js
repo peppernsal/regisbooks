@@ -1,12 +1,9 @@
 useAuth(async (user) => {
 	let userInfo;
-
-	console.log(user)
 	
 	try {
 		userInfo = await getUserInfo(user.userId);
 	} catch (err) {
-		alert("Forbidden user"+err.toString());
 		location.href = authUrl;
 	}
 

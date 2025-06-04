@@ -6,6 +6,7 @@ useAuth(async (user) => {
 	try {
 		userInfo = await getUserInfo(user.userId);
 	} catch (err) {
+		alert(err);
 		location.href = authUrl;
 	}
 

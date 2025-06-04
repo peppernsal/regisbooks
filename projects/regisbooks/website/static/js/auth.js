@@ -17,8 +17,6 @@ async function getUser() {
 
 let userPromise = getUser();
 
-// while (!user); // wait for user data to be fetched before returning
-
 async function useAuth(func) {
 	return func(await userPromise);
 }

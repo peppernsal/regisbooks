@@ -1,3 +1,5 @@
+if (Cookies.get("accepted") !== "true") location.href = "/acknowledgement";
+
 const authUrl = "https://228794087.propelauthtest.com";
 const authClient = PropelAuth.createClient({ authUrl });
 

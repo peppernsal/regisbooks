@@ -92,7 +92,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 				reqInfoDiv.appendChild(reqInfo);
 
 				const actionsDiv = document.createElement("div");
-				actionsDiv.classList.add("col-md-3");
+				actionsDiv.classList.add("col-md-5");
 
 				const fulfillBtn = document.createElement("button");
 				fulfillBtn.appendChild(textElem("h4", `I sent ${listingRequester.firstName} the book`));

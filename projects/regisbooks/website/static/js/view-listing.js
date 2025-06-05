@@ -78,7 +78,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 				replacementDiv.classList.add("row", "align-items-center", "text-center")
 				
 				const reqInfoDiv = document.createElement("div");
-				reqInfoDiv.classList.add("col-md-7");
+				reqInfoDiv.classList.add("col-md-6");
 
 				const reqInfo = document.createElement("h3");
 				reqInfo.appendChild(document.createTextNode(`This listing was requested by ${listingRequester.firstName} ${listingRequester.lastName} (`));
@@ -89,27 +89,13 @@ document.addEventListener("DOMContentLoaded", async () => {
 				reqInfo.appendChild(emailLink);
 				reqInfo.appendChild(document.createTextNode(")"));
 
+				reqInfoDiv.appendChild(reqInfo);
+
 				const fulfillDiv = document.createElement("div");
-				fulfillDiv.classList.add("col-md-5");
+				fulfillDiv.classList.add("col-md-4");
 
 				const fulfillBtn = document.createElement("button");
 				fulfillBtn.appendChild(textElem("h4", `I sent ${listingRequester.firstName} the book`));
-				
-				const rejectBtn = document.createElement("button");
-				rejectBtn.appendChild(textElem("h4", `Reject Request`));
-				rejectBtn.classList.add("btn", "btn-danger", "ms-2");
-				rejectBtn.onclick = () => {
-					if (window.confirm("Are you sure you want to reject this request? This will make the listing available again.")) {
-						rejectListingReq(listingID).then((resp) => {
-							if (resp.status != 200) {
-								alert("Could not reject the request!");
-								return;
-							}
-							location.reload();
-						});
-					}
-				};
-				fulfillDiv.appendChild(rejectBtn);
 
 				fulfillBtn.classList.add("btn", "body-btn-primary", "btn-primary");
 				fulfillBtn.onclick = () => {
@@ -125,10 +111,30 @@ document.addEventListener("DOMContentLoaded", async () => {
 				}
 
 				fulfillDiv.appendChild(fulfillBtn);
-				reqInfoDiv.appendChild(reqInfo);
+				
+				const rejectDiv = document.createElement("div");
+				rejectDiv.classList.add("col-md-2");
+
+				const rejectBtn = document.createElement("button");
+				rejectBtn.appendChild(textElem("h4", `Reject Request`));
+				rejectBtn.classList.add("btn", "btn-danger", "ms-2");
+				rejectBtn.onclick = () => {
+					if (window.confirm("Are you sure you want to reject this request? This will make the listing available again.")) {
+						rejectListingReq(listingID).then((resp) => {
+							if (resp.status != 200) {
+								alert("Could not reject the request!");
+								return;
+							}
+							location.reload();
+						});
+					}
+				};
+
+				rejectDiv.appendChild(rejectBtn);
 
 				replacementDiv.appendChild(reqInfoDiv);
 				replacementDiv.appendChild(fulfillDiv);
+				replacementDiv.appendChild(rejectDiv);
 
 				reqBtn.replaceWith(replacementDiv);
 			} else { // listing.status == 2

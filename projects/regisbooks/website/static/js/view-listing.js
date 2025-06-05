@@ -75,7 +75,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
 				const remBtn = document.createElement("button");
 				
-				remBtn.className = "btn btn-danger btn-lg fw-bold my-2 col-md-6";
+				remBtn.className = "btn btn-danger btn-lg fw-bold my-2 col-md-4";
 				remBtn.textContent = "Delete this Listing";
 				remBtn.onclick = () => {
 					if (window.confirm("Are you sure you want to delete this listing? This action cannot be undone.")) {
@@ -90,12 +90,22 @@ document.addEventListener("DOMContentLoaded", async () => {
 				};
 
 				const editBtn = document.createElement("a");
-				editBtn.className = "btn body-btn-primary btn-primary btn-lg fw-bold my-2 col-md-6";
+				editBtn.className = "btn body-btn-primary btn-primary btn-lg fw-bold my-2 col-md-4";
 				editBtn.textContent = "Edit this Listing";
 				editBtn.href = `/edit-listing?id=${listingID}`;
 
+				const frontPadding = document.createElement("div");
+				frontPadding.className = "col-md-1";
+				const backPadding = document.createElement("div");
+				backPadding.className = "col-md-1";
+				const midPadding = document.createElement("div");
+				midPadding.className = "col-md-2";
+
+				replacementDiv.appendChild(frontPadding)
 				replacementDiv.appendChild(remBtn);
+				replacementDiv.appendChild(midPadding);
 				replacementDiv.appendChild(editBtn);
+				replacementDiv.appendChild(backPadding);
 
 				reqBtn.replaceWith(replacementDiv);
 			} else if (listing.status == 1) {

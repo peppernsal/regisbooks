@@ -78,7 +78,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 				replacementDiv.classList.add("row", "align-items-center", "text-center")
 				
 				const reqInfoDiv = document.createElement("div");
-				reqInfoDiv.classList.add("col-md-6");
+				reqInfoDiv.classList.add("col-md-7");
 
 				const reqInfo = document.createElement("h3");
 				reqInfo.appendChild(document.createTextNode(`This listing was requested by ${listingRequester.firstName} ${listingRequester.lastName} (`));
@@ -91,13 +91,13 @@ document.addEventListener("DOMContentLoaded", async () => {
 
 				reqInfoDiv.appendChild(reqInfo);
 
-				const fulfillDiv = document.createElement("div");
-				fulfillDiv.classList.add("col-md-4");
+				const actionsDiv = document.createElement("div");
+				actionsDiv.classList.add("col-md-3");
 
 				const fulfillBtn = document.createElement("button");
 				fulfillBtn.appendChild(textElem("h4", `I sent ${listingRequester.firstName} the book`));
 
-				fulfillBtn.classList.add("btn", "body-btn-primary", "btn-primary");
+				fulfillBtn.classList.add("btn", "body-btn-primary", "btn-primary", "my-2");
 				fulfillBtn.onclick = () => {
 					if (window.confirm("Are you sure you want to mark this request as fulfilled?\nOnly select this if you have sent the book to the requester. This action cannot be undone.")) {
 						fulfillRequestFor(listingID).then((resp) => {
@@ -110,14 +110,11 @@ document.addEventListener("DOMContentLoaded", async () => {
 					}
 				}
 
-				fulfillDiv.appendChild(fulfillBtn);
-				
-				const rejectDiv = document.createElement("div");
-				rejectDiv.classList.add("col-md-2");
-
+				actionsDiv.appendChild(fulfillBtn);
+			
 				const rejectBtn = document.createElement("button");
 				rejectBtn.appendChild(textElem("h4", `Reject Request`));
-				rejectBtn.classList.add("btn", "btn-danger", "ms-2");
+				rejectBtn.classList.add("btn", "btn-danger", "my-2");
 				rejectBtn.onclick = () => {
 					if (window.confirm("Are you sure you want to reject this request? This will make the listing available again.")) {
 						rejectListingReq(listingID).then((resp) => {
@@ -130,11 +127,10 @@ document.addEventListener("DOMContentLoaded", async () => {
 					}
 				};
 
-				rejectDiv.appendChild(rejectBtn);
-
+				actionsDiv.appendChild(rejectBtn);			
+			
 				replacementDiv.appendChild(reqInfoDiv);
-				replacementDiv.appendChild(fulfillDiv);
-				replacementDiv.appendChild(rejectDiv);
+				replacementDiv.appendChild(actionsDiv);
 
 				reqBtn.replaceWith(replacementDiv);
 			} else { // listing.status == 2

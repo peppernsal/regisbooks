@@ -64,6 +64,12 @@ function addListing(listingInfo) {
 	});
 }
 
+function updateListing(listingInfo) {
+	return makeAPICall(`/api/internal/update-listing`, JSON.stringify(listingInfo), "POST", {
+		"Content-Type": "application/json"
+	});
+}
+
 function addBook(bookISBN) {
 	return getJSONInfoFromAPICall(`/api/internal/add-book?isbn=${bookISBN}`);
 }

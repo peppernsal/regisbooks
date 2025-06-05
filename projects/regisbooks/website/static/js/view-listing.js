@@ -67,11 +67,17 @@ document.addEventListener("DOMContentLoaded", async () => {
 			}
 		} else {
 			if (listing.status == 0) {
-				// change reqBtn to remove listing button
+				// replace reqBtn with a remove listing button and an edit listing button
 				const reqBtn = document.getElementById("request-listing");
-				reqBtn.className = "btn btn-danger btn-lg fw-bold";
-				reqBtn.textContent = "Delete this Listing";
-				reqBtn.onclick = () => {
+
+				const replacementDiv = document.createElement("div");
+				replacementDiv.classList.add("row", "align-items-center", "text-center");
+
+				const remBtn = document.createElement("button");
+				
+				remBtn.className = "btn btn-danger btn-lg fw-bold my-2 col-md-6";
+				remBtn.textContent = "Delete this Listing";
+				remBtn.onclick = () => {
 					if (window.confirm("Are you sure you want to delete this listing? This action cannot be undone.")) {
 						remListing(listingID).then((resp) => {
 							if (resp.status != 200) {
@@ -83,6 +89,15 @@ document.addEventListener("DOMContentLoaded", async () => {
 					}
 				};
 
+				const editBtn = document.createElement("a");
+				editBtn.className = "btn body-btn-primary btn-primary btn-lg fw-bold my-2 col-md-6";
+				editBtn.textContent = "Edit this Listing";
+				editBtn.href = `/edit-listing?id=${listingID}`;
+
+				replacementDiv.appendChild(remBtn);
+				replacementDiv.appendChild(editBtn);
+
+				reqBtn.replaceWith(replacementDiv);
 			} else if (listing.status == 1) {
 				const listingRequester = await getUserInfo(listing.requesterID);
 				const reqBtn = document.getElementById("request-listing");

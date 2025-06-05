@@ -1,7 +1,7 @@
-const bookISBN = new URLSearchParams(location.search).get("book");
+const listingID = new URLSearchParams(location.search).get("id");
 
 const waitingMessage = document.getElementById("waiting-message");
-waitingMessage.textContent = `Loading book from ISBN ${bookISBN}`;
+waitingMessage.textContent = `Loading your listing`;
 
 const loaderAnimation = setInterval(() => {
 	if (waitingMessage.textContent.slice(-3) == "...") waitingMessage.textContent = waitingMessage.textContent.slice(0, -3);
@@ -9,11 +9,19 @@ const loaderAnimation = setInterval(() => {
 	waitingMessage.textContent+=".";
 }, 500);
 
-if (!bookISBN) location.href = "/enter-isbn";
+if (!listingID) location.href = "/view-listings";
 
 document.addEventListener("DOMContentLoaded", async () => {
 	try {
-		const bookInfo = await addBook(bookISBN);
+		const userInfo = await getUser();
+		const listingInfo = await getListingInfo(listingISBN);
+		const bookInfo = await getBookInfo(listingInfo.bookID);
+
+		if (listingInfo.authorID != userInfo.userId) {
+			alert("You do not have permission to edit this listing!");
+			location.href = `/view-listing?id=${listingID}`;
+		}
+
 		document.getElementById("book-title").textContent = bookInfo.title;
 		document.getElementById("book-author").textContent = bookInfo.author;
 		document.getElementById("book-isbn").textContent = `ISBN: ${bookISBN}`;
@@ -27,15 +35,27 @@ document.addEventListener("DOMContentLoaded", async () => {
 			document.getElementById("cover-disclaimer").remove();
 		}
 
+
+		const usageLevel = document.getElementById("usage-level").value;
+		const notes = document.getElementById("notes").value;
+
+		document.getElementById("usage-level").value = listingInfo.usageLevel;
+		document.getElementById("notes").value = listingInfo.notes;
+		
+		for (const location of listingInfo.pickupLocations) {
+			const inputElem = addPickupLocation();
+			inputElem.value = location;
+		}
+
 		clearInterval(loaderAnimation);
 		waitingMessage.remove();
-	} catch { // book doesn't exist
-		alert("Invalid ISBN!");
-		location.href = "/enter-isbn";
+	} catch {
+		alert("Listing not found!");
+		location.href = "/view-listings";
 	}
 });
 
-function createListing() {
+function editListing() {
 	const usageLevel = document.getElementById("usage-level").value;
 	const notes = document.getElementById("notes").value;
 	const pickupLocations = Array.from(
@@ -52,14 +72,13 @@ function createListing() {
 		return;
 	}
 
-	const listingInfo = {
-		bookID: bookISBN,
+	const updateInfo = {
 		usageLevel: parseInt(usageLevel),
 		notes: notes,
 		pickupLocations: pickupLocations,
 	}
 	
-	addListing(listingInfo).then(() => location.href = "/view-listings");
+	updateListing(updateInfo).then(() => location.href = `/view-listing?id=${listingI}`);
 }
 
 const locationsContainer = document.getElementById("pickup-locations-container");;
@@ -149,4 +168,6 @@ function addPickupLocation() {
 		top: document.body.scrollHeight, 
 		behavior: 'smooth'
 	});
+
+	return inputElem;
 }

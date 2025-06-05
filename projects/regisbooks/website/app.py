@@ -259,7 +259,6 @@ def register_internal_api_routes():
 		if listing.author_id != author.id: return FORBIDDEN
 		if listing.status != Listing.Status.AVAILABLE: return BAD_REQUEST
 
-		book_id = get("bookID", listing.book_id)
 		notes = get("notes", listing.notes)
 		pickup_locations = get("pickupLocations", listing.pickup_locations)
 		usage_level = get("usageLevel", listing.usage_level)
@@ -270,12 +269,7 @@ def register_internal_api_routes():
 		
 		if (type(pickup_locations) is not list) or any(type(loc) is not str for loc in pickup_locations): return BAD_REQUEST
 
-		if (type(book_id) is not str): return BAD_REQUEST
-
-		if Book.by_id(book_id) is None: return BAD_REQUEST
-
 		# update listing info
-		listing.book_id = book_id
 		listing.notes = notes
 		listing.usage_level = usage_level
 		listing.pickup_locations = pickup_locations

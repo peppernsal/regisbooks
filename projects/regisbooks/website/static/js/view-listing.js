@@ -1,6 +1,6 @@
 const listingID = new URLSearchParams(location.search).get("id");
 
-(async() => {
+document.addEventListener("DOMContentLoaded", async () => {
 	try {
 		const listing = await getListingInfo(listingID);
 		const book = await getBookInfo(listing.bookID);

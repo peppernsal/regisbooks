@@ -1,4 +1,6 @@
-useAuth(async (user) => {
+document.addEventListener("DOMContentLoaded", async () => {
+	const user = await getUser();
+	
 	if (!user) return;
 
 	let userInfo;

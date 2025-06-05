@@ -12,7 +12,7 @@ function toggleSidebar() {
 	}
 }
 
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', () => {
 	const sidebar = document.querySelector('.sidebar');
 	const savedState = localStorage.getItem('sidebarState');
 

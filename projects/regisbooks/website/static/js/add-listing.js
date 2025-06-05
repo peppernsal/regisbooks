@@ -11,7 +11,7 @@ const loaderAnimation = setInterval(() => {
 
 if (!bookISBN) location.href = "/enter-isbn";
 
-(async () => {
+document.addEventListener("DOMContentLoaded", async () => {
 	try {
 		const bookInfo = await addBook(bookISBN);
 		document.getElementById("book-title").textContent = bookInfo.title;

@@ -1,6 +1,8 @@
 const userID = new URLSearchParams(location.search).get('id');
 
-useAuth(async (user) => {
+document.addEventListener("DOMContentLoaded", async () => {
+	const user = await getUser();
+	
 	if (userID == user.id) location.href = '/dash';
 
 	const userInfo = await getUserInfo(userID);

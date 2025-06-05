@@ -67,9 +67,9 @@ document.addEventListener("DOMContentLoaded", async () => {
 			}
 		} else {
 			if (listing.status == 0) {
-				// change to remove listing button
+				// change reqBtn to remove listing button
 				const reqBtn = document.getElementById("request-listing");
-				reqBtn.className - "btn btn-danger";
+				reqBtn.className = "btn btn-danger btn-lg fw-bold";
 				reqBtn.textContent = "Delete this Listing";
 				reqBtn.onclick = () => {
 					if (window.confirm("Are you sure you want to delete this listing? This action cannot be undone.")) {

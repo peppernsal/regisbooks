@@ -12,8 +12,10 @@ document.addEventListener("DOMContentLoaded", async () => {
 		}
 
 		users.sort((a, b) => {
-			const aScore = a.stats.listingsMade + a.stats.booksGiven;
-			const bScore = b.stats.listingsMade + b.stats.booksGiven;
+			const aScore = getAura(a);
+			const bScore = getAura(b);
+
+			// reversed terms for descending order
 			return bScore - aScore;
 		});
 
@@ -36,8 +38,8 @@ document.addEventListener("DOMContentLoaded", async () => {
 			nameSpan.appendChild(usernameLink);
 			
 			const pointsSpan = document.createElement("span");
-			pointsSpan.className = "text-dark";
-			pointsSpan.textContent = `${user.stats.listingsMade} Listings Made, ${user.stats.booksGiven} Books Given`;
+			pointsSpan.className = "text-warning";
+			pointsSpan.textContent = `${getAura(user)} Aura`;
 
 			userRow.appendChild(rankSpan);
 			userRow.appendChild(nameSpan);

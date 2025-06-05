@@ -16,6 +16,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 	document.getElementById('full-name').textContent =  `${userInfo.firstName} ${userInfo.lastName}`;
 	document.getElementById('username').textContent = userInfo.username;
 	document.getElementById('email').textContent = userInfo.email;
+	document.getElementById('aura').textContent = getAura(userInfo);
 
 	// Fill in stats
 	document.getElementById('stat-listings-made').textContent = userInfo.stats.listingsMade;

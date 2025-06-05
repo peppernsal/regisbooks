@@ -241,6 +241,48 @@ def register_internal_api_routes():
 		db.session.commit()
 
 		return RESP_OK
+	
+	@app.route("/api/internal/update-listing", methods=["POST"])
+	@auth.require_user
+	def updatelisting_internal():
+		try: author = ensure_user()
+		except PermissionError: return FORBIDDEN
+		get = request.json.get
+
+		listing_id = get("listingID")
+
+		if type(listing_id) is not str: return BAD_REQUEST
+
+		listing: Listing = Listing.by_id(listing_id)
+		
+		if listing is None: return BAD_REQUEST
+		if listing.author_id != author.id: return FORBIDDEN
+		if listing.status != Listing.Status.AVAILABLE: return BAD_REQUEST
+
+		book_id = get("bookID", listing.book_id)
+		notes = get("notes", listing.notes)
+		pickup_locations = get("pickupLocations", listing.pickup_locations)
+		usage_level = get("usageLevel", listing.usage_level)
+
+		if (type(usage_level) is not int) or not (0 <= usage_level <= 2): return BAD_REQUEST
+		
+		if (type(notes) is not str): return BAD_REQUEST
+		
+		if (type(pickup_locations) is not list) or any(type(loc) is not str for loc in pickup_locations): return BAD_REQUEST
+
+		if (type(book_id) is not str): return BAD_REQUEST
+
+		if Book.by_id(book_id) is None: return BAD_REQUEST
+
+		# update listing info
+		listing.book_id = book_id
+		listing.notes = notes
+		listing.usage_level = usage_level
+		listing.pickup_locations = pickup_locations
+
+		db.session.commit()
+
+		return RESP_OK
 
 	@app.route("/api/internal/add-pre-req", methods=["POST"])
 	@auth.require_user

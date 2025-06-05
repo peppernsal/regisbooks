@@ -8,7 +8,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 	try {
 		userInfo = await getUserInfo(user.userId);
 	} catch (err) {
-		alert("Please try logging in again.");
+		alert("Please try logging in again. Make sure you are using a Regis account.");
 		location.href = authUrl;
 	}
 

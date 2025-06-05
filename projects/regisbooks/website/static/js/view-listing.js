@@ -94,9 +94,24 @@ document.addEventListener("DOMContentLoaded", async () => {
 
 				const fulfillBtn = document.createElement("button");
 				fulfillBtn.appendChild(textElem("h4", `I sent ${listingRequester.firstName} the book`));
+				
+				const rejectBtn = document.createElement("button");
+				rejectBtn.appendChild(textElem("h4", `Reject Request`));
+				rejectBtn.classList.add("btn", "btn-danger", "ms-2");
+				rejectBtn.onclick = () => {
+					if (window.confirm("Are you sure you want to reject this request? This will make the listing available again.")) {
+						rejectListingReq(listingID).then((resp) => {
+							if (resp.status != 200) {
+								alert("Could not reject the request!");
+								return;
+							}
+							location.reload();
+						});
+					}
+				};
+				fulfillDiv.appendChild(rejectBtn);
 
-
-				fulfillBtn.classList.add("btn", "btn-primary");
+				fulfillBtn.classList.add("btn", "body-btn-primary", "btn-primary");
 				fulfillBtn.onclick = () => {
 					if (window.confirm("Are you sure you want to mark this request as fulfilled?\nOnly select this if you have sent the book to the requester. This action cannot be undone.")) {
 						fulfillRequestFor(listingID).then((resp) => {

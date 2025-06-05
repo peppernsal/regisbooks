@@ -97,7 +97,7 @@ def register_internal_api_routes():
 		try: ensure_user()
 		except PermissionError: return FORBIDDEN
 
-		users = User.query.filter(User.email not in secret_keys.EMAIL_WHITELIST).all()
+		users = User.query.filter(~User.email.in_(secret_keys.EMAIL_WHITELIST)).all()
 
 		return jsonify([user.id for user in users])
 

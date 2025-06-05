@@ -13,11 +13,11 @@ if (!listingID) location.href = "/view-listings";
 
 document.addEventListener("DOMContentLoaded", async () => {
 	try {
-		const userInfo = await getUser();
+		const user = await getUser();
 		const listingInfo = await getListingInfo(listingID);
 		const bookInfo = await getBookInfo(listingInfo.bookID);
 
-		if (listingInfo.authorID != userInfo.userId) {
+		if (listingInfo.authorID != user.userId) {
 			alert("You do not have permission to edit this listing!");
 			location.href = `/view-listing?id=${listingID}`;
 		}
@@ -51,7 +51,8 @@ document.addEventListener("DOMContentLoaded", async () => {
 		waitingMessage.remove();
 	} catch (err) {
 		console.log(err);
-		location.href = "/view-listings";
+		
+		// location.href = "/view-listings";
 	}
 });
 

@@ -29,7 +29,7 @@ function onScanSuccess(decodedText, decodedResult) {
 
 setInterval(() => {
 	const barcodeButtons = document.getElementById("barcode-reader").querySelectorAll("button");
-	console.log(barcodeButtons);
+
 	barcodeButtons.forEach(button => {
 		if (button.classList.contains("btn")) return;
 		

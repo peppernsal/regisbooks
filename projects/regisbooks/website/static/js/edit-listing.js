@@ -14,7 +14,7 @@ if (!listingID) location.href = "/view-listings";
 document.addEventListener("DOMContentLoaded", async () => {
 	try {
 		const userInfo = await getUser();
-		const listingInfo = await getListingInfo(listingISBN);
+		const listingInfo = await getListingInfo(listingID);
 		const bookInfo = await getBookInfo(listingInfo.bookID);
 
 		if (listingInfo.authorID != userInfo.userId) {
@@ -49,8 +49,8 @@ document.addEventListener("DOMContentLoaded", async () => {
 
 		clearInterval(loaderAnimation);
 		waitingMessage.remove();
-	} catch {
-		alert("Listing not found!");
+	} catch (err) {
+		console.log(err);
 		location.href = "/view-listings";
 	}
 });
@@ -78,7 +78,7 @@ function editListing() {
 		pickupLocations: pickupLocations,
 	}
 	
-	updateListing(updateInfo).then(() => location.href = `/view-listing?id=${listingI}`);
+	updateListing(updateInfo).then(() => location.href = `/view-listing?id=${listingID}`);
 }
 
 const locationsContainer = document.getElementById("pickup-locations-container");;

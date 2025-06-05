@@ -42,7 +42,7 @@
 
 				<a id="new-listing" href="/enter-isbn" class="btn body-btn-primary btn-primary mb-4 d-block text-center">List a New Book</a>
 
-				<button id="toggle-filters" class="btn body-btn-primary btn-primary mb-4">Show Filters</button>
+				<button id="toggle-filters" class="btn body-btn-primary btn-primary mb-4">Show Filters/Search</button>
 
 				<div class="filters mb-4" style="display: none;">
 					<div class="form-check form-switch mb-3">
@@ -53,10 +53,10 @@
 					<fieldset id="filter-set">
 						<div class="row g-3">
 							<div class="col-md-6">
-								<input type="text" class="form-control" id="filter-name" placeholder="Filter by title">
+								<input type="text" class="form-control" id="filter-name" placeholder="Search by title">
 							</div>
 							<div class="col-md-6">
-								<input type="text" class="form-control" id="filter-isbn" placeholder="Filter by ISBN">
+								<input type="text" class="form-control" id="filter-isbn" placeholder="Search by ISBN">
 							</div>
 						</div>
 
@@ -80,7 +80,7 @@
 							</div>
 
 							<div class="col-md-4 d-flex">
-								<input type="text" class="form-control me-2" id="location-input" placeholder="Add Location">
+								<input type="text" class="form-control me-2" id="location-input" placeholder="Add Location Filter">
 								<button class="btn body-btn-primary btn-primary" id="add-location" onclick="addLocation()">+</button>
 							</div>
 						</div>

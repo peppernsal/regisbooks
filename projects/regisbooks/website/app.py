@@ -61,15 +61,17 @@ def register_external_api_routes(): # TODO, also have an efficient system to man
 
 		if type(listing_id) is not str: return BAD_REQUEST
 
-		listing = Listing.query.filter(Listing.id == listing_id)
+		listing_query = Listing.query.filter(Listing.id == listing_id)
+
+		listing: Listing = listing_query.first()
 
 		if listing is None: return BAD_REQUEST
 
 		listing.author.stats.listings_made -= 1
-		listing.delete()
 
 		flag_modified(listing.author, "stats") # ensure stats is updated in db
 
+		listing_query.delete()
 
 		db.session.commit()
 
@@ -320,7 +322,9 @@ def register_internal_api_routes():
 
 		if type(listing_id) is not str: return BAD_REQUEST
 		
-		listing: Listing = Listing.query.filter(Listing.id == listing_id)
+		listing_query: Listing = Listing.query.filter(Listing.id == listing_id)
+
+		listing = listing_query.first()
 
 		if (listing.status != Listing.Status.AVAILABLE): return BAD_REQUEST
 		
@@ -330,7 +334,7 @@ def register_internal_api_routes():
 		
 		flag_modified(user, "stats") # ensure stats is updated in db
 
-		listing.delete()
+		listing_query.delete()
 		db.session.commit()
 
 		return RESP_OK

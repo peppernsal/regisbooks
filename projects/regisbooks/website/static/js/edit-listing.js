@@ -24,7 +24,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
 		document.getElementById("book-title").textContent = bookInfo.title;
 		document.getElementById("book-author").textContent = bookInfo.author;
-		document.getElementById("book-isbn").textContent = `ISBN: ${bookISBN}`;
+		document.getElementById("book-isbn").textContent = `ISBN: ${bookInfo.id}`;
 		document.getElementById("book-publishing-info").textContent = `Published by ${bookInfo.publisher}, ${bookInfo.publishDate}`;
 		
 		if (bookInfo.coverImageURL != "<no-url>") {
@@ -34,10 +34,6 @@ document.addEventListener("DOMContentLoaded", async () => {
 			document.getElementById("book-cover-img").remove();
 			document.getElementById("cover-disclaimer").remove();
 		}
-
-
-		const usageLevel = document.getElementById("usage-level").value;
-		const notes = document.getElementById("notes").value;
 
 		document.getElementById("usage-level").value = listingInfo.usageLevel;
 		document.getElementById("notes").value = listingInfo.notes;
@@ -74,12 +70,26 @@ function editListing() {
 	}
 
 	const updateInfo = {
+		listingID,
 		usageLevel: parseInt(usageLevel),
-		notes: notes,
-		pickupLocations: pickupLocations,
+		notes,
+		pickupLocations,
 	}
 	
-	updateListing(updateInfo).then(() => location.href = `/view-listing?id=${listingID}`);
+	updateListing(updateInfo)
+		.then((response) => {
+			if (response && response.status === 200) {
+				alert("Listing successfully updated!");
+				location.href = `/view-listing?id=${listingID}`;
+			} else {
+				alert("Failed to update listing. Please try again.");
+				location.href = `/view-listing?id=${listingID}`;
+			}
+		})
+		.catch(() => {
+			alert("Failed to update listing. Please try again.");
+			location.href = `/view-listing?id=${listingID}`;
+		});
 }
 
 const locationsContainer = document.getElementById("pickup-locations-container");;

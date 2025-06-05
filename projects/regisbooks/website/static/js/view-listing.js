@@ -131,7 +131,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 		alert("Invalid listing!");
 		location.href = "/view-listings";
 	}
-})();
+});
 
 function requestThisListing() {
 	reqListing(listingID).then((resp) => {

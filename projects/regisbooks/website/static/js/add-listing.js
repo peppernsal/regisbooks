@@ -33,7 +33,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 		alert("Invalid ISBN!");
 		location.href = "/enter-isbn";
 	}
-})();
+});
 
 function createListing() {
 	const usageLevel = document.getElementById("usage-level").value;

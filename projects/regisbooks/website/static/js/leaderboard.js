@@ -36,7 +36,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 			nameSpan.appendChild(usernameLink);
 			
 			const pointsSpan = document.createElement("span");
-			pointsSpan.className = "text-primary";
+			pointsSpan.className = "text-dark";
 			pointsSpan.textContent = `${user.stats.listingsMade} Listings Made, ${user.stats.booksGiven} Books Given`;
 
 			userRow.appendChild(rankSpan);

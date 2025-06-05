@@ -62,4 +62,4 @@ document.addEventListener("DOMContentLoaded", async () => {
 		alert.appendChild(alertInner);
 		listingsContainer.appendChild(alert);
 	}
-})
+});

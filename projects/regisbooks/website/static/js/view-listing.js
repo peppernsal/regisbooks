@@ -67,9 +67,22 @@ document.addEventListener("DOMContentLoaded", async () => {
 			}
 		} else {
 			if (listing.status == 0) {
+				// change to remove listing button
 				const reqBtn = document.getElementById("request-listing");
-				reqBtn.classList.add("disabled");
-				reqBtn.innerHTML = "<em>You Cannot Request Your Own Listing</em>";
+				reqBtn.className - "btn btn-danger";
+				reqBtn.textContent = "Delete this Listing";
+				reqBtn.onclick = () => {
+					if (window.confirm("Are you sure you want to delete this listing? This action cannot be undone.")) {
+						remListing(listingID).then((resp) => {
+							if (resp.status != 200) {
+								alert("Could not delete the listing!");
+								return;
+							}
+							location.href = "/view-listings";
+						});
+					}
+				};
+
 			} else if (listing.status == 1) {
 				const listingRequester = await getUserInfo(listing.requesterID);
 				const reqBtn = document.getElementById("request-listing");

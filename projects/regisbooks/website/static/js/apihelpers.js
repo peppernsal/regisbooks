@@ -74,7 +74,7 @@ function addPreReq(preReqInfo) {
 	});
 }
 
-function remBook(listingID) {
+function remListing(listingID) {
 	return getJSONInfoFromAPICall(`/api/internal/rem-listing?id=${listingID}`);
 }
 

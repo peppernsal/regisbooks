@@ -45,6 +45,16 @@ myListingsCheckbox.onchange = () => {
 
 populateListings();
 
+function disableFilters() {
+	filterSet.disabled = true;
+	myListingsCheckbox.disabled = true;
+}
+
+function enableFilters() {
+	filterSet.disabled = false;
+	myListingsCheckbox.disabled = false;
+}
+
 function addLocation() {
 	const locationInput = document.getElementById("location-input");
 	const locationTags = document.getElementById("location-tags");
@@ -76,6 +86,7 @@ function addLocation() {
 }
 
 async function populateListings() {
+	disableFilters();
 	listingsContainer.innerHTML = ""; // Clear previous listings
 
 	let listings;
@@ -168,6 +179,8 @@ async function populateListings() {
 
 		listingsContainer.appendChild(row);
 	}
+
+	enableFilters();
 }
 
 document.getElementById('toggle-filters').addEventListener('click', function() {

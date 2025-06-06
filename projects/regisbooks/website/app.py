@@ -174,17 +174,16 @@ def register_internal_api_routes():
 			query = query.filter(Listing.author_id == poster_id)
 
 		def filter_pickup_loc(listing: Listing, targets: list[str]): # NOTE: this is kind of slow, maybe fix sometime before prod?
-			if len(targets) == 0: return True
-
 			for target in targets:
 				for location in listing.pickup_locations:
 					if re.match(f".*{target.lower()}.*", location.lower()): return True
 
 			return False
 		
-		query = query.order_by(Listing.id).offset(page_num*LISTINGS_PER_PAGE).limit(LISTINGS_PER_PAGE)
-
-		filtered: list[Listing] = [listing for listing in query.all() if filter_pickup_loc(listing, location_filters)]
+		if len(location_filters) == 0:
+			filtered = query.order_by(Listing.id).offset(page_num*LISTINGS_PER_PAGE).limit(LISTINGS_PER_PAGE).all()
+		else:
+			filtered: list[Listing] = [listing for listing in query.all() if filter_pickup_loc(listing, location_filters)][page_num*LISTINGS_PER_PAGE:(page_num+1)*LISTINGS_PER_PAGE]
 
 		return jsonify([listing.as_dict for listing in filtered])
 

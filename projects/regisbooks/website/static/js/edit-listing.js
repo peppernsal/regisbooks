@@ -45,10 +45,8 @@ document.addEventListener("DOMContentLoaded", async () => {
 
 		clearInterval(loaderAnimation);
 		waitingMessage.remove();
-	} catch (err) {
-		console.log(err);
-		
-		// location.href = "/view-listings";
+	} catch (err) {		
+		location.href = `/view-listing?id=${listingID}`;
 	}
 });
 

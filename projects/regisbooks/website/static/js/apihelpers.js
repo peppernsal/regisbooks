@@ -1,6 +1,28 @@
 // authInfo should be defined prior to loading this library
 const listingUsageRepr = ["New", "Lightly Used", "Used"];
 const listingStatusRepr = ["Available", "Requested", "Given Away"];
+const classRepr = [
+	"Freshman",
+	"Sophomore",
+	"Junior",
+	"Senior"
+]
+const subjectAreaRepr = [
+	"Art",
+	"Music",
+	"Science",
+	"Math",
+	"History",
+	"English",
+	"Computer Science",
+	"Theology",
+	"French",
+	"Spanish",
+	"German",
+	"Latin",
+	"Chinese",
+	"Other"
+]
 
 async function makeAPICall(endpoint, body, method, extraHeaders) {
 	return await fetch(endpoint, {

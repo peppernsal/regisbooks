@@ -13,12 +13,6 @@ parse_fs_routes(app, "root", {}, {})
 with app.app_context():
 	app.sqlalchemy.db.create_all()
 
-	# with app.sqlalchemy.db.engine.connect() as conn:
-	# 	conn.execute(text("ALTER TABLE users DROP CONSTRAINT users_first_name_key;"))
-	# 	conn.execute(text("ALTER TABLE users DROP CONSTRAINT users_last_name_key;"))
-	# 	conn.execute(text("ALTER TABLE users DROP CONSTRAINT users_username_key;")) 	
-	# 	conn.commit()
-
 print("Setup complete, starting server...")
 
 serve(app, host=config["host"], port=config["port"], threads=8)

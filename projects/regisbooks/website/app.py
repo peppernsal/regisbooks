@@ -543,11 +543,29 @@ def init_db_api():
 			REQUESTED = 1
 			TAKEN = 2
 		
-		class Class: # TODO: decide if this should be in listing or books
+		class Class:
 			FRESHMAN = 0
 			SOPHOMORE = 1
 			JUNIOR = 2
 			SENIOR = 3
+
+		class SubjectArea:
+			ART = 0
+			MUSIC = 1
+			SCIENCE = 2
+			MATH = 3
+			HISTORY = 4
+			ENGLISH = 5
+			CS = 6
+			THEOLOGY = 7
+			FRENCH = 8
+			SPANISH = 9
+			GERMAN = 10
+			LATIN = 11
+			CHINESE = 12
+			OTHER = 13
+
+
 
 		__tablename__ = "listings"
 

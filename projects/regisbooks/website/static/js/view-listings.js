@@ -1,3 +1,5 @@
+let listingsPageNumber = 0;
+
 const listingsContainer = document.getElementById("listings-container");
 
 const locationInput = document.getElementById("location-input");
@@ -85,6 +87,66 @@ function addLocation() {
 	populateListings();
 }
 
+const nextPageButton = document.getElementById("next-page");
+const prevPageButton = document.getElementById("prev-page");
+const pageInfo = document.getElementById("page-info");
+
+async function moreListingsExist() {
+	const usageLevel = parseInt(document.getElementById("filter-usage").value);
+	const statusLevel = parseInt(document.getElementById("filter-status").value);
+	const locationTags = document.getElementById("location-tags");
+	const locations = Array.from(locationTags.children).map((tag) => tag.textContent.slice(9).trim());
+	const myListingsOnly = myListingsCheckbox.checked;
+
+	const posterID = myListingsOnly ? (await getUser()).userId : undefined;
+
+	const options = {
+		name: document.getElementById("filter-name").value ?? undefined,
+		isbn: document.getElementById("filter-isbn").value ?? undefined,
+		locations,
+		usage: usageLevel === 0 ? usageLevel : (usageLevel ?? undefined),
+		status: statusLevel === 0 ? statusLevel : (statusLevel ?? undefined),
+		posterID,
+		page: (listingsPageNumber+1) // check if next page exists
+	};
+
+	const listings = await getListings(options);
+
+	console.log(`Checking if more listings exist for page ${listingsPageNumber + 1}...`);
+	console.log(listings);
+	console.log(listings.length > 0)
+
+	return listings.length > 0;
+}
+
+async function incPage() {
+	listingsPageNumber++;
+	populateListings();
+
+	prevPageButton.disabled = false;
+
+	if (!moreListingsExist()) {
+		nextPageButton.disabled = true;
+	}
+
+	pageInfo.textContent = `Page ${listingsPageNumber + 1}`;
+}
+
+function decPage() {
+	if (listingsPageNumber > 0) {
+		listingsPageNumber--;
+		populateListings();
+		
+		pageInfo.textContent = `Page ${listingsPageNumber + 1}`;
+
+		nextPageButton.disabled = false;
+
+		return;
+	}
+
+	prevPageButton.disabled = true;
+}
+
 async function populateListings() {
 	disableFilters();
 	listingsContainer.innerHTML = ""; // Clear previous listings
@@ -105,7 +167,8 @@ async function populateListings() {
 		locations,
 		usage: usageLevel === 0 ? usageLevel : (usageLevel ?? undefined),
 		status: statusLevel === 0 ? statusLevel : (statusLevel ?? undefined),
-		posterID
+		posterID,
+		page: listingsPageNumber
 	};
 
 	listings = await getListings(options);
@@ -191,5 +254,13 @@ document.getElementById('toggle-filters').addEventListener('click', function() {
 	} else {
 		filters.style.display = 'none';
 		this.textContent = 'Show Filters/Search';
+	}
+});
+
+
+document.addEventListener('DOMContentLoaded', async () => {
+	if (await moreListingsExist()) {
+		console.log("this shouln't be happening")
+		nextPageButton.disabled = false;
 	}
 });

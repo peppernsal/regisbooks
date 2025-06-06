@@ -21,6 +21,7 @@ app = App(__name__, template_folder="html")
 BAD_REQUEST = Response(status=400)
 RESP_OK = Response(status=200)
 FORBIDDEN = Response(status=403)
+LISTINGS_PER_PAGE = 10
 
 def webpy_setup(app: App):
 	global auth, db
@@ -153,6 +154,7 @@ def register_internal_api_routes():
 		status_filter: int = options.get("status")
 		usage_filter: int = options.get("usage")
 		poster_id: str = options.get("posterID")
+		page_num: int = options.get("page", 0)
 
 		query = Listing.query
 
@@ -179,6 +181,8 @@ def register_internal_api_routes():
 					if re.match(f".*{target.lower()}.*", location.lower()): return True
 
 			return False
+		
+		query = query.order_by(Listing.id).offset(page_num*LISTINGS_PER_PAGE).limit(LISTINGS_PER_PAGE)
 
 		filtered: list[Listing] = [listing for listing in query.all() if filter_pickup_loc(listing, location_filters)]
 

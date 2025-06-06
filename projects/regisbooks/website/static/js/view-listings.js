@@ -137,6 +137,10 @@ async function decPage() {
 
 		nextPageButton.disabled = false;
 
+		if (listingsPageNumber === 0) {
+			prevPageButton.disabled = true;
+		}
+
 		return;
 	}
 

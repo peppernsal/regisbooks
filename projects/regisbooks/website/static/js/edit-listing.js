@@ -78,16 +78,10 @@ function editListing() {
 	
 	updateListing(updateInfo)
 		.then((response) => {
-			if (response && response.status === 200) {
-				alert("Listing successfully updated!");
-				location.href = `/view-listing?id=${listingID}`;
-			} else {
+			if (response.status !== 200) {
 				alert("Failed to update listing. Please try again.");
-				location.href = `/view-listing?id=${listingID}`;
 			}
-		})
-		.catch(() => {
-			alert("Failed to update listing. Please try again.");
+
 			location.href = `/view-listing?id=${listingID}`;
 		});
 }

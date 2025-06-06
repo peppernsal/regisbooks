@@ -112,30 +112,26 @@ async function moreListingsExist() {
 
 	const listings = await getListings(options);
 
-	console.log(`Checking if more listings exist for page ${listingsPageNumber + 1}...`);
-	console.log(listings);
-	console.log(listings.length > 0)
-
 	return listings.length > 0;
 }
 
 async function incPage() {
 	listingsPageNumber++;
-	populateListings();
+	await populateListings();
 
 	prevPageButton.disabled = false;
 
-	if (!moreListingsExist()) {
+	if (!(await moreListingsExist())) {
 		nextPageButton.disabled = true;
 	}
 
 	pageInfo.textContent = `Page ${listingsPageNumber + 1}`;
 }
 
-function decPage() {
+async function decPage() {
 	if (listingsPageNumber > 0) {
 		listingsPageNumber--;
-		populateListings();
+		await populateListings();
 		
 		pageInfo.textContent = `Page ${listingsPageNumber + 1}`;
 
@@ -260,7 +256,6 @@ document.getElementById('toggle-filters').addEventListener('click', function() {
 
 document.addEventListener('DOMContentLoaded', async () => {
 	if (await moreListingsExist()) {
-		console.log("this shouln't be happening")
 		nextPageButton.disabled = false;
 	}
 });

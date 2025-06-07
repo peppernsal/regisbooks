@@ -15,7 +15,7 @@ const nameFilter = document.getElementById("filter-name");
 nameFilter.addEventListener("keydown", (event) => {
 	if (event.key === "Enter") {
 		event.preventDefault();
-		populateListings();
+		newSearch();
 	}
 });
 
@@ -23,18 +23,18 @@ const isbnFilter = document.getElementById("filter-isbn");
 isbnFilter.addEventListener("keydown", (event) => {
 	if (event.key === "Enter") {
 		event.preventDefault();
-		populateListings();
+		newSearch();
 	}
 });
 
 const usageFilter = document.getElementById("filter-usage");
 usageFilter.addEventListener("change", (event) => {
-	populateListings();
+	newSearch();
 });
 
 const statusFilter = document.getElementById("filter-status");
 statusFilter.addEventListener("change", (event) => {
-	populateListings();
+	newSearch();
 });
 
 const myListingsCheckbox = document.getElementById("show-my-listings");
@@ -42,7 +42,7 @@ const myListingsCheckbox = document.getElementById("show-my-listings");
 const filterSet = document.getElementById("filter-set");
 
 myListingsCheckbox.onchange = () => {
-	populateListings();
+	newSearch();
 }
 
 populateListings();
@@ -84,7 +84,7 @@ function addLocation() {
 
 	locationInput.value = "";
 
-	populateListings();
+	newSearch();
 }
 
 const nextPageButton = document.getElementById("next-page");
@@ -141,6 +141,12 @@ async function decPage() {
 		listingsPageNumber--;
 		await populateListings();
 	}
+}
+
+async function newSearch() {
+	listingsPageNumber = 0;
+
+	await populateListings();
 }
 
 async function populateListings() {

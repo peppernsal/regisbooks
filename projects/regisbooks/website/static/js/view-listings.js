@@ -115,36 +115,32 @@ async function moreListingsExist() {
 	return listings.length > 0;
 }
 
-async function incPage() {
-	listingsPageNumber++;
-	await populateListings();
+async function updatePaginationButtonStates() {
+	if (listingsPageNumber === 0) {
+		prevPageButton.disabled = true;
+	} else {
+		prevPageButton.disabled = false;
+	}
 
-	prevPageButton.disabled = false;
-
-	if (!(await moreListingsExist())) {
+	if (await moreListingsExist()) {
+		nextPageButton.disabled = false;
+	} else {
 		nextPageButton.disabled = true;
 	}
 
 	pageInfo.textContent = `Page ${listingsPageNumber + 1}`;
 }
 
+async function incPage() {
+	listingsPageNumber++;
+	await populateListings();
+}
+
 async function decPage() {
 	if (listingsPageNumber > 0) {
 		listingsPageNumber--;
 		await populateListings();
-		
-		pageInfo.textContent = `Page ${listingsPageNumber + 1}`;
-
-		nextPageButton.disabled = false;
-
-		if (listingsPageNumber === 0) {
-			prevPageButton.disabled = true;
-		}
-
-		return;
 	}
-
-	prevPageButton.disabled = true;
 }
 
 async function populateListings() {
@@ -244,6 +240,7 @@ async function populateListings() {
 	}
 
 	enableFilters();
+	await updatePaginationButtonStates();
 }
 
 document.getElementById('toggle-filters').addEventListener('click', function() {

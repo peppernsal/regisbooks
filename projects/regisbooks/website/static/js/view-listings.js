@@ -1,5 +1,3 @@
-let listingsPageNumber = 0;
-
 const listingsContainer = document.getElementById("listings-container");
 
 const locationInput = document.getElementById("location-input");
@@ -45,8 +43,6 @@ myListingsCheckbox.onchange = () => {
 	newSearch();
 }
 
-populateListings();
-
 function disableFilters() {
 	filterSet.disabled = true;
 	myListingsCheckbox.disabled = true;
@@ -59,7 +55,6 @@ function enableFilters() {
 
 function addLocation() {
 	const locationInput = document.getElementById("location-input");
-	const locationTags = document.getElementById("location-tags");
 
 	const location = locationInput.value.trim();
 	if (location === "") {
@@ -67,9 +62,19 @@ function addLocation() {
 		return;
 	}
 
+	addLocationFromString(location);
+
+	locationInput.value = "";
+
+	newSearch();
+}
+
+function addLocationFromString(loc) {
+	const locationTags = document.getElementById("location-tags");
+
 	const badge = document.createElement("span");
 	badge.className = "badge bg-success text-light me-2 mb-1";
-	badge.textContent = `Location: ${location}`;
+	badge.textContent = `Location: ${loc}`;
 
 	const removeBtn = document.createElement("button");
 	removeBtn.className = "btn-close btn-close-white ms-2";
@@ -81,10 +86,6 @@ function addLocation() {
 
 	badge.appendChild(removeBtn);
 	locationTags.appendChild(badge);
-
-	locationInput.value = "";
-
-	newSearch();
 }
 
 const nextPageButton = document.getElementById("next-page");
@@ -247,6 +248,16 @@ async function populateListings() {
 
 	enableFilters();
 	await updatePaginationButtonStates();
+
+	searchParams.set("page", listingsPageNumber);
+	searchParams.set("name", nameFilter.value);
+	searchParams.set("isbn", isbnFilter.value);
+	searchParams.set("usage", usageFilter.value);
+	searchParams.set("status", statusFilter.value);
+	searchParams.set("myListings", myListingsCheckbox.checked);
+	searchParams.set("locations", Array.from(locationTags.children).map(tag => tag.textContent.slice(9).trim()).join(","));
+
+	window.history.replaceState({}, '', `${location.pathname}?${searchParams.toString()}`);
 }
 
 document.getElementById('toggle-filters').addEventListener('click', function() {
@@ -266,3 +277,25 @@ document.addEventListener('DOMContentLoaded', async () => {
 		nextPageButton.disabled = false;
 	}
 });
+
+const searchParams = new URLSearchParams(window.location.search);
+
+let listingsPageNumber = searchParams.get("page") ? parseInt(searchParams.get("page")) : 0;
+
+if (isNaN(listingsPageNumber) || listingsPageNumber < 0) {
+	listingsPageNumber = 0;
+}
+
+nameFilter.value = searchParams.get("name") || "";
+isbnFilter.value = searchParams.get("isbn") || "";
+usageFilter.value = searchParams.get("usage") || "";
+statusFilter.value = searchParams.get("status") || "";
+myListingsCheckbox.checked = searchParams.get("myListings") === "true";
+const locationFilterString = searchParams.get("locations") || "";
+const locationFilterArray = locationFilterString.split(",").map(loc => loc.trim()).filter(loc => loc !== "");
+
+for (const loc of locationFilterArray) {
+	addLocationFromString(loc);
+}
+
+populateListings();

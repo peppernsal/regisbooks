@@ -11,3 +11,11 @@
 	color: black;
 	cursor: not-allowed;
 }
+
+/* for some reason, the above selector does not cover this case */
+fieldset .body-btn-primary:disabled {
+	background-color: rgb(240, 240, 240);
+	border-color: black;
+	color: black;
+	cursor: not-allowed;
+}

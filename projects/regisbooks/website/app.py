@@ -527,7 +527,6 @@ def init_db_api():
 				"lastName": self.last_name,
 				"username": self.username,
 				"email": self.email,
-				"listings": [listing.id for listing in self.listings],
 				"stats": {
 					"listingsMade": self.stats.listings_made,
 					"booksGiven": self.stats.books_given,

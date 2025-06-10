@@ -26,11 +26,12 @@ document.addEventListener("DOMContentLoaded", async () => {
 	const listingsContainer = document.getElementById('user-listings');
 	listingsContainer.textContent = '';
 
+	// userInfo.listings contains all the listing IDs of the user's listings, but this way, we actually reduce the number of API calls
 	const listings = await getListings({ posterID: userInfo.id});
 	const userListings = listings.filter(listing => listing.status !== 2);
 
 	if (userListings.length > 0) {
-		for (const listing of userListings	) {
+		for (const listing of userListings) {
 			const book = await getBookInfo(listing.bookID);
 			const container = document.createElement('div');
 			container.className = 'col-12 mb-2';

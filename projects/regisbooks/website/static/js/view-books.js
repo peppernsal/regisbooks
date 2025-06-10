@@ -1,0 +1,98 @@
+const booksContainer = document.getElementById('books-container');
+
+document.addEventListener("DOMContentLoaded", async () => {
+	booksContainer.innerHTML = '';
+
+	const books = await getBooks();
+
+	for (const book of books) {
+		const bookCard = document.createElement('a');
+		bookCard.className = 'card mb-3 text-decoration-none';
+		bookCard.href = `/view-listings?isbn=${book.isbn}`;
+
+		const cardBody = document.createElement('div');
+		cardBody.className = 'row g-0 align-items-center'; // Added align-items-center to vertically center content
+
+		const coverImgContainer = document.createElement('div');
+		coverImgContainer.className = 'col-md-1';
+		const coverImg = document.createElement('img');
+		coverImg.className = 'img-fluid detail-cover-img';
+		coverImg.src = book.coverImageURL !== "<no-url>" ? book.coverImageURL : "/static/images/no-cover.png";
+		coverImgContainer.appendChild(coverImg);
+
+		const textContainer = document.createElement('div');
+		textContainer.className = 'col-md-7';
+		const textContent = document.createElement('div');
+		textContent.className = 'card-body';
+
+		const title = document.createElement('h5');
+		title.className = 'card-title';
+		title.textContent = book.title;
+
+		const author = document.createElement('h6');
+		author.className = 'card-subtitle mb-2 text-muted';
+		author.textContent = book.author;
+
+		const description = document.createElement('p');
+		description.className = 'card-text';
+		description.textContent = book.description;
+
+		textContent.appendChild(title);
+		textContent.appendChild(author);
+		textContent.appendChild(description);
+		textContainer.appendChild(textContent);
+
+		const rightContainer = document.createElement('div');
+		rightContainer.className = 'col-md-4 text-end';
+		const rightContent = document.createElement('div');
+		rightContent.className = 'card-body';
+
+		const listings = await getListings({ isbn: book.isbn });
+
+		const listingsCount = document.createElement('h6');
+		listingsCount.className = 'text-muted';
+		if (listings.length == 1) {
+			listingsCount.textContent = `1 listing available`;
+		} else {
+			listingsCount.textContent = `${listings.length} listings available`;
+		}
+		
+		rightContent.appendChild(listingsCount);
+
+		if (listings.length !== 0) {
+			const aggrPickupLocations = listings.reduce((acc, listing) => {
+				for (const location of listing.pickupLocations) {
+					if (!acc.includes(location)) {
+						acc.push(location);
+					}
+				}
+				return acc;
+			}, []);
+
+			const pickupLocations = document.createElement('h6');
+			pickupLocations.className = 'text-muted';
+
+			if (aggrPickupLocations.length > 2) {
+				if (aggrPickupLocations.length === 3) {
+					pickupLocations.textContent = `Pickup at ${aggrPickupLocations.slice(0, 2).join(", ")}, and 1 other location`;
+				} else {
+					const numMore = aggrPickupLocations.length - 2;
+					pickupLocations.textContent = `Pickup at ${aggrPickupLocations.slice(0, 2).join(", ")}, and ${numMore} other locations`;
+				}
+			} else {
+				pickupLocations.textContent = `Pickup at ${aggrPickupLocations.join(", ")}`;
+			}
+
+			rightContent.appendChild(pickupLocations);
+		}
+
+		rightContainer.appendChild(rightContent);
+
+		cardBody.appendChild(coverImgContainer);
+		cardBody.appendChild(textContainer);
+		cardBody.appendChild(rightContainer);
+		bookCard.appendChild(cardBody);
+
+		booksContainer.appendChild(bookCard);
+	}
+});

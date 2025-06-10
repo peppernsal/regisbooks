@@ -38,8 +38,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 		const coverCaption = document.getElementById("cover-disclaimer");
 
 		if (book.coverImageURL === "<no-url>") {
-			coverImg.remove();
-			coverCaption.remove();
+			coverCaption.textContent = "No cover image available.";
 		} else {
 			coverImg.src = book.coverImageURL;
 			coverCaption.textContent = "Note: cover image and publisher may not match physical book. Check ISBN to match versions.";

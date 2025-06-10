@@ -234,7 +234,7 @@ def register_internal_api_routes():
 			notes=notes,
 			usage_level=usage_level,
 			author_id=author.id,
-			pickup_locations=pickup_locations
+			pickup_locations=[loc.strip() for loc in pickup_locations]
 		)
 
 		author.stats.listings_made += 1

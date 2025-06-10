@@ -11,7 +11,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 		bookCard.href = `/view-listings?isbn=${book.isbn}`;
 
 		const cardBody = document.createElement('div');
-		cardBody.className = 'row g-0 align-items-center'; // Added align-items-center to vertically center content
+		cardBody.className = 'row g-0 align-items-center';
 
 		const coverImgContainer = document.createElement('div');
 		coverImgContainer.className = 'col-md-1';
@@ -29,17 +29,17 @@ document.addEventListener("DOMContentLoaded", async () => {
 		title.className = 'card-title';
 		title.textContent = book.title;
 
-		const author = document.createElement('h6');
-		author.className = 'card-subtitle mb-2 text-muted';
-		author.textContent = book.author;
+		const pubInfo = document.createElement('h6');
+		pubInfo.className = 'card-subtitle mb-2 text-muted';
+		pubInfo.textContent = `by ${book.author} (${book.publisher})`;
 
-		const description = document.createElement('p');
-		description.className = 'card-text';
-		description.textContent = book.description;
+		const isbn = document.createElement('h6');
+		isbn.className = 'card-subtitle mb-2 text-muted';
+		isbn.textContent = `ISBN: ${book.isbn}`;
 
 		textContent.appendChild(title);
-		textContent.appendChild(author);
-		textContent.appendChild(description);
+		textContent.appendChild(pubInfo);
+		textContent.appendChild(isbn);
 		textContainer.appendChild(textContent);
 
 		const rightContainer = document.createElement('div');

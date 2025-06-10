@@ -1,5 +1,8 @@
 const listingsContainer = document.getElementById("listings-container");
 
+const clearFiltersBtn = document.getElementById("clear-filters");
+const locationTags = document.getElementById("location-tags");
+
 const locationInput = document.getElementById("location-input");
 
 locationInput.addEventListener("keydown", (event) => {
@@ -43,6 +46,17 @@ myListingsCheckbox.onchange = () => {
 	newSearch();
 }
 
+function clearFilters() {
+	nameFilter.value = "";
+	isbnFilter.value = "";
+	usageFilter.value = "";
+	statusFilter.value = "";
+	myListingsCheckbox.checked = false;
+	locationTags.innerHTML = "";
+	
+	populateListings();
+}
+
 function disableFilters() {
 	filterSet.disabled = true;
 	myListingsCheckbox.disabled = true;
@@ -70,8 +84,6 @@ function addLocation() {
 }
 
 function addLocationFromString(loc) {
-	const locationTags = document.getElementById("location-tags");
-
 	const badge = document.createElement("span");
 	badge.className = "badge bg-success text-light me-2 mb-1";
 	badge.textContent = `Location: ${loc}`;
@@ -264,9 +276,11 @@ document.getElementById('toggle-filters').addEventListener('click', function() {
 	const filters = document.querySelector('.filters');
 	if (filters.style.display === 'none' || filters.style.display === '') {
 		filters.style.display = 'block';
+		clearFiltersBtn.style.display = null;
 		this.textContent = 'Hide Filters/Search';
 	} else {
 		filters.style.display = 'none';
+		clearFiltersBtn.style.display = 'none';
 		this.textContent = 'Show Filters/Search';
 	}
 });

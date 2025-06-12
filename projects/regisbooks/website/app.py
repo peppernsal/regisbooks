@@ -158,15 +158,14 @@ def register_internal_api_routes():
 		poster_id: str = options.get("posterID")
 		page_num: int = options.get("page", 0)
 
-		if isbnlib.is_isbn10(isbn_filter):
-			isbn_filter = isbnlib.to_isbn13(isbn_filter)
-
 		query = Listing.query
 
 		if name_filter is not None:
 			query = query.join(Book).filter(Book.title.ilike(f"%{name_filter}%")).reset_joinpoint()
 
 		if isbn_filter is not None:
+			if isbnlib.is_isbn10(isbn_filter):
+				isbn_filter = isbnlib.to_isbn13(isbn_filter)
 			query = query.filter(Listing.book_id.ilike(f"%{isbn_filter}%"))
 
 		if status_filter is not None:
@@ -186,11 +185,14 @@ def register_internal_api_routes():
 			return False
 		
 		if len(location_filters) == 0:
+			total_count = query.count()
 			filtered = query.order_by(Listing.id).offset(page_num*LISTINGS_PER_PAGE).limit(LISTINGS_PER_PAGE).all()
 		else:
-			filtered: list[Listing] = [listing for listing in query.all() if filter_pickup_loc(listing, location_filters)][page_num*LISTINGS_PER_PAGE:(page_num+1)*LISTINGS_PER_PAGE]
+			filtered_all: list[Listing] = [listing for listing in query.all() if filter_pickup_loc(listing, location_filters)]
+			total_count = len(filtered_all)
+			filtered  = filtered_all[page_num*LISTINGS_PER_PAGE:(page_num+1)*LISTINGS_PER_PAGE]
 
-		return jsonify([listing.as_dict for listing in filtered])
+		return jsonify({ "listings": [listing.as_dict for listing in filtered], "totalCount": total_count })
 
 	@app.route("/api/internal/get-open-reqs")
 	@auth.require_user

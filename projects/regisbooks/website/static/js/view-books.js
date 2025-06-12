@@ -47,7 +47,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 		const rightContent = document.createElement('div');
 		rightContent.className = 'card-body';
 
-		const listings = await getListings({ isbn: book.isbn });
+		const listings = (await getListings({ isbn: book.isbn })).listings;
 
 		const listingsCount = document.createElement('h6');
 		listingsCount.className = 'text-muted';

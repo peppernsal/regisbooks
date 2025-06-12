@@ -44,7 +44,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 	const listingsContainer = document.getElementById('user-listings');
 	listingsContainer.textContent = '';
 
-	const listings = await getListings({ posterID: userInfo.id});
+	const listings = (await getListings({ posterID: userInfo.id })).listings;
 	const userListings = listings.filter(listing => listing.status !== 2);
 
 	if (userListings.length > 0) {

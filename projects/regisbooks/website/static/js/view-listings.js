@@ -104,44 +104,20 @@ const nextPageButton = document.getElementById("next-page");
 const prevPageButton = document.getElementById("prev-page");
 const pageInfo = document.getElementById("page-info");
 
-async function moreListingsExist() {
-	const usageLevel = parseInt(document.getElementById("filter-usage").value);
-	const statusLevel = parseInt(document.getElementById("filter-status").value);
-	const locationTags = document.getElementById("location-tags");
-	const locations = Array.from(locationTags.children).map((tag) => tag.textContent.slice(9).trim());
-	const myListingsOnly = myListingsCheckbox.checked;
-
-	const posterID = myListingsOnly ? (await getUser()).userId : undefined;
-
-	const options = {
-		name: document.getElementById("filter-name").value ?? undefined,
-		isbn: document.getElementById("filter-isbn").value ?? undefined,
-		locations,
-		usage: usageLevel === 0 ? usageLevel : (usageLevel ?? undefined),
-		status: statusLevel === 0 ? statusLevel : (statusLevel ?? undefined),
-		posterID,
-		page: (listingsPageNumber+1) // check if next page exists
-	};
-
-	const listings = await getListings(options);
-
-	return listings.length > 0;
-}
-
-async function updatePaginationButtonStates() {
+async function updatePaginationButtonStates(startingNumber, endingNumber, totalListings) {
 	if (listingsPageNumber === 0) {
 		prevPageButton.disabled = true;
 	} else {
 		prevPageButton.disabled = false;
 	}
 
-	if (await moreListingsExist()) {
+	if (endingNumber < totalListings) {
 		nextPageButton.disabled = false;
 	} else {
 		nextPageButton.disabled = true;
 	}
 
-	pageInfo.textContent = `Page ${listingsPageNumber + 1}`;
+	pageInfo.textContent = `Page ${listingsPageNumber + 1} (showing ${startingNumber}-${endingNumber} of ${totalListings} filtered listings)`;
 }
 
 async function incPage() {
@@ -165,8 +141,6 @@ async function newSearch() {
 async function populateListings() {
 	disableFilters();
 	listingsContainer.innerHTML = ""; // Clear previous listings
-
-	let listings;
 	
 	const usageLevel = parseInt(document.getElementById("filter-usage").value);
 	const statusLevel = parseInt(document.getElementById("filter-status").value);
@@ -186,7 +160,13 @@ async function populateListings() {
 		page: listingsPageNumber
 	};
 
-	listings = await getListings(options);
+	const res = await getListings(options);
+
+	const listings = res.listings;
+	const totalListings = res.totalCount;
+
+	const start = listingsPageNumber*LISTINGS_PER_PAGE;
+	const end = start+listings.length;
 	
 	for (let i = 0; i < listings.length; i+=2) {
 		const group = listings.slice(i, i+2);
@@ -259,7 +239,7 @@ async function populateListings() {
 	}
 
 	enableFilters();
-	await updatePaginationButtonStates();
+	await updatePaginationButtonStates(start+1, end, totalListings);
 
 	searchParams.set("page", listingsPageNumber);
 	searchParams.set("name", nameFilter.value);
@@ -282,13 +262,6 @@ document.getElementById('toggle-filters').addEventListener('click', function() {
 		filters.style.display = 'none';
 		clearFiltersBtn.style.display = 'none';
 		this.textContent = 'Show Filters/Search';
-	}
-});
-
-
-document.addEventListener('DOMContentLoaded', async () => {
-	if (await moreListingsExist()) {
-		nextPageButton.disabled = false;
 	}
 });
 

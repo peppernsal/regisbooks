@@ -100,17 +100,18 @@ def register_external_api_routes(): # TODO, also have an efficient system to man
 
 		db.session.execute(text("ALTER TABLE listings ALTER CONSTRAINT listings_book_id_fkey DEFERRABLE;"))
 
-		listings = Listing.get_all()
-		for listing in listings:
-			if isbnlib.is_isbn10(listing.book_id):
-				listing.book_id = isbnlib.to_isbn13(listing.book_id)
-
 		books = Book.get_all()
 
 		for book in books:
 			if isbnlib.is_isbn10(book.id):
 				book.id = isbnlib.to_isbn13(book.id)
 		
+
+		listings = Listing.get_all()
+		for listing in listings:
+			if isbnlib.is_isbn10(listing.book_id):
+				listing.book_id = isbnlib.to_isbn13(listing.book_id)
+
 
 		db.session.execute(text("ALTER TABLE listings ENABLE TRIGGER ALL;"))
 		db.session.execute(text("ALTER TABLE users ENABLE TRIGGER ALL;"))

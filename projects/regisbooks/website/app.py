@@ -92,35 +92,6 @@ def register_external_api_routes(): # TODO, also have an efficient system to man
 
 		return RESP_OK
 	
-	@app.route("/api/external/temp/normalize-book-isbns", methods=["POST"])
-	def normalize_book_isbns_external():
-		admin_key = request.json.get("key")
-
-		if admin_key != secret_keys.ADMIN_KEY: return FORBIDDEN
-
-		db.session.execute(text("""ALTER TABLE listings
-DROP CONSTRAINT listings_book_id_fkey,
-ADD CONSTRAINT listings_book_id_fkey
-FOREIGN KEY (book_id)
-REFERENCES books (id)
-ON UPDATE CASCADE;
-"""))
-
-		books = Book.get_all()
-
-		for book in books:
-			if isbnlib.is_isbn10(book.id):
-				new_id = isbnlib.to_isbn13(book.id)
-
-				db.session.execute(
-					text("UPDATE books SET id = :new_id WHERE id = :old_id"),
-					{ "new_id": new_id, "old_id": book.id }
-				)
-
-		db.session.commit()
-
-		return RESP_OK
-	
 def register_internal_api_routes():
 	@app.route("/api/internal/get-user")
 	@auth.require_user

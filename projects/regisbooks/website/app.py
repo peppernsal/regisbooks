@@ -96,6 +96,11 @@ def register_external_api_routes(): # TODO, also have an efficient system to man
 
 		if admin_key != secret_keys.ADMIN_KEY: return FORBIDDEN
 
+		listings = Listing.get_all()
+		for listing in listings:
+			if isbnlib.is_isbn10(listing.book_id):
+				listing.book_id = isbnlib.to_isbn13(listing.book_id)
+
 		books = Book.get_all()
 
 		for book in books:

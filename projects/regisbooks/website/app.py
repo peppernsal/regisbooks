@@ -1,17 +1,17 @@
+import re
+import genid
+import httpx
+import isbnlib
+import secret_keys
 from dataclasses import dataclass, field
 from json import JSONDecodeError
-import re
 from typing import TypeVar
-from flask import jsonify, render_template, request, Response
-import httpx
-from webpy import App
-from propelauth_flask import init_auth, current_user
+from flask import Response, jsonify, render_template, request
+from propelauth_flask import current_user, init_auth
 from propelauth_flask.user import LoggedInUser
-from sqlalchemy.orm.attributes import flag_modified
 from sqlalchemy.orm import Mapped
-
-import secret_keys
-import genid
+from sqlalchemy.orm.attributes import flag_modified
+from webpy import App
 
 current_user: LoggedInUser
 T = TypeVar('T')
@@ -90,6 +90,21 @@ def register_external_api_routes(): # TODO, also have an efficient system to man
 
 		return RESP_OK
 	
+	@app.route("/api/external/temp/normalize-book-isbns", methods=["POST"])
+	def normalize_book_isbns_external():
+		admin_key = request.json.get("key")
+
+		if admin_key != secret_keys.ADMIN_KEY: return FORBIDDEN
+
+		books = Book.get_all()
+
+		for book in books:
+			if isbnlib.is_isbn10(book.id):
+				book.id = isbnlib.to_isbn13(book.id)
+				db.session.commit()
+
+		return RESP_OK
+	
 def register_internal_api_routes():
 	@app.route("/api/internal/get-user")
 	@auth.require_user
@@ -155,6 +170,9 @@ def register_internal_api_routes():
 		usage_filter: int = options.get("usage")
 		poster_id: str = options.get("posterID")
 		page_num: int = options.get("page", 0)
+
+		if isbnlib.is_isbn10(isbn_filter):
+			isbn_filter = isbnlib.to_isbn13(isbn_filter)
 
 		query = Listing.query
 
@@ -693,6 +711,9 @@ def init_db_api():
 			
 		@staticmethod
 		def by_id(book_id: str):
+			if isbnlib.is_isbn10(isbn):
+				isbn = isbnlib.to_isbn13(isbn)
+
 			return query_by_id(Book, book_id)
 		
 		@staticmethod
@@ -711,6 +732,9 @@ def init_db_api():
 
 		@staticmethod
 		def from_isbn(isbn: str) -> "Book": # TODO: add validation for isbns			
+			if isbnlib.is_isbn10(isbn):
+				isbn = isbnlib.to_isbn13(isbn)
+		
 			book_info = httpx.get(f"https://openlibrary.org/isbn/{isbn}.json", follow_redirects=True).json()
 
 			work_path: str = book_info["works"][0]["key"]

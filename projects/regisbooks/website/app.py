@@ -110,13 +110,12 @@ ON UPDATE CASCADE;
 
 		for book in books:
 			if isbnlib.is_isbn10(book.id):
-				book.id = isbnlib.to_isbn13(book.id)
-		
+				new_id = isbnlib.to_isbn13(book.id)
 
-		listings = Listing.get_all()
-		for listing in listings:
-			if isbnlib.is_isbn10(listing.book_id):
-				listing.book_id = isbnlib.to_isbn13(listing.book_id)
+				db.session.execute(
+					text("UPDATE books SET id = :new_id WHERE id = :old_id"),
+					{ "new_id": new_id, "old_id": book.id }
+				)
 
 
 		db.session.execute(text("ALTER TABLE listings ENABLE TRIGGER ALL;"))

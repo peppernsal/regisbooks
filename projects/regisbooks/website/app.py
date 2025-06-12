@@ -117,9 +117,6 @@ ON UPDATE CASCADE;
 					{ "new_id": new_id, "old_id": book.id }
 				)
 
-
-		db.session.execute(text("ALTER TABLE listings ENABLE TRIGGER ALL;"))
-		db.session.execute(text("ALTER TABLE users ENABLE TRIGGER ALL;"))
 		db.session.commit()
 
 		return RESP_OK

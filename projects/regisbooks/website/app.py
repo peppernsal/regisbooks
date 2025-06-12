@@ -98,7 +98,7 @@ def register_external_api_routes(): # TODO, also have an efficient system to man
 
 		if admin_key != secret_keys.ADMIN_KEY: return FORBIDDEN
 
-		db.session.execute(text("ALTER TABLE b ALTER CONSTRAINT listings_book_id_fkey DEFERRABLE;"))
+		db.session.execute(text("ALTER TABLE listings ALTER CONSTRAINT listings_book_id_fkey DEFERRABLE;"))
 
 		listings = Listing.get_all()
 		for listing in listings:

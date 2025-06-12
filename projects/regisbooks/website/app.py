@@ -1,4 +1,6 @@
 import re
+
+from sqlalchemy import text
 import genid
 import httpx
 import isbnlib
@@ -96,7 +98,7 @@ def register_external_api_routes(): # TODO, also have an efficient system to man
 
 		if admin_key != secret_keys.ADMIN_KEY: return FORBIDDEN
 
-		db.session.execute("SET FOREIGN_KEY_CHECKS=0;")
+		db.session.execute(text("SET FOREIGN_KEY_CHECKS=0;"))
 
 		listings = Listing.get_all()
 		for listing in listings:
@@ -110,7 +112,7 @@ def register_external_api_routes(): # TODO, also have an efficient system to man
 				book.id = isbnlib.to_isbn13(book.id)
 		
 		db.session.commit()
-		db.session.execute("SET FOREIGN_KEY_CHECKS=1;")
+		db.session.execute(text("SET FOREIGN_KEY_CHECKS=1;"))
 
 		return RESP_OK
 	

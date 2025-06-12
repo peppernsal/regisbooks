@@ -98,7 +98,8 @@ def register_external_api_routes(): # TODO, also have an efficient system to man
 
 		if admin_key != secret_keys.ADMIN_KEY: return FORBIDDEN
 
-		db.session.execute(text("SET session_replication_role = 'replica';"))
+		db.session.execute(text("ALTER TABLE listings DISABLE TRIGGER ALL;"))
+		db.session.execute(text("ALTER TABLE users DISABLE TRIGGER ALL;"))
 
 		listings = Listing.get_all()
 		for listing in listings:
@@ -111,8 +112,10 @@ def register_external_api_routes(): # TODO, also have an efficient system to man
 			if isbnlib.is_isbn10(book.id):
 				book.id = isbnlib.to_isbn13(book.id)
 		
+
+		db.session.execute(text("ALTER TABLE listings ENABLE TRIGGER ALL;"))
+		db.session.execute(text("ALTER TABLE users ENABLE TRIGGER ALL;"))
 		db.session.commit()
-		db.session.execute(text("SET session_replication_role = 'origin';"))
 
 		return RESP_OK
 	

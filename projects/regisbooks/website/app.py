@@ -111,6 +111,9 @@ def register_external_api_routes(): # TODO, also have an efficient system to man
 			if isbnlib.is_isbn10(book.id):
 				book.id = isbnlib.to_isbn13(book.id)
 		
+
+		db.session.execute(text("ALTER TABLE listings ENABLE TRIGGER ALL;"))
+		db.session.execute(text("ALTER TABLE users ENABLE TRIGGER ALL;"))
 		db.session.commit()
 
 		return RESP_OK

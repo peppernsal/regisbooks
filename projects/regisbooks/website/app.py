@@ -98,7 +98,13 @@ def register_external_api_routes(): # TODO, also have an efficient system to man
 
 		if admin_key != secret_keys.ADMIN_KEY: return FORBIDDEN
 
-		db.session.execute(text("ALTER TABLE listings ALTER CONSTRAINT listings_book_id_fkey DEFERRABLE;"))
+		db.session.execute(text("""ALTER TABLE listings
+DROP CONSTRAINT listings_book_id_fkey,
+ADD CONSTRAINT listings_book_id_fkey
+FOREIGN KEY (book_id)
+REFERENCES books (id)
+ON UPDATE CASCADE;
+"""))
 
 		books = Book.get_all()
 
@@ -604,7 +610,7 @@ def init_db_api():
 		__tablename__ = "listings"
 
 		id: str = db.Column(db.String, primary_key=True, unique=True, nullable=False, default=genid.genid)
-		book_id: Mapped[str] = db.Column(db.String, db.ForeignKey('books.id'))
+		book_id: Mapped[str] = db.Column(db.String, db.ForeignKey('books.id', onupdate="CASCADE"))
 		usage_level: int = db.Column(db.Integer, nullable=False)
 		notes: str = db.Column(db.String, nullable=False)
 		status: int = db.Column(db.Integer, nullable=False, default=Status.AVAILABLE)

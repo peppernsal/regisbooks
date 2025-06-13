@@ -239,7 +239,7 @@ async function populateListings() {
 	}
 
 	enableFilters();
-	await updatePaginationButtonStates(start == 0 ? 0 : start+1, end, totalListings);
+	await updatePaginationButtonStates(end == 0 ? 0 : start+1, end, totalListings);
 
 	searchParams.set("page", listingsPageNumber);
 	searchParams.set("name", nameFilter.value);

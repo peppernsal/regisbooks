@@ -222,6 +222,7 @@ def register_internal_api_routes():
 		get = request.json.get
 
 		book_id = get("bookID")
+
 		notes = get("notes")
 		pickup_locations = get("pickupLocations")
 		usage_level = get("usageLevel")
@@ -233,6 +234,9 @@ def register_internal_api_routes():
 		if (type(pickup_locations) is not list) or any(type(loc) is not str for loc in pickup_locations): return BAD_REQUEST
 
 		if (type(book_id) is not str): return BAD_REQUEST
+
+		if isbnlib.is_isbn10(book_id):
+			book_id = isbnlib.to_isbn13(book_id)
 
 		if Book.by_id(book_id) is None: return BAD_REQUEST
 

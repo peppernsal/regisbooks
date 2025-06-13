@@ -44,8 +44,9 @@ document.addEventListener("DOMContentLoaded", async () => {
 	const listingsContainer = document.getElementById('user-listings');
 	listingsContainer.textContent = '';
 
-	const listings = (await getListings({ posterID: userInfo.id })).listings;
-	const userListings = listings.filter(listing => listing.status !== 2);
+	const listings = await getListingsPaginateFully({ posterID: userInfo.id });
+	// sort listings with status 1 (requested) to the front
+	const userListings = listings.sort((a, b) => (b.status === 1 ? 1 : 0) - (a.status === 1 ? 1 : 0));
 
 	if (userListings.length > 0) {
 		for (const listing of userListings) {

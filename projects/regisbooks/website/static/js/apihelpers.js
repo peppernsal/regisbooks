@@ -72,6 +72,23 @@ function getListings(options) {
 	return getJSONInfoFromAPICall(`/api/internal/get-listings`);
 }
 
+async function getListingsPaginateFully(options) {
+	const listings = [];
+	
+	let page = 0;
+	while (true) {
+		const res = (await getListings({ ...options, page }));
+
+		if (res.listings.length > 0) {
+			listings.push(...res.listings);
+		} else break;
+
+		page++;
+	}
+
+	return listings;
+}
+
 function getMyListings() {
 	return getJSONInfoFromAPICall(`/api/internal/my-listings`);
 }

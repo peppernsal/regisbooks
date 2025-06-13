@@ -47,17 +47,17 @@ document.addEventListener("DOMContentLoaded", async () => {
 		const rightContent = document.createElement('div');
 		rightContent.className = 'card-body';
 
-		const listings = (await getListings({ isbn: book.isbn })).listings;
+		const listings = await getListingsPaginateFully({ isbn: book.isbn });
 
-		const listingsCount = document.createElement('h6');
-		listingsCount.className = 'text-muted';
+		const listingsCountDisplay = document.createElement('h6');
+		listingsCountDisplay.className = 'text-muted';
 		if (listings.length == 1) {
-			listingsCount.textContent = `1 listing available`;
+			listingsCountDisplay.textContent = `1 listing available`;
 		} else {
-			listingsCount.textContent = `${listings.length} listings available`;
+			listingsCountDisplay.textContent = `${listings.length} listings available`;
 		}
 		
-		rightContent.appendChild(listingsCount);
+		rightContent.appendChild(listingsCountDisplay);
 
 		if (listings.length !== 0) {
 			const aggrPickupLocations = listings.reduce((acc, listing) => {

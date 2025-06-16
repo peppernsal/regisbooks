@@ -50,7 +50,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
 				if (listing.requesterID == currUserId) {
 					reqBtn.remove();
-					displayRequestInfo(book, listing);
+					displayRequestInfo(book, listing, author);
 				} else {
 					reqBtn.innerHTML = "<em>This Listing Has Already Been Requested By Someone!</em>";
 				}
@@ -197,9 +197,7 @@ function requestThisListing() {
 	});
 }
 
-async function displayRequestInfo(book, listing) {
-	const poster = await getUserInfo(listing.authorID);
-
+async function displayRequestInfo(book, listing, poster) {
 	const emailLink = document.getElementById("email-info");
 
 	emailLink.textContent = poster.email;

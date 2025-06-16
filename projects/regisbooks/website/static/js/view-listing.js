@@ -200,18 +200,12 @@ function requestThisListing() {
 async function displayRequestInfo(book, listing) {
 	const poster = await getUserInfo(listing.authorID);
 
-	const emailBtn = document.getElementById("email-info-btn");
 	const emailLink = document.getElementById("email-info");
 
 	emailLink.textContent = poster.email;
 	emailLink.href = `mailto:${poster.email}?subject=RegisBooks: Request for ${book.title}`;
 
-	emailBtn.onclick = () => {
-		emailLink.classList.toggle("d-none");
-		emailBtn.textContent = emailLink.classList.contains("d-none") ? "Show Lister Email" : "Hide Lister Email";
-	};
-
-	document.getElementById("success-message").textContent = "You have successfully requested this listing!";
+	document.getElementById("success-message").innerHTML = 'You have successfully requested this listing! <span style="color: red">Please reach out to the lister via email.</span> They will <em>not</em> receive an automatic notification.';
 
 	document.getElementById("rem-listing-btn").onclick = () => {
 		rejectListingReq(listingID).then((resp) => {

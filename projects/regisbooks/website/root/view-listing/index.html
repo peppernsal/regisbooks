@@ -84,21 +84,22 @@
 									<button id="request-listing" class="btn btn-success btn-lg fw-bold" onclick="requestThisListing()">Request This Book</button>
 								</div>
 							
-								<div id="req-info" class="row align-items-center text-center d-none">
-									<div class="col-md-3">
-										<h3 id="success-message"></h3>
+								<div id="req-info" class="d-none">
+									<div class="row align-items-center text-center">
+										<div class="col-md-6">
+											<a id="rem-listing-btn" class="btn btn-danger btn-lg fw-bold">Remove My Request</a>
+										</div>
+
+										<div class="col-md-6">
+											<h3><a id="email-info"></a></h3>
+										</div>
 									</div>
 									
-									<div class="col-md-2">
-										<a id="email-info-btn" class="btn btn-success btn-lg fw-bold">Show Lister Email</a>
-									</div>
-
-									<div class="col-md-2">
-										<a id="rem-listing-btn" class="btn btn-danger btn-lg fw-bold">Remove My Request</a>
-									</div>
-
-									<div class="col-md-5">
-										<h3><a id="email-info" class="d-none"></a></h3>
+									<div class="row align-items-center text-center mt-4">
+										
+										<div class="col-md-12">
+											<h4 id="success-message"></h4>
+										</div>
 									</div>
 								</div>
 							</div>

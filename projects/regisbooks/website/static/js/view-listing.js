@@ -203,7 +203,7 @@ async function displayRequestInfo(book, listing, poster) {
 	emailLink.textContent = poster.email;
 	emailLink.href = `mailto:${poster.email}?subject=RegisBooks: Request for ${book.title}`;
 
-	document.getElementById("success-message").innerHTML = 'You have successfully requested this listing! <span style="color: red">Please reach out to the lister via email.</span> They will <em>not</em> receive an automatic notification.';
+	document.getElementById("success-message").innerHTML = 'You have successfully requested this listing! <span class="text-danger">Please reach out to the lister via email.</span> They will <em>not</em> receive an automatic notification.';
 
 	document.getElementById("rem-listing-btn").onclick = () => {
 		rejectListingReq(listingID).then((resp) => {

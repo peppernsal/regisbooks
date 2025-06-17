@@ -41,7 +41,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 		coverCaption.textContent = "Note: cover image and publisher may not match physical book. Check ISBN to match versions.";
 	
 		if (author.id != currUserId) {
-			if (listing.status == 1) {
+			if (listing.status == STATUS_REQUESTED) {
 				const reqBtn = document.getElementById("request-listing");
 				reqBtn.classList.add("disabled");
 
@@ -51,7 +51,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 				} else {
 					reqBtn.innerHTML = "<em>This Listing Has Already Been Requested By Someone!</em>";
 				}
-			} else if (listing.status == 2) {
+			} else if (listing.status == STATUS_GIVEN) {
 				const reqBtn = document.getElementById("request-listing");
 				reqBtn.classList.add("disabled");
 
@@ -62,7 +62,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 				}
 			}
 		} else {
-			if (listing.status == 0) {
+			if (listing.status == STATUS_AVAILABLE) {
 				// replace reqBtn with a remove listing button and an edit listing button
 				const reqBtn = document.getElementById("request-listing");
 
@@ -104,7 +104,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 				replacementDiv.appendChild(backPadding);
 
 				reqBtn.replaceWith(replacementDiv);
-			} else if (listing.status == 1) {
+			} else if (listing.status == STATUS_REQUESTED) {
 				const listingRequester = await getUserInfo(listing.requesterID);
 				const reqBtn = document.getElementById("request-listing");
 
@@ -167,7 +167,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 				replacementDiv.appendChild(actionsDiv);
 
 				reqBtn.replaceWith(replacementDiv);
-			} else { // listing.status == 2
+			} else { // listing.status == STATUS_GIVEN
 				const listingRequester = await getUserInfo(listing.requesterID);
 
 				const reqBtn = document.getElementById("request-listing");

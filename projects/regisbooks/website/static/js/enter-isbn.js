@@ -19,7 +19,7 @@ html5QrCodeScanner.render(onScanSuccess);
 function onScanSuccess(decodedText, decodedResult) {
 	if (decodedText) {
 		const isbn = decodedText.replace(/\D/g,'');
-		if (isbn.length >= 10 && isbn.length <= 13) {
+		if (isbn.length == 10 || isbn.length == 13) {
 			window.location.href = `/add-listing?book=${isbn}`;
 		} else {
 			alert("Scanned code is not a valid ISBN.");

@@ -46,7 +46,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
 	const listings = await getListingsPaginateFully({ posterID: userInfo.id });
 	// sort listings with status 1 (requested) to the front
-	const userListings = listings.sort((a, b) => (b.status === 1 ? 1 : 0) - (a.status === 1 ? 1 : 0));
+	const userListings = listings.sort((a, b) => (b.status === STATUS_REQUESTED ? 1 : 0) - (a.status === STATUS_REQUESTED ? 1 : 0));
 
 	if (userListings.length > 0) {
 		for (const listing of userListings) {
@@ -64,9 +64,9 @@ document.addEventListener("DOMContentLoaded", async () => {
 			const title = textElem('span', book.title);
 			title.className = 'text-success';
 			
-			const status = listing.status === 0 ? 'Available' : 'Requested';
+			const status = listingStatusRepr[listing.status];
 			const badge = textElem('span', status);
-			badge.className = `badge bg-${listing.status === 0 ? 'success' : 'warning'} ms-2`;
+			badge.className = `badge bg-${listing.status === STATUS_AVAILABLE ? 'success' : 'warning'} ms-2`;
 			
 			summary.appendChild(title);
 			summary.appendChild(badge);

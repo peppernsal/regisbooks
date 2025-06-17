@@ -47,7 +47,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 		const rightContent = document.createElement('div');
 		rightContent.className = 'card-body';
 
-		const listings = await getListingsPaginateFully({ isbn: book.isbn, status: 0 });
+		const listings = await getListingsPaginateFully({ isbn: book.isbn, status: STATUS_AVAILABLE });
 
 		const listingsCountDisplay = document.createElement('h6');
 		listingsCountDisplay.className = 'text-muted';

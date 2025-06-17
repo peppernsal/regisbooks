@@ -7,7 +7,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 	outgoingContainer.innerHTML = "";
 	incomingContainer.innerHTML = "";
 
-	const outgoingRequests = (await getListingsPaginateFully({ status: 1 })).filter((listing) => listing.requesterID == userInfo.id);
+	const outgoingRequests = (await getListingsPaginateFully({ status: STATUS_REQUESTED })).filter((listing) => listing.requesterID == userInfo.id);
 
 	if (outgoingRequests.length > 0) {
 
@@ -55,7 +55,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 		outgoingContainer.appendChild(alert);
 	}
 
-	const incomingRequests = (await getListingsPaginateFully({ posterID: userInfo.id, status: 1 }));
+	const incomingRequests = (await getListingsPaginateFully({ posterID: userInfo.id, status: STATUS_REQUESTED }));
 
 	if (incomingRequests.length > 0) {
 		for (const listing of incomingRequests) {

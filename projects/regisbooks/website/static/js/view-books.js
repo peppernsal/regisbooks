@@ -17,7 +17,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 		coverImgContainer.className = 'col-md-1';
 		const coverImg = document.createElement('img');
 		coverImg.className = 'img-fluid detail-cover-img';
-		coverImg.src = book.coverImageURL !== "<no-url>" ? book.coverImageURL : "/static/images/no-cover.png";
+		coverImg.src = book.coverImageURL;
 		coverImgContainer.appendChild(coverImg);
 
 		const textContainer = document.createElement('div');

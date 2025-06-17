@@ -190,13 +190,11 @@ async function populateListings() {
 			anchor.className = "btn my-1 d-block text-center listing-preview"
 			anchor.href = `/view-listing?id=${listingInfo.id}`;
 
-			if (bookInfo.coverImageURL !== "<no-url>") {
-				const coverImg = document.createElement("img");
-				coverImg.className = "img-fluid scaled-cover-image";
-				coverImg.src = bookInfo.coverImageURL;
+			const coverImg = document.createElement("img");
+			coverImg.className = "img-fluid scaled-cover-image";
+			coverImg.src = bookInfo.coverImageURL;
 
-				anchor.append(coverImg);
-			}
+			anchor.append(coverImg);
 
 			anchor.appendChild(titleContainer);
 

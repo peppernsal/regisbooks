@@ -19,13 +19,8 @@ document.addEventListener("DOMContentLoaded", async () => {
 		document.getElementById("book-isbn").textContent = `ISBN: ${bookISBN}`;
 		document.getElementById("book-publishing-info").textContent = `Published by ${bookInfo.publisher}, ${bookInfo.publishDate}`;
 		
-		if (bookInfo.coverImageURL != "<no-url>") {
-			document.getElementById("book-cover-img").src = bookInfo.coverImageURL;
-			document.getElementById("cover-disclaimer").textContent = "Note: cover image and publisher may not match physical book. Check ISBN to match versions.";
-		} else {
-			document.getElementById("book-cover-img").remove();
-			document.getElementById("cover-disclaimer").remove();
-		}
+		document.getElementById("book-cover-img").src = bookInfo.coverImageURL;
+		document.getElementById("cover-disclaimer").textContent = "Note: cover image and publisher may not match physical book. Check ISBN to match versions.";
 
 		clearInterval(loaderAnimation);
 		waitingMessage.remove();

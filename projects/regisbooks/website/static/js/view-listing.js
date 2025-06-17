@@ -37,12 +37,9 @@ document.addEventListener("DOMContentLoaded", async () => {
 		const coverImg = document.getElementById("book-cover-img");
 		const coverCaption = document.getElementById("cover-disclaimer");
 
-		if (book.coverImageURL === "<no-url>") {
-			coverCaption.textContent = "No cover image available.";
-		} else {
-			coverImg.src = book.coverImageURL;
-			coverCaption.textContent = "Note: cover image and publisher may not match physical book. Check ISBN to match versions.";
-		}
+		coverImg.src = book.coverImageURL;
+		coverCaption.textContent = "Note: cover image and publisher may not match physical book. Check ISBN to match versions.";
+	
 		if (author.id != currUserId) {
 			if (listing.status == 1) {
 				const reqBtn = document.getElementById("request-listing");

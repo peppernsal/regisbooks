@@ -20,7 +20,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
 		const coverImg = document.createElement("img");
 		coverImg.className = "detail-cover-img col-md-3";
-		coverImg.src = bookInfo.coverImageURL !== "<no-url>" ? bookInfo.coverImageURL : "/static/images/no-cover.png";
+		coverImg.src = bookInfo.coverImageURL;
 
 		const textContainer = document.createElement("div");
 		textContainer.className = "col-md-9"
@@ -57,7 +57,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
 		const coverImg = document.createElement("img");
 		coverImg.className = "detail-cover-img col-md-3";
-		coverImg.src = bookInfo.coverImageURL !== "<no-url>" ? bookInfo.coverImageURL : "/static/images/no-cover.png";
+		coverImg.src = bookInfo.coverImageURL;
 
 		const textContainer = document.createElement("div");
 		textContainer.className = "col-md-9"

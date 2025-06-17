@@ -746,7 +746,7 @@ def init_db_api():
 				cover_url = f"https://covers.openlibrary.org/b/isbn/{isbn}-L.jpg"
 
 				if httpx.get(cover_url, follow_redirects=True).is_error:
-					cover_url = "<no-url>"
+					cover_url = "/static/images/no-cover.png"
 
 			return Book(
 				id=isbn,

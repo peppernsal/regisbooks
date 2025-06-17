@@ -177,6 +177,8 @@ def register_internal_api_routes():
 		if poster_id is not None:
 			query = query.filter(Listing.author_id == poster_id)
 
+		query = query.filter(Listing.status != Listing.Status.TAKEN) # compliance with decision for #14
+
 		def filter_pickup_loc(listing: Listing, targets: list[str]): # NOTE: this is kind of slow, maybe fix sometime before prod?
 			for target in targets:
 				for location in listing.pickup_locations:

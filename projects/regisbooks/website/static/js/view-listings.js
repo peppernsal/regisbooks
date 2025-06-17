@@ -238,8 +238,38 @@ async function populateListings() {
 		listingsContainer.appendChild(row);
 	}
 
-	enableFilters();
 	await updatePaginationButtonStates(end == 0 ? 0 : start+1, end, totalListings);
+
+	const numberOfPages = Math.ceil(totalListings/10);
+	const pageButtonContainer = document.getElementById("page-buttons-container");
+	pageButtonContainer.innerHTML = "";
+
+	if (numberOfPages <= 10) {
+		for (let i = 0; i < numberOfPages; i++) {
+			pageButtonContainer.appendChild(
+				createPageJumpButton(i)
+			);
+		}
+	} else { /* numberOfPages > 10 */
+		let start, end;
+
+		if (listingsPageNumber == 0) {
+			start = 0;
+			end = 9;
+		} else if (listingsPageNumber >= (numberOfPages-1-9)) {
+			start = numberOfPages-10;
+			end = numberOfPages-1;
+		} else {
+			start = listingsPageNumber;
+			end = Math.min(listingsPageNumber+9, numberOfPages-1);
+		}
+
+		for (let i = start; i <= end; i++) {
+			pageButtonContainer.appendChild(
+				createPageJumpButton(i)
+			);
+		}
+	}
 
 	searchParams.set("page", listingsPageNumber);
 	searchParams.set("name", nameFilter.value);
@@ -250,6 +280,26 @@ async function populateListings() {
 	searchParams.set("locations", Array.from(locationTags.children).map(tag => tag.textContent.slice(9).trim()).join(","));
 
 	window.history.replaceState({}, '', `${location.pathname}?${searchParams.toString()}`);
+
+	enableFilters();
+
+
+}
+
+function createPageJumpButton(pageNum) {
+	const btn = document.createElement("button");
+	btn.className = "btn body-btn-primary btn-primary mx-2 px-3"
+	btn.textContent = (pageNum+1).toString();
+	btn.onclick = async () => {
+		listingsPageNumber = pageNum;
+		await populateListings();
+	}
+
+	if (pageNum == listingsPageNumber) { // current page button
+		btn.disabled = true;
+	}
+
+	return btn;
 }
 
 document.getElementById('toggle-filters').addEventListener('click', function() {

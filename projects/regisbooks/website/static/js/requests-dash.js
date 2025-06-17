@@ -8,76 +8,97 @@ document.addEventListener("DOMContentLoaded", async () => {
 	incomingContainer.innerHTML = "";
 
 	const outgoingRequests = (await getListingsPaginateFully({ status: 1 })).filter((listing) => listing.requesterID == userInfo.id);
-	for (const listing of outgoingRequests) {
-		const bookInfo = await getBookInfo(listing.bookID);
 
-		const card = document.createElement("a");
-		card.className = "card mb-3 text-decoration-none";
-		card.href = `/view-listing?id=${listing.id}`;
+	if (outgoingRequests.length > 0) {
 
-		const cardBody = document.createElement("div");
-		cardBody.className = "card-body row";
+		for (const listing of outgoingRequests) {
+			const bookInfo = await getBookInfo(listing.bookID);
 
-		const coverImg = document.createElement("img");
-		coverImg.className = "detail-cover-img col-md-3";
-		coverImg.src = bookInfo.coverImageURL;
+			const card = document.createElement("a");
+			card.className = "card mb-3 text-decoration-none";
+			card.href = `/view-listing?id=${listing.id}`;
 
-		const textContainer = document.createElement("div");
-		textContainer.className = "col-md-9"
+			const cardBody = document.createElement("div");
+			cardBody.className = "card-body row";
 
-		const title = document.createElement("h5");
-		title.className = "card-title";
-		title.textContent = bookInfo.title;
+			const coverImg = document.createElement("img");
+			coverImg.className = "detail-cover-img col-md-3";
+			coverImg.src = bookInfo.coverImageURL;
 
-		const listerInfo = await getUserInfo(listing.authorID);
+			const textContainer = document.createElement("div");
+			textContainer.className = "col-md-9"
 
-		const listerName = document.createElement("h6");
-		listerName.className = "card-subtitle text-muted";
-		listerName.textContent = `Listed by: ${listerInfo.firstName} ${listerInfo.lastName}`;
+			const title = document.createElement("h5");
+			title.className = "card-title";
+			title.textContent = bookInfo.title;
 
-		textContainer.appendChild(title);
-		textContainer.appendChild(listerName);
+			const listerInfo = await getUserInfo(listing.authorID);
 
-		cardBody.appendChild(coverImg);
-		cardBody.appendChild(textContainer);
-		card.appendChild(cardBody);
-		outgoingContainer.appendChild(card);
+			const listerName = document.createElement("h6");
+			listerName.className = "card-subtitle text-muted";
+			listerName.textContent = `Listed by: ${listerInfo.firstName} ${listerInfo.lastName}`;
+
+			textContainer.appendChild(title);
+			textContainer.appendChild(listerName);
+
+			cardBody.appendChild(coverImg);
+			cardBody.appendChild(textContainer);
+			card.appendChild(cardBody);
+			outgoingContainer.appendChild(card);
+		}
+	} else {
+		const alert = document.createElement('div');
+		alert.className = 'col-12';
+		const alertInner = textElem('div', "You haven't requested any listings yet!");
+		alertInner.className = 'alert alert-secondary';
+		alert.appendChild(alertInner);
+		outgoingContainer.appendChild(alert);
 	}
 
 	const incomingRequests = (await getListingsPaginateFully({ posterID: userInfo.id, status: 1 }));
-	for (const listing of incomingRequests) {
-		const bookInfo = await getBookInfo(listing.bookID);
 
-		const card = document.createElement("a");
-		card.className = "card mb-3 text-decoration-none";
-		card.href = `/view-listing?id=${listing.id}`;
+	if (incomingRequests.length > 0) {
+		for (const listing of incomingRequests) {
+			const bookInfo = await getBookInfo(listing.bookID);
 
-		const cardBody = document.createElement("div");
-		cardBody.className = "card-body row";
+			const card = document.createElement("a");
+			card.className = "card mb-3 text-decoration-none";
+			card.href = `/view-listing?id=${listing.id}`;
 
-		const coverImg = document.createElement("img");
-		coverImg.className = "detail-cover-img col-md-3";
-		coverImg.src = bookInfo.coverImageURL;
+			const cardBody = document.createElement("div");
+			cardBody.className = "card-body row";
 
-		const textContainer = document.createElement("div");
-		textContainer.className = "col-md-9"
+			const coverImg = document.createElement("img");
+			coverImg.className = "detail-cover-img col-md-3";
+			coverImg.src = bookInfo.coverImageURL;
 
-		const title = document.createElement("h5");
-		title.className = "card-title";
-		title.textContent = bookInfo.title;
+			const textContainer = document.createElement("div");
+			textContainer.className = "col-md-9"
 
-		const requesterInfo = await getUserInfo(listing.requesterID);
+			const title = document.createElement("h5");
+			title.className = "card-title";
+			title.textContent = bookInfo.title;
 
-		const listerName = document.createElement("h6");
-		listerName.className = "card-subtitle text-muted";
-		listerName.textContent = `Requested by: ${requesterInfo.firstName} ${requesterInfo.lastName}`;
+			const requesterInfo = await getUserInfo(listing.requesterID);
 
-		textContainer.appendChild(title);
-		textContainer.appendChild(listerName);
+			const listerName = document.createElement("h6");
+			listerName.className = "card-subtitle text-muted";
+			listerName.textContent = `Requested by: ${requesterInfo.firstName} ${requesterInfo.lastName}`;
 
-		cardBody.appendChild(coverImg);
-		cardBody.appendChild(textContainer);
-		card.appendChild(cardBody);
-		incomingContainer.appendChild(card);
+			textContainer.appendChild(title);
+			textContainer.appendChild(listerName);
+
+			cardBody.appendChild(coverImg);
+			cardBody.appendChild(textContainer);
+			card.appendChild(cardBody);
+			incomingContainer.appendChild(card);
+		}
+	} else {
+		const alert = document.createElement('div');
+		alert.className = 'col-12';
+		const alertInner = textElem('div', "No one has requested your listings yet!");
+		alertInner.className = 'alert alert-secondary';
+		alert.appendChild(alertInner);
+		incomingContainer.appendChild(alert);
 	}
 });

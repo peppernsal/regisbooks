@@ -92,6 +92,17 @@ def register_external_api_routes(): # TODO, also have an efficient system to man
 
 		return RESP_OK
 	
+	@app.route("/api/external/get-impact")
+	def getimpact_external(): # not sensitive, no authentication needed
+		given = Listing.query.filter(Listing.status == Listing.Status.TAKEN).count()
+		otw = Listing.query.filter(Listing.status == Listing.Status.REQUESTED).count()
+
+		return jsonify({
+			"givenAway": given,
+			"requested": otw
+		})
+
+	
 def register_internal_api_routes():
 	@app.route("/api/internal/get-user")
 	@auth.require_user

@@ -203,8 +203,18 @@ async function populateListings() {
 			const usageString = listingUsageRepr[listingInfo.usageLevel];
 			const statusString = listingStatusRepr[listingInfo.status];
 
+			let statusLabel;
+
+			if (listingInfo.status == STATUS_REQUESTED) {
+				statusLabel = document.createElement("h6");
+				statusLabel.innerHTML = `Status: <span class="text-warning">${statusString}</span>`;
+			} else { // STATUS_AVAILABLE, the API route cannot return STATUS_GIVEN
+				statusLabel = document.createElement("h6");
+				statusLabel.innerHTML = `Status: <span class="text-success">${statusString}</span>`;
+			}
+
 			anchor.append(
-				textElem('h6', `Status: ${statusString}`),
+				statusLabel,
 				textElem('h6', `Condition: ${usageString}`),
 			);
 

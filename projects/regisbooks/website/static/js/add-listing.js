@@ -47,6 +47,11 @@ function createListing() {
 		return;
 	}
 
+	if (pickupLocations.length > 5) {
+		alert("You cannot specify more than 5 pickup locations!");
+		return;
+	}
+
 	const listingInfo = {
 		bookID: bookISBN,
 		usageLevel: parseInt(usageLevel),
@@ -60,6 +65,10 @@ function createListing() {
 const locationsContainer = document.getElementById("pickup-locations-container");;
 
 function addPickupLocation() {
+	const numberOfPickupLocations = document.querySelectorAll(".pickup-location").length;
+
+	if (numberOfPickupLocations >= 4) { document.getElementById("add-pickup-location").disabled = true; }
+	
 	const innerDiv = document.createElement("div");
 	innerDiv.className = "row pt-3 justify-content-center";
 
@@ -132,6 +141,10 @@ function addPickupLocation() {
 
 	removeBtn.onclick = () => {
 		innerDiv.remove();
+
+		const numberOfPickupLocations = document.querySelectorAll(".pickup-location").length;
+
+		if (numberOfPickupLocations <= 4) { document.getElementById("add-pickup-location").disabled = false; }
 	};
 
 	removeDiv.appendChild(removeBtn);

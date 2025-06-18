@@ -253,6 +253,8 @@ def register_internal_api_routes():
 
 		if Book.by_id(book_id) is None: return BAD_REQUEST
 
+		pickup_locations = [*set(pickup_locations)]
+
 		new_listing = Listing(
 			book_id=book_id,
 			notes=notes,
@@ -297,6 +299,8 @@ def register_internal_api_routes():
 		if (type(notes) is not str): return BAD_REQUEST
 		
 		if (type(pickup_locations) is not list) or any(type(loc) is not str for loc in pickup_locations) or not (0 < len(pickup_locations) <= 5): return BAD_REQUEST
+
+		pickup_locations = [*set(pickup_locations)]
 
 		# update listing info
 		listing.notes = notes

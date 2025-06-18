@@ -33,9 +33,12 @@ document.addEventListener("DOMContentLoaded", async () => {
 function createListing() {
 	const usageLevel = document.getElementById("usage-level").value;
 	const notes = document.getElementById("notes").value;
-	const pickupLocations = Array.from(
-		document.querySelectorAll(".pickup-location")
-	).map((el) => el.value).filter((el) => el !== "");
+	const pickupLocationsUnique = new Set(
+		Array.from(
+			document.querySelectorAll(".pickup-location")
+		).map((el) => el.value).filter((el) => el !== "")
+	);
+	const pickupLocations = [...pickupLocationsUnique];
 	
 	if (usageLevel === "") {
 		alert("Please fill the usage level field!");

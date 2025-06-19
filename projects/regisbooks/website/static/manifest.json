@@ -1,0 +1,18 @@
+{
+	"$schema": "https://json.schemastore.org/web-manifest",
+	"name": "RegisBooks",
+	"icons": [
+		{
+			"src": "/static/images/favicon-med.png",
+			"type": "image/png",
+			"sizes": "192x192"
+		},
+		{
+			"src": "/static/images/favicon-large.png",
+			"type": "image/png",
+			"sizes": "512x512"
+		}
+	],
+	"start_url": "https://regisbooks.onrender.com/",
+	"display": "standalone"
+}

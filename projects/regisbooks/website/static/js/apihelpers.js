@@ -73,13 +73,9 @@ function getBooks() {
 }
 
 function getListings(options) {
-	if (options) {
-		return getJSONInfoFromAPICall(`/api/internal/get-listings`, JSON.stringify(options), "POST", {
-			"Content-Type": "application/json"
-		});
-	}
-
-	return getJSONInfoFromAPICall(`/api/internal/get-listings`);
+	return getJSONInfoFromAPICall(`/api/internal/get-listings`, JSON.stringify(options), "POST", {
+		"Content-Type": "application/json"
+	});
 }
 
 async function getListingsPaginateFully(options) {

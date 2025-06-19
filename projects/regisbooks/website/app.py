@@ -171,11 +171,6 @@ def register_internal_api_routes():
 	def getlistings_internal():
 		try: ensure_user()
 		except PermissionError: return FORBIDDEN
-
-		if request.method == "GET":
-			listings = Listing.get_all() # TODO: add pagination
-
-			return jsonify([listing.as_dict for listing in listings])
 		
 		options: dict[str, str | int | list[str]] = request.json
 				

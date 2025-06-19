@@ -102,6 +102,24 @@ def register_external_api_routes(): # TODO, also have an efficient system to man
 			"requested": otw
 		})
 
+	@app.route("/api/external/reset-stats", methods=["POST"])
+	def resetstats_external():
+		admin_key = request.json.get("key")
+
+		if admin_key != secret_keys.ADMIN_KEY: return FORBIDDEN
+
+		user_id = request.json.get("userID")
+
+		if type(user_id) is not str: return BAD_REQUEST
+
+		user = User.by_id(user_id)
+
+		user.stats = User.Stats()
+		flag_modified(user, "stats")
+
+		db.session.commit()
+
+		return RESP_OK
 	
 def register_internal_api_routes():
 	@app.route("/api/internal/get-user")

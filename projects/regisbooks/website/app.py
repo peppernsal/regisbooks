@@ -1,6 +1,5 @@
 import re
-
-from sqlalchemy import text
+import hashlib
 import genid
 import httpx
 import isbnlib
@@ -38,11 +37,16 @@ def webpy_setup(app: App):
 	reigster_404_handler()
 
 def register_external_api_routes(): # TODO, also have an efficient system to manage verification of API keys (research) |||| extract & reuse logic from register_internal_api_routes
+	def check_admin_key(key: str) -> bool:
+		key_hash = hashlib.sha512(key.encode()).hexdigest()
+
+		return key_hash == secret_keys.ADMIN_KEY_HASH
+	
 	@app.route("/api/external/rem-book", methods=["POST"])
 	def rembook_external():
 		admin_key = request.json.get("key")
 
-		if admin_key != secret_keys.ADMIN_KEY: return FORBIDDEN
+		if not check_admin_key(admin_key): return FORBIDDEN
 
 		book_id = request.json.get("bookID")
 
@@ -58,7 +62,7 @@ def register_external_api_routes(): # TODO, also have an efficient system to man
 	def remlisting_external():
 		admin_key = request.json.get("key")
 
-		if admin_key != secret_keys.ADMIN_KEY: return FORBIDDEN
+		if not check_admin_key(admin_key): return FORBIDDEN
 
 		listing_id = request.json.get("listingID")
 
@@ -84,7 +88,7 @@ def register_external_api_routes(): # TODO, also have an efficient system to man
 	def cleartakenlistings_external():
 		admin_key = request.json.get("key")
 
-		if admin_key != secret_keys.ADMIN_KEY: return FORBIDDEN
+		if not check_admin_key(admin_key): return FORBIDDEN
 
 		Listing.query.filter(Listing.status == Listing.Status.TAKEN).delete()
 
@@ -106,7 +110,7 @@ def register_external_api_routes(): # TODO, also have an efficient system to man
 	def resetstats_external():
 		admin_key = request.json.get("key")
 
-		if admin_key != secret_keys.ADMIN_KEY: return FORBIDDEN
+		if not check_admin_key(admin_key): return FORBIDDEN
 
 		user_id = request.json.get("userID")
 

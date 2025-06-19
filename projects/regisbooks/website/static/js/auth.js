@@ -3,11 +3,14 @@ if (Cookies.get("accepted") !== "true") location.href = "/acknowledgement";
 const authUrl = "https://228794087.propelauthtest.com";
 const authClient = PropelAuth.createClient({ authUrl });
 
+const authInfoPromise = authClient.getAuthenticationInfoOrNull();
+
+// cache user auth data
 async function getAuthInfo() {
-	return await authClient.getAuthenticationInfoOrNull();
+	return await authInfoPromise;
 }
 
-async function getUser() {
+async function getUserInternal() {
 	const authInfo = await getAuthInfo();
 
 	if (authInfo) return authInfo.user;
@@ -17,7 +20,12 @@ async function getUser() {
 	}
 }
 
-let userPromise = getUser();
+let userPromise = getUserInternal();
+
+// cache user auth data
+async function getUser() {
+	return await userPromise;
+}
 
 async function useAuth(func) {
 	return func(await userPromise);

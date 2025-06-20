@@ -236,7 +236,7 @@ def register_internal_api_routes():
 		if usage_filter is not None:
 			query = query.filter(Listing.usage_level == usage_filter)
 
-		if poster_id is not None:
+		if poster_id is not None: # this necessitates the frontend sending the DB id of the user
 			query = query.filter(Listing.author_id == poster_id)
 
 		query = query.filter(Listing.status != Listing.Status.TAKEN) # compliance with decision for #14
@@ -470,11 +470,11 @@ def register_internal_api_routes():
 
 		if listing is None: return BAD_REQUEST
 		
-		if listing.is_requested and listing.requester_id != current_user.user_id: return BAD_REQUEST
-		if listing.author_id == current_user.user_id: return BAD_REQUEST
+		if listing.is_requested and listing.requester_id != authoritative_id_of(current_user): return BAD_REQUEST
+		if listing.author_id == authoritative_id_of(current_user): return BAD_REQUEST
 
 		listing.status = Listing.Status.REQUESTED
-		listing.requester_id = current_user.user_id
+		listing.requester_id = authoritative_id_of(current_user)
 
 		db.session.commit()
 		return RESP_OK
@@ -493,7 +493,7 @@ def register_internal_api_routes():
 
 		if listing is None: return BAD_REQUEST
 
-		if listing.author_id != current_user.user_id: return FORBIDDEN
+		if listing.author_id != authoritative_id_of(current_user): return FORBIDDEN
 		if listing.status != Listing.Status.REQUESTED: return BAD_REQUEST
 
 		listing.status = Listing.Status.TAKEN
@@ -524,7 +524,7 @@ def register_internal_api_routes():
 		if listing is None: return BAD_REQUEST
 
 		if listing.status != Listing.Status.REQUESTED: return BAD_REQUEST
-		if listing.author_id != current_user.user_id and listing.requester_id != current_user.user_id: return FORBIDDEN
+		if listing.author_id != authoritative_id_of(current_user) and listing.requester_id != authoritative_id_of(current_user): return FORBIDDEN
 
 		listing.status = Listing.Status.AVAILABLE
 		listing.requester_id = None
@@ -533,18 +533,26 @@ def register_internal_api_routes():
 		return RESP_OK
 
 def init_db_api():	
-	global User, Listing, Book, PreRequest, query_by_id, query_all_of, ensure_user, db_add
+	global User, Listing, Book, PreRequest, query_by_id, query_all_of, ensure_user, db_add, authoritative_id_of
+
+	def authoritative_id_of(user: LoggedInUser) -> str:
+		if user.user.legacy_user_id is not None:
+			return user.user.legacy_user_id
+		
+		return user.user_id
 
 	def ensure_user() -> "User":		
-		user = query_by_id(User, current_user.user_id)
-
+		user = User.by_id(
+			authoritative_id_of(current_user)
+		)
+		
 		if user is None:
 			if not current_user.user.email.endswith("@regis.org") and (current_user.user.email not in secret_keys.EMAIL_WHITELIST):
 				auth.delete_user(current_user.user_id)
 				raise PermissionError()
 
 			user = User(
-				id=current_user.user_id,
+				id=authoritative_id_of(current_user),
 				first_name=current_user.user.first_name,
 				last_name=current_user.user.last_name,
 				email=current_user.user.email,
@@ -594,7 +602,20 @@ def init_db_api():
 
 		@staticmethod
 		def by_id(user_id: str):
-			return query_by_id(User, user_id)
+			user_data = auth.fetch_user_metadata_by_user_id(user_id)
+
+			if user_data is None: # it is a legacy OR invalid id, the following will work
+				return query_by_id(User, user_id)
+			
+			# if it is a new ID, this *might* work
+
+			res = query_by_id(User, user_data.user_id)
+
+			if res is not None: return res # it works, new ID of a new user
+
+			# it didn't work, so this means that it is a new ID of a legacy user, we can query by email
+
+			return User.query.filter(User.email == user_data.email).first()
 		
 		@staticmethod
 		def get_all():

@@ -31,6 +31,14 @@ async function getUser() {
 	return await userPromise;
 }
 
+async function getUserID() {
+	const user = await getUser();
+
+	// prioritize legacyId to support legacy users in DB
+	if (user) return user.legacyUserId || user.userId;
+	else return null;
+}
+
 async function useAuth(func) {
 	return func(await userPromise);
 }

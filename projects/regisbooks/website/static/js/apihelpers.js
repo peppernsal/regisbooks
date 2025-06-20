@@ -50,7 +50,7 @@ async function getJSONInfoFromAPICall(endpoint, body, method, headers) {
 }
 
 async function getUserInfo(userID) {
-	if (!userID) return await getJSONInfoFromAPICall(`/api/internal/get-user?id=${await getAuthInfo().userId}`);
+	if (!userID) return await getJSONInfoFromAPICall(`/api/internal/get-user?id=${await getUserID()}`);
 
 	return await getJSONInfoFromAPICall(`/api/internal/get-user?id=${userID}`);
 }

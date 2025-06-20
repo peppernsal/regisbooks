@@ -1,12 +1,12 @@
 document.addEventListener("DOMContentLoaded", async () => {
-	const user = await getUser();
+	const userID = await getUserID();
 	
-	if (!user) return;
+	if (!userID) return;
 
 	let userInfo;
 	
 	try {
-		userInfo = await getUserInfo(user.userId);
+		userInfo = await getUserInfo(userID);
 	} catch (err) {
 		alert("Please try logging in again. Make sure you are using a Regis account.");
 		location.href = authUrl;

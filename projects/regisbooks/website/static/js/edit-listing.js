@@ -13,11 +13,11 @@ if (!listingID) location.href = "/view-listings";
 
 document.addEventListener("DOMContentLoaded", async () => {
 	try {
-		const user = await getUser();
+		const userID = await getUserID();
 		const listingInfo = await getListingInfo(listingID);
 		const bookInfo = await getBookInfo(listingInfo.bookID);
 
-		if (listingInfo.authorID != user.userId) {
+		if (listingInfo.authorID != userID) {
 			alert("You do not have permission to edit this listing!");
 			location.href = `/view-listing?id=${listingID}`;
 		}

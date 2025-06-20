@@ -148,7 +148,7 @@ async function populateListings() {
 	const locations = Array.from(locationTags.children).map((tag) => tag.textContent.slice(9).trim());
 	const myListingsOnly = myListingsCheckbox.checked;
 
-	const posterID = myListingsOnly ? (await getUser()).userId : undefined;
+	const posterID = myListingsOnly ? await getUserID() : undefined;
 
 	const options = {
 		name: document.getElementById("filter-name").value ?? undefined,

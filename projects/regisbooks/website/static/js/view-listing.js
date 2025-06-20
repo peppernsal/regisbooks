@@ -5,7 +5,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 		const listing = await getListingInfo(listingID);
 		const book = await getBookInfo(listing.bookID);
 		const author = await getUserInfo(listing.authorID);
-		const currUserId = (await getUser()).userId;
+		const currUserId = await getUserID();
 
 		document.getElementById("book-title").textContent = book.title;
 		document.getElementById("book-author").textContent = book.author;

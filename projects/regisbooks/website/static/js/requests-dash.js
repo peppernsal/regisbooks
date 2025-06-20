@@ -1,5 +1,5 @@
 document.addEventListener("DOMContentLoaded", async () => {
-	const userInfo = await getUserInfo((await getUser()).userId);
+	const userInfo = await getUserInfo(await getUserID());
 
 	const outgoingContainer = document.getElementById("outgoing-requests");
 	const incomingContainer = document.getElementById("incoming-requests");

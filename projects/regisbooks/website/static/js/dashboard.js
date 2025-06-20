@@ -1,5 +1,7 @@
 document.addEventListener("DOMContentLoaded", async () => {
 	const user = await getUser();
+
+	alert(user);
 	
 	if (!user) return;
 

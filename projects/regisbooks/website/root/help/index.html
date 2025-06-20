@@ -54,14 +54,14 @@
 		<div class="content py-5">
 			<h1 class="mb-4 mx-4">Help &amp; Documentation</h1>
 
-			<div class="accordion mx-4" id="helpAccordion">
+			<div class="accordion mx-4" id="help-accordion">
 				<div class="accordion-item">
 					<h2 class="accordion-header" id="view-listings">
 						<button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapse-view-listings" aria-expanded="true" aria-controls="collapse-view-listings">
 							View Listings
 						</button>
 					</h2>
-					<div id="collapse-view-listings" class="accordion-collapse collapse show" aria-labelledby="view-listings" data-bs-parent="#helpAccordion">
+					<div id="collapse-view-listings" class="accordion-collapse collapse show" aria-labelledby="view-listings" data-bs-parent="#help-accordion">
 						<div class="accordion-body">
 							<p>Browse all available book listings. You can filter, sort, and view details for each listing.</p>
 							<ul>
@@ -78,7 +78,7 @@
 							Enter ISBN
 						</button>
 					</h2>
-					<div id="collapse-enter-isbn" class="accordion-collapse collapse" aria-labelledby="enter-isbn" data-bs-parent="#helpAccordion">
+					<div id="collapse-enter-isbn" class="accordion-collapse collapse" aria-labelledby="enter-isbn" data-bs-parent="#help-accordion">
 						<div class="accordion-body">
 							<p>Add a new book listing by entering its ISBN or scanning its barcode.</p>
 							<ul>
@@ -92,14 +92,15 @@
 				<div class="accordion-item">
 					<h2 class="accordion-header" id="add-listing">
 						<button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse-add-listing" aria-expanded="false" aria-controls="collapse-add-listing">
-							Add Listing Info
+							Add/Edit Listing Info
 						</button>
 					</h2>
-					<div id="collapse-add-listing" class="accordion-collapse collapse" aria-labelledby="add-listing" data-bs-parent="#helpAccordion">
+					<div id="collapse-add-listing" class="accordion-collapse collapse" aria-labelledby="add-listing" data-bs-parent="#help-accordion">
 						<div class="accordion-body">
-							<p>Add a new book listing by entering pickup info and details.</p>
+							<p>Add or edit a book listing by entering pickup info and details.</p>
 							<ul>
 								<li>You will reach this page after entering a Book's ISBN from the <strong>Add Listing</strong> page in the sidebar.</li>
+								<li>If you are editing the listing, you will reach this page after clicking "Edit this Listing" from a listing's page</li>
 								<li>Select the book's usage level, add notes, and specify at least one pickup location.</li>
 								<li>Avoid listing books that have medium to high annotation levels (especially for annotation-heavy courses like English). Light annotations for other courses are alright, but please specify if this is the case in the "Notes" section.</li>
 								<li>Submit the form to post your listing.</li>
@@ -113,12 +114,30 @@
 							Profile
 						</button>
 					</h2>
-					<div id="collapse-dash" class="accordion-collapse collapse" aria-labelledby="dash" data-bs-parent="#helpAccordion">
+					<div id="collapse-dash" class="accordion-collapse collapse" aria-labelledby="dash" data-bs-parent="#help-accordion">
 						<div class="accordion-body">
 							<p>View and your profile information and your own listings.</p>
 							<ul>
 								<li>Go to <strong>Profile</strong> from the sidebar.</li>
 								<li>View your personal information, stats, and unclaimed posted listings.</li>
+								<li>You can also navigate to other users' profiles from the <strong>Leaderboard</strong> page or a listing's details page</li>
+							</ul>
+						</div>
+					</div>
+				</div>
+				<div class="accordion-item">
+					<h2 class="accordion-header" id="view-listings">
+						<button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse-view-listings" aria-expanded="false" aria-controls="collapse-view-listings">
+							Browsing Listings
+						</button>
+					</h2>
+				<div id="collapse-view-listings" class="accordion-collapse collapse" aria-labelledby="view-listings" data-bs-parent="#help-accordion">
+						<div class="accordion-body">
+							<p>Browse available and requested listings.</p>
+							<ul>
+								<li>Navigate to <strong>View Listings</strong> from the sidebar.</li>
+								<li>You can use the filters to narrow down your search.</li>
+								<li>Ten listings are shown per page. You can use the buttons at the bottom of the <strong>View Listings</strong> page to load more pages of listings</li>
 							</ul>
 						</div>
 					</div>
@@ -129,7 +148,7 @@
 							Requesting a Listing
 						</button>
 					</h2>
-					<div id="collapse-view-listing" class="accordion-collapse collapse" aria-labelledby="view-listing" data-bs-parent="#helpAccordion">
+					<div id="collapse-view-listing" class="accordion-collapse collapse" aria-labelledby="view-listing" data-bs-parent="#help-accordion">
 						<div class="accordion-body">
 							<p>Open a request to claim an available book.</p>
 							<ul>
@@ -143,12 +162,30 @@
 					</div>
 				</div>
 				<div class="accordion-item">
+					<h2 class="accordion-header" id="requests-dash">
+						<button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse-requests-dash" aria-expanded="false" aria-controls="collapse-requests-dash">
+							Requests Dashboard
+						</button>
+					</h2>
+					<div id="collapse-requests-dash" class="accordion-collapse collapse" aria-labelledby="requests-dash" data-bs-parent="#help-accordion">
+						<div class="accordion-body">
+							<p>Your incoming and outgoing requests are summarized here.</p>
+							<ul>
+								<li>Click <strong>Manage Requests</strong> in the sidebar to view your requests.</li>
+								<li><em>Incoming</em> requests are from users who requested your listings.</li>
+								<li><em>Outgoing</em> requests are sent by you whenever you request another user's listing.</li>
+								<li>Clicking the "Open a New Request" button will show you all available (unrequested) listings.</li>
+							</ul>
+						</div>
+					</div>
+				</div>
+				<div class="accordion-item">
 					<h2 class="accordion-header" id="leaderboard">
 						<button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse-leaderboard" aria-expanded="false" aria-controls="collapse-leaderboard">
 							Aura
 						</button>
 					</h2>
-					<div id="collapse-leaderboard" class="accordion-collapse collapse" aria-labelledby="leaderboard" data-bs-parent="#helpAccordion">
+					<div id="collapse-leaderboard" class="accordion-collapse collapse" aria-labelledby="leaderboard" data-bs-parent="#help-accordion">
 						<div class="accordion-body">
 							<p>Users are ranked by their <em>Aura</em> on the leaderboard.</p>
 							<ul>
@@ -165,7 +202,7 @@
 							Logout
 						</button>
 					</h2>
-					<div id="collapse-logout" class="accordion-collapse collapse" aria-labelledby="logout" data-bs-parent="#helpAccordion">
+					<div id="collapse-logout" class="accordion-collapse collapse" aria-labelledby="logout" data-bs-parent="#help-accordion">
 						<div class="accordion-body">
 							<p>Log out of your account.</p>
 							<ul>

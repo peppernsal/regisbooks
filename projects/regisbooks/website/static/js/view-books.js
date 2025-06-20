@@ -6,6 +6,10 @@ document.addEventListener("DOMContentLoaded", async () => {
 	const books = await getBooks();
 
 	for (const book of books) {
+		const listingCount = (await getListings({ isbn: book.isbn})).totalCount;
+
+		if (listingCount === 0) continue;
+
 		const bookCard = document.createElement('a');
 		bookCard.className = 'card mb-3 text-decoration-none';
 		bookCard.href = `/view-listings?isbn=${book.isbn}`;

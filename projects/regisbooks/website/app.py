@@ -496,13 +496,15 @@ def register_internal_api_routes():
 
 		listing.status = Listing.Status.TAKEN
 		listing.author.stats.books_given += 1
-		listing.requester.stats.books_recieved += 1
+
+		requester = listing.requester
+		requester.stats.books_received += 1
 
 		flag_modified(listing.author, "stats") # ensure stats is updated in db
-		flag_modified(listing.requester, "stats")
-
+		flag_modified(requester, "stats")
 
 		db.session.commit()
+
 		return RESP_OK
 	
 	@app.route("/api/internal/reject-listing-req")
@@ -575,7 +577,7 @@ def init_db_api():
 		class Stats:
 			listings_made: int = field(default=0)
 			books_given: int = field(default=0)
-			books_recieved: int = field(default=0)
+			books_received: int = field(default=0)
 
 		__tablename__ = "users"
 		
@@ -607,7 +609,7 @@ def init_db_api():
 				"stats": {
 					"listingsMade": self.stats.listings_made,
 					"booksGiven": self.stats.books_given,
-					"booksReceived": self.stats.books_recieved,
+					"booksReceived": self.stats.books_received,
 				}
 			}
 

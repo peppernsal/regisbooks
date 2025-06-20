@@ -149,6 +149,12 @@ function fulfillRequestFor(listingID) {
 	return makeAPICall(`/api/internal/fulfill-req?id=${listingID}`);
 }
 
+async function getImpact() {
+	const resp = await fetch("/api/external/get-impact");
+
+	return await resp.json();
+}
+
 const AURA_PER_LISTING = 1;
 const AURA_PER_BOOK_GIVEN = 3;
 const LISTINGS_PER_PAGE = 10;

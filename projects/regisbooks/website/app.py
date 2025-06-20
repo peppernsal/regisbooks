@@ -52,7 +52,17 @@ def register_external_api_routes(): # TODO, also have an efficient system to man
 
 		if type(book_id) is not str: return BAD_REQUEST
 
-		Book.query.filter(Book.id == book_id).delete()
+		query = Book.query.filter(Book.id == book_id)
+
+		book: Book = query.first()
+
+		if book is None: return BAD_REQUEST
+
+		for listing in book.listings:
+			if listing.book_id == book_id:
+				return BAD_REQUEST # cannot delete book with existing listings
+
+		query.delete()
 
 		db.session.commit()
 
@@ -125,6 +135,28 @@ def register_external_api_routes(): # TODO, also have an efficient system to man
 
 		return RESP_OK
 	
+	@app.route("/api/external/rem-request", methods=["POST"])
+	def remrequest_external():
+		admin_key = request.json.get("key")
+
+		if not check_admin_key(admin_key): return FORBIDDEN
+
+		listing_id = request.json.get("listing_id")
+
+		if type(listing_id) is not str: return BAD_REQUEST
+
+		listing = Listing.by_id(listing_id)
+
+		if listing is None: return BAD_REQUEST
+		if listing.status != Listing.Status.REQUESTED: return BAD_REQUEST
+
+		listing.status = Listing.Status.AVAILABLE
+		listing.requester_id = None
+
+		db.session.commit()
+
+		return RESP_OK
+
 def register_internal_api_routes():
 	@app.route("/api/internal/get-user")
 	@auth.require_user

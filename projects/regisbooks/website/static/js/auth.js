@@ -5,6 +5,10 @@ const authClient = PropelAuth.createClient({ authUrl });
 
 const authInfoPromise = authClient.getAuthenticationInfoOrNull();
 
+authInfoPromise.catch((err) => {
+	alert("Login failed. Please try using a different browser (e.g. Chrome) or disabling incognito mode/third party cookie protection.")
+});
+
 // cache user auth data
 async function getAuthInfo() {
 	return await authInfoPromise;

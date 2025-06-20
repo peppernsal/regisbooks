@@ -110,10 +110,12 @@ def register_external_api_routes(): # TODO, also have an efficient system to man
 	def getimpact_external(): # not sensitive, no authentication needed
 		given = Listing.query.filter(Listing.status == Listing.Status.TAKEN).count()
 		otw = Listing.query.filter(Listing.status == Listing.Status.REQUESTED).count()
+		available = Listing.query.filter(Listing.status == Listing.Status.AVAILABLE).count()
 
 		return jsonify({
 			"givenAway": given,
-			"requested": otw
+			"requested": otw,
+			"available": available
 		})
 
 	@app.route("/api/external/reset-stats", methods=["POST"])

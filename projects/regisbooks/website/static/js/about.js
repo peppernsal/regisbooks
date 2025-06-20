@@ -20,21 +20,30 @@ document.addEventListener("DOMContentLoaded", async () => {
 			verb = "has";
 		}
 
-		requestedInfo = `<a href="/view-listings?status=1" class="text-decoration-none text-success">${impact.requested} more ${gawStr}</a> ${verb} already begun.`;
+		requestedInfo = `<a href="/view-listings?status=1" class="text-decoration-none text-success">${impact.requested} ${gawStr}</a> ${verb} already begun.`;
 	}
 
 	let availableInfo = "";
 
 	if (impact.available > 0) {
-		let distStr = "distributions";
+		let noun = "more";
+
+		// we can't say just "more" because the previous paragraph won't exist, we must use distribution/distributions
+		if (impact.requested == 0) {
+			noun = "more distributions";
+
+			if (impact.available == 1) {
+				noun = "more distribution";
+			}
+		}
+
 		let verb = "are";
 
 		if (impact.available == 1) {
-			distStr = "distribution";
 			verb = "is";
 		}
 
-		availableInfo = `<a href="/view-listings?status=0" class="text-decoration-none text-primary">${impact.available} ${distStr}</a> ${verb} waiting to happen.`;
+		availableInfo = `<a href="/view-listings?status=0" class="text-decoration-none text-primary">${impact.available} ${noun}</a> ${verb} waiting to happen.`;
 	}
 
 	impactPara.innerHTML = `

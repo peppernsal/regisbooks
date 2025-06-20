@@ -20,7 +20,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 			verb = "has";
 		}
 
-		requestedInfo = `<a href="/view-listings?status=1" class="text-decoration-none text-success">${impact.requested} ${gawStr}</a> ${verb} already begun.`;
+		requestedInfo = `<a href="/view-listings?status=1" class="text-decoration-none text-success">${impact.requested} more ${gawStr}</a> ${verb} already begun.`;
 	}
 
 	let availableInfo = "";

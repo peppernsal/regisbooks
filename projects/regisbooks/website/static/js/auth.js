@@ -1,6 +1,6 @@
 if (Cookies.get("accepted") !== "true") location.href = "/acknowledgement";
 
-const authUrl = "https://228794087.propelauthtest.com";
+const authUrl = "https://auth.regisbooks.org";
 const authClient = PropelAuth.createClient({ authUrl });
 
 const authInfoPromise = authClient.getAuthenticationInfoOrNull();

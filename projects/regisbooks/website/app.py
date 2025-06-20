@@ -541,9 +541,9 @@ def init_db_api():
 		
 		return user.user_id
 
-	def ensure_user() -> "User":		
-		user = User.by_id(
-			authoritative_id_of(current_user)
+	def ensure_user() -> "User":
+		user = User.query.filter(
+			User.id == authoritative_id_of(current_user)
 		)
 		
 		if user is None:

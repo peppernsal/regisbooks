@@ -1,4 +1,14 @@
+
 document.addEventListener("DOMContentLoaded", async () => {
+	const waitingMessage = document.getElementById("waiting-message");
+	waitingMessage.textContent = "Loading the leaderboard";
+
+	const loaderAnimation = setInterval(() => {
+		if (waitingMessage.textContent.slice(-3) == "...") waitingMessage.textContent = waitingMessage.textContent.slice(0, -3);
+
+		waitingMessage.textContent+=".";
+	}, 500);
+
 	const leaderboardContent = document.getElementById("leaderboard-content");
 	try {
 		const userIDs = await getAllUsers();
@@ -52,4 +62,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 		console.error("Error loading leaderboard:", error);
 		leaderboardContent.innerHTML = `<p class="text-danger">Failed to load leaderboard. Please try again later.</p>`;
 	}
+
+	clearInterval(loaderAnimation);
+	waitingMessage.remove();
 });

@@ -1,11 +1,7 @@
 document.addEventListener("DOMContentLoaded", async () => {
 	const user = await getUser();
-
-	console.log(user);
 	
 	if (!user) return;
-
-	console.log("User authenticated:", user);
 
 	let userInfo;
 	

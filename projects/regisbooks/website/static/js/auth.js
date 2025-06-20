@@ -5,10 +5,6 @@ const authClient = PropelAuth.createClient({ authUrl });
 
 const authInfoPromise = authClient.getAuthenticationInfoOrNull();
 
-authInfoPromise.catch((error) => {
-	console.error("Error fetching authentication info:", error);
-});
-
 // cache user auth data
 async function getAuthInfo() {
 	return await authInfoPromise;

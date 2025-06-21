@@ -166,7 +166,7 @@ def register_internal_api_routes():
 		try: ensure_user()
 		except PermissionError: return FORBIDDEN
 
-		user = User.by_id(request.args.get("id"))
+		user = User.by_id(request.args.get("id"), request.args.get("fallbackID"))
 
 		if user is None: return BAD_REQUEST
 		return jsonify(user.as_dict)
@@ -600,22 +600,15 @@ def init_db_api():
 		requests: Mapped[list["PreRequest"]] = db.relationship("PreRequest", backref="creator", lazy=True)
 		stats: Stats = db.Column(db.PickleType, nullable=False, default=Stats)
 
+		"""THIS METHOD REQUIRES A DB ID, a new ID for a legacy user *will not work*. A new ID for a legacy user may be passed as the fallback ID"""
 		@staticmethod
-		def by_id(user_id: str):
-			user_data = auth.fetch_user_metadata_by_user_id(user_id)
+		def by_id(user_id: str, fallback_id: str = None):
+			res = query_by_id(User, user_id)
 
-			if user_data is None: # it is a legacy OR invalid id, the following will work
-				return query_by_id(User, user_id)
+			if res is None and fallback_id is not None:
+				return query_by_id(User, fallback_id)
 			
-			# if it is a new ID, this *might* work
-
-			res = query_by_id(User, user_data.user_id)
-
-			if res is not None: return res # it works, new ID of a new user
-
-			# it didn't work, so this means that it is a new ID of a legacy user, we can query by email
-
-			return User.query.filter(User.email == user_data.email).first()
+			return res
 		
 		@staticmethod
 		def get_all():

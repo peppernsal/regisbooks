@@ -1,7 +1,5 @@
 import re
 import hashlib
-
-from colorama import init
 import genid
 import httpx
 import isbnlib

@@ -3,7 +3,7 @@ const userID = new URLSearchParams(location.search).get('id');
 document.addEventListener("DOMContentLoaded", async () => {
 	const user = await getUser();
 	
-	if (userID == user.id) location.href = '/dash';
+	if (userID == await getUserID()) location.href = '/dash';
 
 	const userInfo = await getUserInfo(userID);
 	if (!userInfo) location.href = '/dash';

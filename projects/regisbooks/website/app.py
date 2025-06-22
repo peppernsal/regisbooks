@@ -29,7 +29,6 @@ LISTINGS_PER_PAGE = 10
 def webpy_setup(app: App):
 	global auth, db
 
-
 	if app.debug: # debug/test mode set by webpy
 		auth = init_auth(secret_keys.TEST_REGISBOOKS_AUTH_URL, secret_keys.TEST_REGISBOOKS_AUTH_API_KEY)
 	else:	
@@ -439,7 +438,9 @@ def register_internal_api_routes():
 
 		if type(req_id) is not str: return BAD_REQUEST
 		
-		req: PreRequest = PreRequest.query.filter(PreRequest.id == req_id)
+		req: PreRequest = PreRequest.query.filter(PreRequest.id == req_id).first()
+
+		if req is None: return BAD_REQUEST
 
 		if req.creator_id != user.id: return FORBIDDEN
 		
@@ -551,7 +552,7 @@ def init_db_api():
 	def ensure_user() -> "User":
 		user = User.query.filter(
 			User.id == authoritative_id_of(current_user)
-		)
+		).first()
 		
 		if user is None:
 			if not current_user.user.email.endswith("@regis.org") and (current_user.user.email not in secret_keys.EMAIL_WHITELIST):
@@ -609,7 +610,7 @@ def init_db_api():
 
 		"""THIS METHOD REQUIRES A DB ID, a new ID for a legacy user *will not work*. A new ID for a legacy user may be passed as the fallback ID"""
 		@staticmethod
-		def by_id(user_id: str, fallback_id: str = None):
+		def by_id(user_id: str, fallback_id: str = None):			
 			res = query_by_id(User, user_id)
 
 			if res is None and fallback_id is not None:

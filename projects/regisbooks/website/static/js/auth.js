@@ -1,3 +1,8 @@
+// force deprecate regisbooks.onrender.com
+if (location.hostname === "regisbooks.onrender.com") {
+	location.hostname = "regisbooks.org";
+}
+
 if (Cookies.get("accepted") !== "true") location.href = "/acknowledgement";
 
 const DEBUG = false;

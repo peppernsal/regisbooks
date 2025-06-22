@@ -1,12 +1,21 @@
 const userID = new URLSearchParams(location.search).get('id');
 
 document.addEventListener("DOMContentLoaded", async () => {
-	const user = await getUser();
-	
-	if (userID == await getUserID()) location.href = '/dash';
+	const selfUserID = await getUserID();
+	const selfProfile = userID === null || userID === selfUserID;
 
-	const userInfo = await getUserInfo(userID);
-	if (!userInfo) location.href = '/dash';
+	let userInfo;
+	
+	try {
+		userInfo = await getUserInfo(userID);
+	} catch (err) {
+		if (selfProfile) {
+			alert("Please try logging in again. Make sure you are using a Regis account.");
+			location.href = authUrl;
+		} else {
+			location.href = `/view-profile?id=${selfUserID}`;
+		}
+	}
 
 	// Update page title with user's name
 	const h1 = document.querySelector('h1');
@@ -14,28 +23,29 @@ document.addEventListener("DOMContentLoaded", async () => {
 	const icon = elem('i', '');
 	icon.className = 'bi bi-person-circle me-2';
 	h1.appendChild(icon);
-	h1.appendChild(textElem('span', `${userInfo.firstName}'s Profile`));
+	h1.appendChild(selfProfile ? textElem('span', 'Dashboard') : textElem('span', `${userInfo.firstName}'s Profile`));
+
 	// Fill in profile items using userInfo
 	document.getElementById('full-name').textContent = `${userInfo.firstName} ${userInfo.lastName}`;
 	document.getElementById('username').textContent = userInfo.username;
 	document.getElementById('email').textContent = userInfo.email;
 	document.getElementById('aura').textContent = getAura(userInfo);
 
-	document.querySelectorAll('h3').forEach(heading => {
-		if (heading.textContent.includes('Stats')) {
-			heading.textContent = '';
-			const icon = elem('i', '');
-			icon.className = 'bi bi-bar-chart-fill me-2';
-			heading.appendChild(icon);
-			heading.appendChild(textElem('span', `${userInfo.firstName}'s Stats`));
-		} else if (heading.textContent.includes('Listings')) {
-			heading.textContent = '';
-			const icon = elem('i', '');
-			icon.className = 'bi bi-journal-text me-2';
-			heading.appendChild(icon);
-			heading.appendChild(textElem('span', `${userInfo.firstName}'s Listings`));
-		}
-	});
+	const statsContainerLabel = document.getElementById('stats-container-label');
+	
+	if (selfProfile) {
+		statsContainerLabel.textContent = 'Your Stats';
+	} else {
+		statsContainerLabel.textContent = `${userInfo.firstName}'s Stats`
+	}
+
+	const listingsContainerLabel = document.getElementById('listings-container-label');
+
+	if (selfProfile) {
+		listingsContainerLabel.textContent = 'Your Listings';
+	} else {
+		listingsContainerLabel.textContent = `${userInfo.firstName}'s Listings`;
+	}
 
 	document.getElementById('stat-listings-made').textContent = userInfo.stats.listingsMade;
 	document.getElementById('stat-books-given').textContent = userInfo.stats.booksGiven;

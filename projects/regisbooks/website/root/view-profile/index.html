@@ -30,7 +30,6 @@
 		<script src="/static/js/sidebar.js"></script>
 
 		<link rel="stylesheet" href="/static/css/theme.css">
-		<link rel="stylesheet" href="/static/css/dashboard.css">
 	</head>
 
 	<body class="bg-light text-dark">
@@ -43,7 +42,7 @@
 				<a href="/view-books" class="text-white mb-3">View Books</a>
 				<a href="/enter-isbn" class="text-white mb-3">Add Listing</a>
 				<a href="/requests-dash" class="text-white mb-3">Manage Requests</a>
-				<a href="/dash" class="text-white mb-3">Profile</a>
+				<a href="/view-profile" class="text-white mb-3">Profile</a>
 				<a href="/help#dash" class="text-white mb-3">Help</a>
 				<a href="/leaderboard" class="text-white mb-3">Leaderboard</a>
 				<a href="/about" class="text-white mb-3">About</a>
@@ -73,7 +72,7 @@
 					</div>
 				</div>
 
-				<h3 class="mt-4"><i class="bi bi-bar-chart-fill me-2"></i>Stats:</h3>
+				<h3 class="mt-4" id="stats-container-label"><i class="bi bi-bar-chart-fill me-2"></i>Stats:</h3>
 				<div class="row row-cols-1 row-cols-md-3 g-3 mt-2">
 					<div class="col">
 						<div class="card text-center border-success">
@@ -101,7 +100,7 @@
 					</div>
 				</div>
 
-				<h3 class="mt-5"><i class="bi bi-journal-text me-2"></i>Listings:</h3>
+				<h3 class="mt-5" id="listings-container-label"><i class="bi bi-journal-text me-2"></i>Listings:</h3>
 				<div id="user-listings" class="row row-cols-1 row-cols-md-2 mt-2 g-3">
 				</div>
 

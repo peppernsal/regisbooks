@@ -1,5 +1,7 @@
 import re
 import hashlib
+
+from colorama import init
 import genid
 import httpx
 import isbnlib
@@ -27,7 +29,11 @@ LISTINGS_PER_PAGE = 10
 def webpy_setup(app: App):
 	global auth, db
 
-	auth = init_auth(secret_keys.AUTH_URL, secret_keys.AUTH_API_KEY)
+
+	if app.debug: # debug/test mode set by webpy
+		auth = init_auth(secret_keys.TEST_REGISBOOKS_AUTH_URL, secret_keys.TEST_REGISBOOKS_AUTH_API_KEY)
+	else:	
+		auth = init_auth(secret_keys.AUTH_URL, secret_keys.AUTH_API_KEY)
 
 	db = app.sqlalchemy.init(secret_keys.DB_URI)
 
@@ -35,6 +41,7 @@ def webpy_setup(app: App):
 	register_internal_api_routes()
 	register_external_api_routes()
 	reigster_404_handler()
+
 
 def register_external_api_routes(): # TODO, also have an efficient system to manage verification of API keys (research) |||| extract & reuse logic from register_internal_api_routes
 	def check_admin_key(key: str) -> bool:

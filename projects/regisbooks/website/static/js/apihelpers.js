@@ -55,8 +55,12 @@ async function getUserInfo(userID) {
 	return await getJSONInfoFromAPICall(`/api/internal/get-user?id=${userID}`);
 }
 
-async function getAllUsers() {
-	return await getJSONInfoFromAPICall(`/api/internal/get-users`);
+function getAllUsers() {
+	return getJSONInfoFromAPICall(`/api/internal/get-users`);
+}
+
+function getLeaderboard() {
+	return getJSONInfoFromAPICall(`/api/internal/get-leaderboard`);
 }
 
 

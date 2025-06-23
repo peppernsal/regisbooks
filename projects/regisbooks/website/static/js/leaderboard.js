@@ -11,25 +11,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
 	const leaderboardContent = document.getElementById("leaderboard-content");
 	try {
-		const userIDs = await getAllUsers();
-
-		const users = [];
-
-		for (const userID of userIDs) {
-			const user = await getUserInfo(userID);
-
-			users.push(user);
-		}
-
-		users.sort((a, b) => {
-			const aScore = a.aura;
-			const bScore = b.aura;
-
-			// reversed terms for descending order
-			return bScore - aScore;
-		});
-
-		const topUsers = users.slice(0, 10);
+		const topUsers = await getLeaderboard();
 		
 		topUsers.forEach((user, index) => {
 			const userRow = document.createElement("div");

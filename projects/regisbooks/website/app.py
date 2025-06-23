@@ -203,6 +203,18 @@ def register_internal_api_routes():
 		users = User.get_all()
 
 		return jsonify([user.id for user in users])
+	
+	@app.route("/api/internal/get-leaderboard")
+	@auth.require_user
+	def getleaderboard_internal():
+		try: ensure_user()
+		except PermissionError: return FORBIDDEN
+
+		leaders: list[User] = User.query.order_by(User.aura.desc()).limit(10).all()
+
+		return jsonify([
+			leader.as_dict for leader in leaders
+		])
 
 	@app.route("/api/internal/get-listing")
 	@auth.require_user

@@ -14,8 +14,8 @@ parse_fs_routes(app, "root", {}, {})
 with app.app_context():
 	app.sqlalchemy.db.create_all()
 
-	with app.sqlalchemy.db.engine.connect() as conn:
-		conn.execute(text('ALTER TABLE "users" ADD COLUMN aura INTEGER NOT NULL DEFAULT 0'))
+	# with app.sqlalchemy.db.engine.connect() as conn:
+	# 	conn.execute(text('ALTER TABLE "users" ADD COLUMN aura INTEGER NOT NULL DEFAULT 0'))
 
 
 print("Setup complete, starting server...")

@@ -1,11 +1,9 @@
 import sys
 import httpx
-import admkey
-
-SERVER_URL = "https://regisbooks.onrender.com"
+import constants
 
 listing = sys.argv[1]
 
-resp = httpx.post(f"{SERVER_URL}/api/external/rem-listing", json={ "listingID": listing, "key": admkey.ADMIN_KEY })
+resp = httpx.post(f"{constants.SERVER_URL}/api/external/rem-listing", json={ "listingID": listing, "key": constants.ADMIN_KEY })
 
 print(resp)

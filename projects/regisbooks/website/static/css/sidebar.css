@@ -45,18 +45,22 @@
 
 	.sidebar-toggle {
 		position: relative;
-		left: calc(100% + 0.5em);
+		left: calc(100% - 6em);
 		display: flex;
 		align-items: center;
 		justify-content: center;
-		background-color: var(--bs-primary);
+		background-color: #0057da;
 		color: #ffffff;
 		border: none;
 		border-radius: 50%;
-		width: 1.9em;
-		height: 1.9em;
+		width: 5em;
+		height: 5em;
 		cursor: pointer;
 		transition: left 0.7s ease;
+	}
+
+	.sidebar-toggle > i {
+		font-size: 3.3em;
 	}
 
 	.sidebar.collapsed .sidebar-toggle {
@@ -126,6 +130,10 @@
 		height: 1.9em;
 		cursor: pointer;
 		transition: left 0.7s ease;
+	}
+
+	.sidebar-toggle > i {
+		font-size: 1.2em;
 	}
 
 	.sidebar.collapsed .sidebar-toggle {

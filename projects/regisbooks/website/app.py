@@ -23,6 +23,8 @@ BAD_REQUEST = Response(status=400)
 RESP_OK = Response(status=200)
 FORBIDDEN = Response(status=403)
 LISTINGS_PER_PAGE = 10
+AURA_PER_LISTING = 1
+AURA_PER_BOOK_GIVEN = 3
 
 def webpy_setup(app: App):
 	global auth, db
@@ -89,6 +91,7 @@ def register_external_api_routes(): # TODO, also have an efficient system to man
 		if listing is None: return BAD_REQUEST
 
 		listing.author.stats.listings_made -= 1
+		listing.author.aura -= AURA_PER_LISTING
 
 		flag_modified(listing.author, "stats") # ensure stats is updated in db
 
@@ -135,6 +138,7 @@ def register_external_api_routes(): # TODO, also have an efficient system to man
 		user = User.by_id(user_id)
 
 		user.stats = User.Stats()
+		user.aura = 0
 		flag_modified(user, "stats")
 
 		db.session.commit()
@@ -163,6 +167,21 @@ def register_external_api_routes(): # TODO, also have an efficient system to man
 
 		return RESP_OK
 
+	@app.route("/api/external/normalize-aura", methods=["POST"])
+	def normalizeaura_external():
+		admin_key = request.json.get("key")
+
+		if not check_admin_key(admin_key): return FORBIDDEN
+
+		users = User.get_all()
+
+		for user in users:
+			user.aura = AURA_PER_LISTING*user.stats.listings_made + AURA_PER_BOOK_GIVEN*user.stats.books_given
+
+		db.session.commit()
+
+		return RESP_OK
+	
 def register_internal_api_routes():
 	@app.route("/api/internal/get-user")
 	@auth.require_user
@@ -319,6 +338,7 @@ def register_internal_api_routes():
 		)
 
 		author.stats.listings_made += 1
+		author.aura += AURA_PER_LISTING
 
 		flag_modified(author, "stats") # ensure stats is updated in db
 		
@@ -417,6 +437,7 @@ def register_internal_api_routes():
 		if (listing.author_id != user.id): return FORBIDDEN
 
 		user.stats.listings_made -= 1
+		user.aura -= AURA_PER_LISTING
 		
 		flag_modified(user, "stats") # ensure stats is updated in db
 
@@ -504,6 +525,7 @@ def register_internal_api_routes():
 
 		listing.status = Listing.Status.TAKEN
 		listing.author.stats.books_given += 1
+		listing.author.aura += AURA_PER_BOOK_GIVEN
 
 		requester = listing.requester
 		requester.stats.books_received += 1
@@ -605,10 +627,12 @@ def init_db_api():
 		listings: Mapped[list["Listing"]] = db.relationship("Listing", backref="author", lazy=True)
 		requests: Mapped[list["PreRequest"]] = db.relationship("PreRequest", backref="creator", lazy=True)
 		stats: Stats = db.Column(db.PickleType, nullable=False, default=Stats)
+		aura: int = db.Column(db.Integer, nullable=False, default=0)
 
-		"""THIS METHOD REQUIRES A DB ID, a new ID for a legacy user *will not work*. A new ID for a legacy user may be passed as the fallback ID"""
 		@staticmethod
 		def by_id(user_id: str, fallback_id: str = None):			
+			"""THIS METHOD REQUIRES A DB ID, a new ID for a legacy user *will not work*. A new ID for a legacy user may be passed as the fallback ID"""
+
 			res = query_by_id(User, user_id)
 
 			if res is None and fallback_id is not None:
@@ -632,7 +656,8 @@ def init_db_api():
 					"listingsMade": self.stats.listings_made,
 					"booksGiven": self.stats.books_given,
 					"booksReceived": self.stats.books_received,
-				}
+				},
+				"aura": self.aura
 			}
 
 	class Listing(db.Model):

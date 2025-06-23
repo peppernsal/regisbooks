@@ -155,10 +155,5 @@ async function getImpact() {
 	return await resp.json();
 }
 
-const AURA_PER_LISTING = 1;
-const AURA_PER_BOOK_GIVEN = 3;
-const LISTINGS_PER_PAGE = 10;
 
-function getAura(userInfo) {
-	return userInfo.stats.listingsMade*AURA_PER_LISTING + userInfo.stats.booksGiven*AURA_PER_BOOK_GIVEN;
-}
+const LISTINGS_PER_PAGE = 10;

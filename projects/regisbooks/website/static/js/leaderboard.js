@@ -22,8 +22,8 @@ document.addEventListener("DOMContentLoaded", async () => {
 		}
 
 		users.sort((a, b) => {
-			const aScore = getAura(a);
-			const bScore = getAura(b);
+			const aScore = a.aura;
+			const bScore = b.aura;
 
 			// reversed terms for descending order
 			return bScore - aScore;
@@ -49,7 +49,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 			
 			const pointsSpan = document.createElement("span");
 			pointsSpan.className = "text-warning";
-			pointsSpan.textContent = `${getAura(user)} Aura`;
+			pointsSpan.textContent = `${user.aura} Aura`;
 
 			userRow.appendChild(rankSpan);
 			userRow.appendChild(nameSpan);

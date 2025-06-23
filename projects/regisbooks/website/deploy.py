@@ -1,5 +1,4 @@
-from sqlalchemy import text, Column, Integer
-from alembic import op
+from sqlalchemy import text
 from waitress import serve
 from app import app, webpy_setup
 from json import load
@@ -14,8 +13,8 @@ parse_fs_routes(app, "root", {}, {})
 with app.app_context():
 	app.sqlalchemy.db.create_all()
 
-	# with app.sqlalchemy.db.engine.connect() as conn:
-	# 	conn.execute(text('ALTER TABLE "users" ADD COLUMN aura INTEGER NOT NULL DEFAULT 0'))
+	with app.sqlalchemy.db.engine.connect() as conn:
+		conn.execute(text('ALTER TABLE "users" ADD COLUMN aura INTEGER NOT NULL DEFAULT 0'))
 
 
 print("Setup complete, starting server...")

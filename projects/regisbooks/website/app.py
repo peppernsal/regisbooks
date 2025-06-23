@@ -627,7 +627,7 @@ def init_db_api():
 		listings: Mapped[list["Listing"]] = db.relationship("Listing", backref="author", lazy=True)
 		requests: Mapped[list["PreRequest"]] = db.relationship("PreRequest", backref="creator", lazy=True)
 		stats: Stats = db.Column(db.PickleType, nullable=False, default=Stats)
-		# aura: int = db.Column(db.Integer, nullable=False, default=0)
+		aura: int = db.Column(db.Integer, nullable=False, default=0)
 
 		@staticmethod
 		def by_id(user_id: str, fallback_id: str = None):			
@@ -657,7 +657,7 @@ def init_db_api():
 					"booksGiven": self.stats.books_given,
 					"booksReceived": self.stats.books_received,
 				},
-				# "aura": self.aura
+				"aura": self.aura
 			}
 
 	class Listing(db.Model):

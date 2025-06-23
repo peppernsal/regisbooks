@@ -1,11 +1,21 @@
-.content {
-	margin-left: 15em;
-	padding: 1em;
-    transition: margin-left 0.5s ease, width 0.5s ease, margin-right 0.5s ease;
+@media screen and (min-width: 50em) {
+	.content {
+		margin-left: 1em;
+		margin-right: 1em;
+		padding: 1em;
+	}
 }
 
-.content.centered {
-	margin-left: 5em;
-	margin-right: 1em;
-	transition: margin-left 0.7s ease, width 0.7s ease, margin-right 0.7s ease;
+@media screen and (min-width: 100em) {
+	.content {
+		margin-left: 15em;
+		padding: 1em;
+		transition: margin-left 0.5s ease, width 0.5s ease, margin-right 0.5s ease;
+	}
+
+	.content.centered {
+		margin-left: 5em;
+		margin-right: 1em;
+		transition: margin-left 0.7s ease, width 0.7s ease, margin-right 0.7s ease;
+	}
 }

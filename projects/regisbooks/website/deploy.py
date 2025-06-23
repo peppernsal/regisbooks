@@ -15,6 +15,7 @@ with app.app_context():
 
 	with app.sqlalchemy.db.engine.connect() as conn:
 		conn.execute(text('ALTER TABLE "users" ADD COLUMN aura INTEGER NOT NULL DEFAULT 0'))
+		conn.commit()
 
 
 print("Setup complete, starting server...")

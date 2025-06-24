@@ -80,3 +80,10 @@ badges: list[BadgeInfo] = [
 		)
 	)
 ]
+
+def get(name: str) -> BadgeInfo:
+	for badge in badges:
+		if badge.name.lower() == name.lower():
+			return badge
+		
+	return None

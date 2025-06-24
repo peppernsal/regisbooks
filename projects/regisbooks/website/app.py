@@ -611,16 +611,10 @@ def init_db_api():
 		db.session.commit()
 
 	def query_by_id(model_type: type[T], model_id: str) -> T: #I think  this is a beautiful line of code
-		return db.session.execute(
-			db.select(model_type).where(model_type.id == model_id)
-		).scalar()
+		return model_type.query.filter(model_type.id == model_id).first()
 	
 	def query_all_of(model_type: type[T]) -> list[T]:
-		return list(
-			db.session.execute(
-				db.select(model_type)
-			).scalars().all()
-		)
+		return model_type.query.all()
 	
 	class User(db.Model):
 		@dataclass

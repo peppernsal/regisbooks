@@ -4,6 +4,7 @@ import genid
 import httpx
 import isbnlib
 import secret_keys
+import badges
 from dataclasses import dataclass, field
 from json import JSONDecodeError
 from typing import TypeVar
@@ -182,6 +183,22 @@ def register_external_api_routes(): # TODO, also have an efficient system to man
 
 		return RESP_OK
 	
+	@app.route("/api/external/normalize-badges", methods=["POST"])
+	def normalizebadges_external():
+		admin_key = request.json.get("key")
+
+		if not check_admin_key(admin_key): return FORBIDDEN
+
+		users = User.get_all()
+
+		for user in users:
+			if user.badges is None:
+				user.badges = []
+
+		db.session.commit()
+
+		return RESP_OK
+
 def register_internal_api_routes():
 	@app.route("/api/internal/get-user")
 	@auth.require_user
@@ -193,6 +210,36 @@ def register_internal_api_routes():
 
 		if user is None: return BAD_REQUEST
 		return jsonify(user.as_dict)
+	
+	# for foreign profile viewing and badge achievement notification
+	@app.route("/api/internal/get-updated-achieved-badges")
+	@auth.require_user
+	def getupdatedbadges_internal():
+		try: ensure_user()
+		except PermissionError: return FORBIDDEN
+
+		user_id = request.args.get("id", authoritative_id_of(current_user))
+
+		user = User.by_id(user_id)
+
+		if user is None: return BAD_REQUEST
+
+		achieved_badges = [badge for badge in badges.badges if badge.achieved(user, Listing, Book)]
+
+		return jsonify([badge.as_dict for badge in achieved_badges])
+	
+	# supports badge achievement notification
+	@app.route("/api/internal/update-achieved-badges")
+	@auth.require_user
+	def updateachievedbadges_internal():
+		try: user = ensure_user()
+		except PermissionError: return FORBIDDEN
+
+		user.badges = [badge for badge in badges.badges if badge.achieved(user, Listing, Book)]
+
+		db.session.commit()
+
+		return RESP_OK
 
 	@app.route("/api/internal/get-users")
 	@auth.require_user
@@ -596,7 +643,8 @@ def init_db_api():
 				first_name=current_user.user.first_name,
 				last_name=current_user.user.last_name,
 				email=current_user.user.email,
-				username=current_user.user.username
+				username=current_user.user.username,
+				badges=[]
 			)
 
 			db.session.add(user)
@@ -634,6 +682,7 @@ def init_db_api():
 		requests: Mapped[list["PreRequest"]] = db.relationship("PreRequest", backref="creator", lazy=True)
 		stats: Stats = db.Column(db.PickleType, nullable=False, default=Stats)
 		aura: int = db.Column(db.Integer, nullable=False, default=0)
+		badges: list[str] | None = db.Column(db.PickleType, nullable=True) # needed nullable=True for pre-migration compat
 
 		@staticmethod
 		def by_id(user_id: str, fallback_id: str = None):			
@@ -663,7 +712,8 @@ def init_db_api():
 					"booksGiven": self.stats.books_given,
 					"booksReceived": self.stats.books_received,
 				},
-				"aura": self.aura
+				"aura": self.aura,
+				"badges": [badge.as_dict for badge in self.badges]
 			}
 
 	class Listing(db.Model):

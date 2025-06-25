@@ -51,7 +51,7 @@ badges: list[BadgeInfo] = [
 		lambda user, Listing, Book: user.stats.books_received > 0
 	),
 	BadgeInfo(
-		"It comes back around",
+		"It Comes Back Around",
 		"Receive and give away at least one book",
 		lambda user, Listing, Book: user.stats.books_received > 0 and user.stats.books_given > 0
 	),

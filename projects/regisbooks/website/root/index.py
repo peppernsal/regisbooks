@@ -3,4 +3,4 @@ import webpy
 def handler(app: webpy.App, *args):
 	from flask import redirect
 	
-	return redirect("/view-profile")
+	return redirect("/acknowledgement")

@@ -55,6 +55,14 @@ async function getUserInfo(userID) {
 	return await getJSONInfoFromAPICall(`/api/internal/get-user?id=${userID}`);
 }
 
+function getUpdatedAchievedBadges(userID) {
+	return getJSONInfoFromAPICall(`/api/internal/get-updated-achieved-badges?id=${userID}`);
+}
+
+function updateAchievedBadges() {
+	return makeAPICall(`/api/internal/update-achieved-badges`);
+}
+
 function getAllUsers() {
 	return getJSONInfoFromAPICall(`/api/internal/get-users`);
 }
@@ -62,7 +70,6 @@ function getAllUsers() {
 function getLeaderboard() {
 	return getJSONInfoFromAPICall(`/api/internal/get-leaderboard`);
 }
-
 
 function getListingInfo(listingID) {
 	return getJSONInfoFromAPICall(`/api/internal/get-listing?id=${listingID}`);

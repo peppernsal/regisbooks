@@ -5,7 +5,7 @@ if (location.hostname === "regisbooks.onrender.com") {
 
 if (Cookies.get("accepted") !== "true") location.href = "/acknowledgement";
 
-const DEBUG = false;
+const DEBUG = true;
 
 let authUrl;
 

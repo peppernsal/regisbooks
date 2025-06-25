@@ -58,12 +58,12 @@ badges: list[BadgeInfo] = [
 	BadgeInfo(
 		"Loyal Member",
 		"Gain at least 10 Aura",
-		lambda user, Listing, Book: user.stats.aura >= 10
+		lambda user, Listing, Book: user.aura >= 10
 	),
 	BadgeInfo(
 		"Aura Farmer",
 		"Gain at least 25 Aura",
-		lambda user, Listing, Book: user.stats.aura >= 25
+		lambda user, Listing, Book: user.aura >= 25
 	),
 	BadgeInfo(
 		"Omnipresent",
@@ -74,9 +74,9 @@ badges: list[BadgeInfo] = [
 	),
 	BadgeInfo(
 		"Stacking",
-		"List a book that at least two other users have listed",
+		"List a book that at least two other listings already posted",
 		lambda user, Listing, Book: any(
-			True for listing in user.listings if listing.book.listings.count() >= 3
+			True for listing in user.listings if len(listing.book.listings) >= 3
 		)
 	)
 ]

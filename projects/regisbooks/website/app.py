@@ -218,7 +218,7 @@ def register_internal_api_routes():
 		try: ensure_user()
 		except PermissionError: return FORBIDDEN
 
-		user_id = request.args.get("id", authoritative_id_of(current_user))
+		user_id = request.args.get("id", "")
 
 		user = User.by_id(user_id)
 
@@ -228,14 +228,14 @@ def register_internal_api_routes():
 
 		return jsonify([badge.as_dict for badge in achieved_badges])
 	
-	# supports badge achievement notification
+	# supports badge achievement notification, can and should only be called from the current user
 	@app.route("/api/internal/update-achieved-badges")
 	@auth.require_user
 	def updateachievedbadges_internal():
 		try: user = ensure_user()
 		except PermissionError: return FORBIDDEN
 
-		user.badges = [badge for badge in badges.badges if badge.achieved(user, Listing, Book)]
+		user.badges = [badge.name for badge in badges.badges if badge.achieved(user, Listing, Book)]
 
 		db.session.commit()
 
@@ -713,7 +713,7 @@ def init_db_api():
 					"booksReceived": self.stats.books_received,
 				},
 				"aura": self.aura,
-				"badges": [badge.as_dict for badge in self.badges]
+				"badges": [badges.get(badge_name).as_dict for badge_name in self.badges]
 			}
 
 	class Listing(db.Model):

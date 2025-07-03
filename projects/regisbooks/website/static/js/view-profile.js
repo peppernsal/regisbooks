@@ -256,11 +256,19 @@ document.addEventListener("DOMContentLoaded", async () => {
 			container.appendChild(link);
 			listingsContainer.appendChild(container);
 		}
-	} else {
+	} else if (userInfo.stats.listingsMade > 0) { // fulfilled listings are present
 		const alert = document.createElement('div');
-		alert.className = 'col-12';
+		alert.className = 'col-md-12 text-center';
 		const alertInner = textElem('div', 'No active listings found.');
 		alertInner.className = 'alert alert-secondary';
+		alert.appendChild(alertInner);
+		listingsContainer.appendChild(alert);
+	} else { // no listings were ever made, encourage the user to make some...
+		const alert = document.createElement('div');
+		alert.className = 'col-md-12 text-center';
+		const alertInner = document.createElement('div');
+		alertInner.innerHTML = `<i class="bi bi-exclamation-circle me-2"></i>You haven't made any listings yet! Consider giving away some of your old books by adding a listing <a href="/enter-isbn">here</a>`;
+		alertInner.className = 'alert alert-warning';
 		alert.appendChild(alertInner);
 		listingsContainer.appendChild(alert);
 	}

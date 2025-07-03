@@ -8,7 +8,9 @@
 
 @media screen and (min-width: 90em) {
 	.content {
-		margin-left: 15em;
+		margin-left: 16em;
+		margin-right: 1em;
+		width: auto;
 		padding: 1em;
 		transition: margin-left 0.5s ease, width 0.5s ease, margin-right 0.5s ease;
 	}

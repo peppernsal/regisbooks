@@ -29,6 +29,97 @@ document.addEventListener("DOMContentLoaded", async () => {
 	document.getElementById('full-name').textContent = `${userInfo.firstName} ${userInfo.lastName}`;
 	document.getElementById('username').textContent = userInfo.username;
 	document.getElementById('email').textContent = userInfo.email;
+
+	if (!selfProfile) {
+		document.getElementById('phone-number').parentElement.remove(); // do not display phone numbers for foreign profiles
+	} else {
+		if (userInfo.phoneNumber) {
+			const phone = userInfo.phoneNumber;
+
+			document.getElementById('phone-number').textContent = `(${phone.slice(0, 3)}) ${phone.slice(3, 6)}-${phone.slice(6, 10)}`;
+		} else {
+			const addPhoneBtn = document.createElement("button");
+			addPhoneBtn.className = "btn btn-success btn-sm"
+			addPhoneBtn.textContent = "+ Add Phone Number"
+			addPhoneBtn.setAttribute("title", "Adding a phone number makes it easier for users to contact you when they request your listings. Your number will not be shown to other users when they view your profile.");
+			addPhoneBtn.setAttribute("data-bs-toggle", "tooltip");
+			addPhoneBtn.setAttribute("data-bs-placement", "top");
+			
+			const tooltip = new window.bootstrap.Tooltip(addPhoneBtn);
+
+			addPhoneBtn.onclick = () => {
+				const inputDiv = document.createElement("div");
+				inputDiv.className = "d-inline-flex align-items-center";
+			
+
+				const input = document.createElement("input");
+				input.type = "text";
+				input.className = "form-control me-2";
+				input.placeholder = "(XXX)-XXX-XXXX";
+				input.maxLength = 14;
+				input.pattern = "\\(\\d{3}\\) \\d{3}-\\d{4}";
+				input.setAttribute("aria-label", "Phone number");
+
+				input.addEventListener("keydown", (e) => {
+					if (e.key === "Enter") {
+						e.preventDefault();
+						submitBtn.click();
+					}
+				});
+				
+				input.addEventListener("input", (e) => {
+					let value = input.value.replace(/\D/g, "");
+					if (value.length > 10) value = value.slice(0, 10);
+					let formatted = "";
+					if (value.length > 0) formatted = "(" + value.slice(0, 3);
+					if (value.length >= 4) formatted += ") " + value.slice(3, 6);
+					if (value.length >= 7) formatted += "-" + value.slice(6, 10);
+					input.value = formatted;
+				});
+
+				const submitBtn = document.createElement("button");
+				submitBtn.className = "btn btn-success";
+				submitBtn.type = "button";
+				submitBtn.textContent = "Submit";
+				
+				submitBtn.onclick = async () => {
+					const value = input.value.trim();
+					const phonePattern = /^\(\d{3}\) \d{3}-\d{4}$/;
+
+					if (!phonePattern.test(value)) {
+						input.classList.add("is-invalid");
+						input.focus();
+
+						alert("Please make sure that your phone number is ten digits!");
+						return;
+					}
+					
+					input.classList.remove("is-invalid");
+
+					try {
+						const digitsOnly = value.replace(/\D/g, "");
+						await updatePhoneNumber(digitsOnly);
+						inputDiv.replaceWith(textElem("span", value));
+
+						tooltip.dispose();
+
+						alert("Phone number successfully updated!");
+					} catch (e) {
+						alert("Failed to update phone number. Please try again.");
+					}
+				};
+
+				inputDiv.appendChild(input);
+				inputDiv.appendChild(submitBtn);
+
+				addPhoneBtn.parentElement.style.display = "inline-block";
+				addPhoneBtn.replaceWith(inputDiv);
+			};
+
+			document.getElementById('phone-number').replaceWith(addPhoneBtn);
+		}
+	}
+
 	document.getElementById('aura').textContent = userInfo.aura;
 
 	const statsContainerLabel = document.getElementById('stats-container-label-text');

@@ -200,7 +200,20 @@ async function displayRequestInfo(book, listing, poster) {
 	emailLink.textContent = poster.email;
 	emailLink.href = `mailto:${poster.email}?subject=RegisBooks: Request for ${book.title}`;
 
-	document.getElementById("success-message").innerHTML = 'You have successfully requested this listing! <span class="text-danger">Please reach out to the lister via email.</span> They will <em>not</em> receive an automatic notification.';
+	const phoneLink = document.getElementById("phone-info");
+
+	if (!poster.phoneNumber) {
+		phoneLink.parentElement.parentElement.remove();
+
+		emailLink.parentElement.parentElement.className = "col-md-8";
+	} else {
+		const phone = poster.phoneNumber;
+
+		phoneLink.textContent = `(${phone.slice(0, 3)}) ${phone.slice(3, 6)}-${phone.slice(6, 10)}`;
+		phoneLink.href = `tel:+1${phone}`
+	}
+
+	document.getElementById("success-message").innerHTML = 'You have successfully requested this listing! <span class="text-danger">Please reach out to the lister via email or text.</span> They will <em>not</em> receive an automatic notification.';
 
 	document.getElementById("rem-listing-btn").onclick = () => {
 		rejectListingReq(listingID).then((resp) => {

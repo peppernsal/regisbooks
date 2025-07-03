@@ -79,6 +79,7 @@ function getBookInfo(bookID) {
 	return getJSONInfoFromAPICall(`/api/internal/get-book?id=${bookID}`);
 }
 
+
 function getBooks() {
 	return getJSONInfoFromAPICall(`/api/internal/get-books`);
 }
@@ -124,6 +125,10 @@ function updateListing(listingInfo) {
 	return makeAPICall(`/api/internal/update-listing`, JSON.stringify(listingInfo), "POST", {
 		"Content-Type": "application/json"
 	});
+}
+
+function updatePhoneNumber(phoneNumber) {
+	return makeAPICall(`/api/internal/update-phone-number?number=${phoneNumber}`);
 }
 
 function addBook(bookISBN) {

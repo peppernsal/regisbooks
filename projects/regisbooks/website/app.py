@@ -247,11 +247,13 @@ def register_internal_api_routes():
 		try: user = ensure_user()
 		except PermissionError: return FORBIDDEN
 
-		phone_number: str = request.json.get("phoneNumber", "")
+		phone_number: str = request.args.get("number", "")
 
 		if (len(phone_number) != 10) or (not phone_number.isdigit()): return BAD_REQUEST
 
 		user.phone_number = phone_number
+
+		db.session.commit()
 
 		return RESP_OK
 

@@ -123,11 +123,11 @@ document.addEventListener("DOMContentLoaded", async () => {
 					try {
 						const digitsOnly = value.replace(/\D/g, "");
 						await updatePhoneNumber(digitsOnly);
-						inputDiv.replaceWith(textElem("span", value));
-
+						
 						tooltip.dispose();
 
 						alert("Phone number successfully updated!");
+						location.reload();
 					} catch (e) {
 						alert("Failed to update phone number. Please try again.");
 					}

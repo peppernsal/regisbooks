@@ -27,13 +27,3 @@
 	background-color: var(--primary);
 	color: var(--text-on-primary);
 }
-
-.body-btn-primary:hover {
-	background-color: rgba(13, 110, 253, 0.8);
-	border-color: rgba(10, 88, 202, 0.8);
-}
-
-.body-btn-primary:active {
-	background-color: rgba(13, 110, 253, 0.6);
-	border-color: rgba(10, 88, 202, 0.6);
-}

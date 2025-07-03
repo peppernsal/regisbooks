@@ -15,7 +15,7 @@ with app.app_context():
 	app.sqlalchemy.db.create_all()
 
 	with app.sqlalchemy.db.engine.connect() as conn:
-		conn.execute(text('ALTER TABLE "users" ADD COLUMN phone_number STRING'))
+		conn.execute(text('ALTER TABLE "users" ADD COLUMN phone_number VARCHAR'))
 		conn.commit()
 
 # change this to logging once it is set up

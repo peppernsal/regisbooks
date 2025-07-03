@@ -30,13 +30,37 @@ document.addEventListener("DOMContentLoaded", async () => {
 	document.getElementById('username').textContent = userInfo.username;
 	document.getElementById('email').textContent = userInfo.email;
 
+	const phoneElem = document.getElementById('phone-number');
+
 	if (!selfProfile) {
-		document.getElementById('phone-number').parentElement.remove(); // do not display phone numbers for foreign profiles
+		phoneElem.parentElement.remove(); // do not display phone numbers for foreign profiles
 	} else {
 		if (userInfo.phoneNumber) {
 			const phone = userInfo.phoneNumber;
 
-			document.getElementById('phone-number').textContent = `(${phone.slice(0, 3)}) ${phone.slice(3, 6)}-${phone.slice(6, 10)}`;
+			phoneElem.textContent = `(${phone.slice(0, 3)}) ${phone.slice(3, 6)}-${phone.slice(6, 10)}`;
+		
+			const removeBtn = document.createElement("button");
+			removeBtn.className = "btn btn-danger btn-sm ms-2";
+			removeBtn.innerHTML = '<i class="bi bi-trash"></i>';
+			removeBtn.title = "Remove phone number";
+			removeBtn.setAttribute("data-bs-toggle", "tooltip");
+			removeBtn.setAttribute("data-bs-placement", "top");
+			new window.bootstrap.Tooltip(removeBtn);
+
+			removeBtn.onclick = async () => {
+				try {
+					await updatePhoneNumber(null);
+
+					alert("Phone number successfully removed.");
+
+					location.reload();
+				} catch (e) {
+					alert("Failed to remove phone number. Please try again.");
+				}
+			};
+
+			phoneElem.parentElement.appendChild(removeBtn);
 		} else {
 			const addPhoneBtn = document.createElement("button");
 			addPhoneBtn.className = "btn btn-success btn-sm"
@@ -80,7 +104,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 				const submitBtn = document.createElement("button");
 				submitBtn.className = "btn btn-success";
 				submitBtn.type = "button";
-				submitBtn.textContent = "Submit";
+				submitBtn.textContent = "Update";
 				
 				submitBtn.onclick = async () => {
 					const value = input.value.trim();
@@ -116,7 +140,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 				addPhoneBtn.replaceWith(inputDiv);
 			};
 
-			document.getElementById('phone-number').replaceWith(addPhoneBtn);
+			phoneElem.replaceWith(addPhoneBtn);
 		}
 	}
 

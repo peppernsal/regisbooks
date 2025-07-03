@@ -683,6 +683,7 @@ def init_db_api():
 		stats: Stats = db.Column(db.PickleType, nullable=False, default=Stats)
 		aura: int = db.Column(db.Integer, nullable=False, default=0)
 		badges: list[str] | None = db.Column(db.PickleType, nullable=True) # needed nullable=True for pre-migration compat
+		phone_number: str | None = db.Column(db.String, nullable=True)
 
 		@staticmethod
 		def by_id(user_id: str, fallback_id: str = None):			
@@ -713,7 +714,8 @@ def init_db_api():
 					"booksReceived": self.stats.books_received,
 				},
 				"aura": self.aura,
-				"badges": [badges.get(badge_name).as_dict for badge_name in self.badges]
+				"badges": [badges.get(badge_name).as_dict for badge_name in self.badges],
+				"phoneNumber": self.phone_number
 			}
 
 	class Listing(db.Model):

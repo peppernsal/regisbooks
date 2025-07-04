@@ -1,6 +1,6 @@
 // authInfo should be defined prior to loading this library
 
-const USAGE_NEW = 0;
+const USAGE_LIKE_NEW = 0;
 const USAGE_LIGHT = 1;
 const USAGE_USED = 2;
 
@@ -9,7 +9,7 @@ const STATUS_AVAILABLE = 0;
 const STATUS_REQUESTED = 1;
 const STATUS_GIVEN = 2;
 
-const listingUsageRepr = ["New", "Lightly Used", "Used"];
+const listingUsageRepr = ["Like New", "Lightly Used", "Used"];
 const listingStatusRepr = ["Available", "Requested", "Given Away"];
 const classRepr = [
 	"Freshman",

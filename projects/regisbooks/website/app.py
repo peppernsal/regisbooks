@@ -743,7 +743,7 @@ def init_db_api():
 
 	class Listing(db.Model):
 		class UsageLevel:
-			NEW = 0
+			LIKE_NEW = 0
 			LIGHT = 1
 			USED = 2
 		

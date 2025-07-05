@@ -1,9 +1,12 @@
 const booksContainer = document.getElementById('books-container');
 
-document.addEventListener("DOMContentLoaded", async () => {
+const classFilter = document.getElementById("class-filter");
+classFilter.addEventListener("change", populateBooks);
+
+async function populateBooks() {
 	booksContainer.innerHTML = '';
 
-	const books = await getBooks();
+	const books = await getBooks(classFilter.value);
 
 	for (const book of books) {
 		const listingCount = (await getListings({ isbn: book.isbn})).totalCount;
@@ -99,4 +102,6 @@ document.addEventListener("DOMContentLoaded", async () => {
 
 		booksContainer.appendChild(bookCard);
 	}
-});
+}
+
+document.addEventListener("DOMContentLoaded", populateBooks);

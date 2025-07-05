@@ -80,7 +80,11 @@ function getBookInfo(bookID) {
 }
 
 
-function getBooks() {
+function getBooks(classFilter) {
+	if (classFilter !== undefined && classFilter !== "") {
+		return getJSONInfoFromAPICall(`/api/internal/get-books?class=${classFilter}`);
+	}
+
 	return getJSONInfoFromAPICall(`/api/internal/get-books`);
 }
 

@@ -380,8 +380,27 @@ def register_internal_api_routes():
 		except PermissionError: return FORBIDDEN
 		
 		books = Book.get_all()
-				
-		return jsonify([book.as_dict for book in books])
+
+		class_filter = request.args.get("class")
+
+		print(class_filter)
+
+		if class_filter is None: return jsonify([book.as_dict for book in books])
+
+		if not class_filter.isdigit(): return BAD_REQUEST
+
+		class_filter = int(class_filter)
+
+		if class_filter == Book.Class.FRESHMAN:
+			return jsonify([book.as_dict for book in books if book.isbn in Book.Class.FRESHMAN_LIST])
+		elif class_filter == Book.Class.SOPHOMORE:
+			return jsonify([book.as_dict for book in books if book.isbn in Book.Class.SOPHOMORE_LIST])
+		elif class_filter == Book.Class.JUNIOR:
+			return jsonify([book.as_dict for book in books if book.isbn in Book.Class.JUNIOR_LIST])
+		elif class_filter == Book.Class.SENIOR:
+			return jsonify([book.as_dict for book in books if book.isbn in Book.Class.SENIOR_LIST])
+		
+		return BAD_REQUEST # unknown class filter
 	
 	@app.route("/api/internal/add-listing", methods=["POST"])
 	@auth.require_user
@@ -748,30 +767,6 @@ def init_db_api():
 			AVAILABLE = 0
 			REQUESTED = 1
 			TAKEN = 2
-		
-		class Class:
-			FRESHMAN = 0
-			SOPHOMORE = 1
-			JUNIOR = 2
-			SENIOR = 3
-
-		class SubjectArea:
-			ART = 0
-			MUSIC = 1
-			SCIENCE = 2
-			MATH = 3
-			HISTORY = 4
-			ENGLISH = 5
-			CS = 6
-			THEOLOGY = 7
-			FRENCH = 8
-			SPANISH = 9
-			GERMAN = 10
-			LATIN = 11
-			CHINESE = 12
-			OTHER = 13
-
-
 
 		__tablename__ = "listings"
 
@@ -867,6 +862,83 @@ def init_db_api():
 			return query_all_of(PreRequest)
 
 	class Book(db.Model):
+		class Class:
+			FRESHMAN = 0
+			SOPHOMORE = 1
+			JUNIOR = 2
+			SENIOR = 3
+
+			# Yes, these constants are hardcoded like the badge system. They need to be updated statically once a year and thus have no value being in a database
+
+			FRESHMAN_LIST = {
+				"9780670921676",
+				"9780205309023",
+				"9780140444254",
+				"9780061120060",
+				"9780367513436",
+				"9781319244415",
+				"9780199374380",
+				"9781622917457",
+				"9781622911363",
+				"9781622911370",
+				"9781259999826",
+				"9781264215393",
+				"9781585102129",
+				"9781585104239",
+				"9781264877522"
+			}
+
+			SOPHOMORE_LIST = {
+				"9780811216029",
+				"9780486284996",
+				"9780142437278",
+				"9780316769174",
+				"9781982149482",
+				"9780190089528",
+				"9780687646234",
+				"9781622917495",
+				"9781622911431",
+				"9781111354183",
+				"9781259999826",
+				"9780156013987",
+				"9781264215393",
+				"9781585102327",
+				"9781585102129",
+				"9781585104239",
+				"9781264877522"
+			}
+
+			JUNIOR_LIST = {
+				"9780345806567",
+				"9780743477123",
+				"9781538182222",
+				"9780190058241",
+				"9781622911578",
+				"9781622911561",
+				"9781111354183",
+				"9782070360215",
+				"9781260120998",
+				"9781585102327",
+				"9780806142326",
+				"9780060935061"
+			}
+
+			SENIOR_LIST = {
+				"9780073534664",
+				"9780195339222",
+				"9780316499071",
+				"9781620974551",
+				"9781622911516",
+				"9781622911523",
+				"9782035873880",
+				"9782070360024",
+				"9782070362363",
+				"9780865164215",
+				"9783903352513",
+				"9781260121001",
+				"9788422698456"
+			}
+
 		__tablename__ = "books"
 
 		# same as ISBN

@@ -28,8 +28,8 @@ isbnFilter.addEventListener("keydown", (event) => {
 	}
 });
 
-const usageFilter = document.getElementById("filter-usage");
-usageFilter.addEventListener("change", (event) => {
+const classFilter = document.getElementById("filter-usage");
+classFilter.addEventListener("change", (event) => {
 	newSearch();
 });
 
@@ -49,7 +49,7 @@ myListingsCheckbox.onchange = () => {
 function clearFilters() {
 	nameFilter.value = "";
 	isbnFilter.value = "";
-	usageFilter.value = "";
+	classFilter.value = "";
 	statusFilter.value = "";
 	myListingsCheckbox.checked = false;
 	locationTags.innerHTML = "";
@@ -282,7 +282,7 @@ async function populateListings() {
 	searchParams.set("page", listingsPageNumber);
 	searchParams.set("name", nameFilter.value);
 	searchParams.set("isbn", isbnFilter.value);
-	searchParams.set("usage", usageFilter.value);
+	searchParams.set("usage", classFilter.value);
 	searchParams.set("status", statusFilter.value);
 	searchParams.set("myListings", myListingsCheckbox.checked);
 	searchParams.set("locations", Array.from(locationTags.children).map(tag => tag.textContent.slice(9).trim()).join(","));
@@ -333,7 +333,7 @@ if (isNaN(listingsPageNumber) || listingsPageNumber < 0) {
 
 nameFilter.value = searchParams.get("name") || "";
 isbnFilter.value = searchParams.get("isbn") || "";
-usageFilter.value = searchParams.get("usage") || "";
+classFilter.value = searchParams.get("usage") || "";
 statusFilter.value = searchParams.get("status") || "";
 myListingsCheckbox.checked = searchParams.get("myListings") === "true";
 const locationFilterString = searchParams.get("locations") || "";

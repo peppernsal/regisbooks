@@ -424,7 +424,7 @@ def register_internal_api_routes():
 
 		flag_modified(author, "stats") # ensure stats is updated in db
 		
-		db_add(new_listing)
+		db.session.add(new_listing)
 
 		db.session.commit()
 
@@ -497,7 +497,9 @@ def register_internal_api_routes():
 
 		req.preferred_pickup_locations = preferred_pickup_locations
 
-		db_add(req)
+		db.session.add(req)
+		db.session.commit()
+
 		return RESP_OK
 
 	@app.route("/api/internal/rem-listing")
@@ -643,7 +645,7 @@ def register_internal_api_routes():
 		return RESP_OK
 
 def init_db_api():	
-	global User, Listing, Book, PreRequest, query_by_id, query_all_of, ensure_user, db_add, authoritative_id_of
+	global User, Listing, Book, PreRequest, query_by_id, query_all_of, ensure_user, authoritative_id_of
 
 	def authoritative_id_of(user: LoggedInUser) -> str:
 		if user.user.legacy_user_id is not None:
@@ -675,11 +677,6 @@ def init_db_api():
 			db.session.commit()
 
 		return user
-	
-		
-	def db_add(model):
-		db.session.add(model)
-		db.session.commit()
 
 	def query_by_id(model_type: type[T], model_id: str) -> T: #I think  this is a beautiful line of code
 		return model_type.query.filter(model_type.id == model_id).first()
@@ -914,7 +911,10 @@ def init_db_api():
 
 			if already is None:
 				book = Book.from_isbn(isbn)
-				db_add(book)
+
+				db.session.add(book)
+				db.session.commit()
+
 				return book
 			
 			return already

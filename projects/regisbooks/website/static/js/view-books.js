@@ -4,6 +4,8 @@ const classFilter = document.getElementById("class-filter");
 classFilter.addEventListener("change", populateBooks);
 
 async function populateBooks() {
+	classFilter.disabled = true;
+
 	booksContainer.innerHTML = '';
 
 	const books = await getBooks(classFilter.value);
@@ -102,6 +104,8 @@ async function populateBooks() {
 
 		booksContainer.appendChild(bookCard);
 	}
+
+	classFilter.disabled = false;
 }
 
 document.addEventListener("DOMContentLoaded", populateBooks);

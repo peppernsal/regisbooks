@@ -199,6 +199,26 @@ def register_external_api_routes(): # TODO, also have an efficient system to man
 
 		return RESP_OK
 
+	@app.route("/api/external/set-eng-flag", methods=["POST"])
+	def remrequest_external():
+		admin_key = request.json.get("key")
+
+		if not check_admin_key(admin_key): return FORBIDDEN
+
+		listing_id = request.json.get("listing_id")
+
+		if type(listing_id) is not str: return BAD_REQUEST
+
+		listing = Listing.by_id(listing_id)
+
+		if listing is None: return BAD_REQUEST
+
+		listing.is_annotated_english_book = True
+
+		db.session.commit()
+
+		return RESP_OK
+
 def register_internal_api_routes():
 	@app.route("/api/internal/get-user")
 	@auth.require_user

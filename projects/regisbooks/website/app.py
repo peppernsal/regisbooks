@@ -200,7 +200,7 @@ def register_external_api_routes(): # TODO, also have an efficient system to man
 		return RESP_OK
 
 	@app.route("/api/external/set-eng-flag", methods=["POST"])
-	def remrequest_external():
+	def setengflag_external():
 		admin_key = request.json.get("key")
 
 		if not check_admin_key(admin_key): return FORBIDDEN

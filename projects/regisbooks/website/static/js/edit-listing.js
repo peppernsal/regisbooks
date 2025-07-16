@@ -33,6 +33,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
 		document.getElementById("usage-level").value = listingInfo.usageLevel;
 		document.getElementById("notes").value = listingInfo.notes;
+		document.getElementById("english-flag").checked = listingInfo.isAnnotatedEnglishBook;
 		
 		for (const location of listingInfo.pickupLocations) {
 			const inputElem = addPickupLocation();
@@ -49,6 +50,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 function editListing() {
 	const usageLevel = document.getElementById("usage-level").value;
 	const notes = document.getElementById("notes").value;
+	const englishFlag = document.getElementById("english-flag").checked;
 	const pickupLocationsUnique = new Set(
 		Array.from(
 			document.querySelectorAll(".pickup-location")
@@ -76,6 +78,7 @@ function editListing() {
 		usageLevel: parseInt(usageLevel),
 		notes,
 		pickupLocations,
+		englishFlag
 	}
 	
 	updateListing(updateInfo)

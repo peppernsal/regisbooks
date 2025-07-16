@@ -33,6 +33,8 @@ document.addEventListener("DOMContentLoaded", async () => {
 function createListing() {
 	const usageLevel = document.getElementById("usage-level").value;
 	const notes = document.getElementById("notes").value;
+	const englishFlag = document.getElementById("english-flag").checked;
+
 	const pickupLocationsUnique = new Set(
 		Array.from(
 			document.querySelectorAll(".pickup-location")
@@ -58,8 +60,9 @@ function createListing() {
 	const listingInfo = {
 		bookID: bookISBN,
 		usageLevel: parseInt(usageLevel),
-		notes: notes,
-		pickupLocations: pickupLocations,
+		notes,
+		pickupLocations,
+		englishFlag
 	}
 	
 	addListing(listingInfo).then(() => location.href = "/view-listings");

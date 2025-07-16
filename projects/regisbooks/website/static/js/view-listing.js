@@ -39,6 +39,12 @@ document.addEventListener("DOMContentLoaded", async () => {
 
 		coverImg.src = book.coverImageURL;
 		coverCaption.textContent = "Note: cover image and publisher may not match physical book. Check ISBN to match versions.";
+
+		if (listing.isAnnotatedEnglishBook) {
+			document.getElementById("english-alert").innerHTML = '<i class="bi bi-exclamation-triangle-fill me-2"></i> This book is an English-course book which already has annotations. It will <em>not</em> be acceptable to use this as your primary book for Regis English courses. <strong>Use this only as reference material.</strong>'
+		} else {
+			document.getElementById("english-alert").remove();
+		}
 	
 		if (author.id != currUserId) {
 			if (listing.status == STATUS_REQUESTED) {

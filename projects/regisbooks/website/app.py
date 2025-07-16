@@ -798,7 +798,8 @@ def init_db_api():
 				"status": self.status,
 				"pickupLocations": self.pickup_locations,
 				"authorID": self.author_id,
-				"requesterID": self.requester_id
+				"requesterID": self.requester_id,
+				"isAnnotatedEnglishBook": self.is_annotated_english_book
 			}
 		
 		@property

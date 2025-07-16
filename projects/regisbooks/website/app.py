@@ -152,7 +152,7 @@ def register_external_api_routes(): # TODO, also have an efficient system to man
 
 		if not check_admin_key(admin_key): return FORBIDDEN
 
-		listing_id = request.json.get("listing_id")
+		listing_id = request.json.get("listingID")
 
 		if type(listing_id) is not str: return BAD_REQUEST
 
@@ -205,7 +205,7 @@ def register_external_api_routes(): # TODO, also have an efficient system to man
 
 		if not check_admin_key(admin_key): return FORBIDDEN
 
-		listing_id = request.json.get("listing_id")
+		listing_id = request.json.get("listingID")
 
 		if type(listing_id) is not str: return BAD_REQUEST
 

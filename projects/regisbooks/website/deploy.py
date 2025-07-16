@@ -15,7 +15,8 @@ with app.app_context():
 	app.sqlalchemy.db.create_all()
 
 	with app.sqlalchemy.db.engine.connect() as conn:
-		conn.execute(text('ALTER TABLE "users" ADD COLUMN is_annotated_english_book BOOLEAN NOT NULL DEFAULT FALSE'))
+		conn.execute(text('ALTER TABLE "users" DROP COLUMN is_annotated_english_book'))
+		conn.execute(text('ALTER TABLE "listings" ADD COLUMN is_annotated_english_book BOOLEAN NOT NULL DEFAULT FALSE'))
 		conn.commit()	
 
 # change this to logging once it is set up

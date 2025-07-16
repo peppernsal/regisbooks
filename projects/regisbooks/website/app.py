@@ -723,6 +723,7 @@ def init_db_api():
 		aura: int = db.Column(db.Integer, nullable=False, default=0)
 		badges: list[str] | None = db.Column(db.PickleType, nullable=True) # needed nullable=True for pre-migration compat
 		phone_number: str | None = db.Column(db.String, nullable=True)
+		is_annotated_english_book: bool = db.Column(db.Boolean, nullable=False, default=True)
 
 		@staticmethod
 		def by_id(user_id: str, fallback_id: str = None):			

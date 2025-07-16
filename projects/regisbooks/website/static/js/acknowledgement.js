@@ -1,6 +1,7 @@
-if (Cookies.get("accepted") === "true") location.href = "https://auth.regisbooks.org";
+if (Cookies.get("accepted") === "true") location.href = "/goto-auth";
+
 function acknowledge() {
 	Cookies.set("accepted", "true", { expires: 365 });
 
-	location.href = "https://auth.regisbooks.org";
+	location.href = "/goto-auth";
 }

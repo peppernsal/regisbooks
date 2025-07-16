@@ -414,6 +414,7 @@ def register_internal_api_routes():
 		notes = get("notes")
 		pickup_locations = get("pickupLocations")
 		usage_level = get("usageLevel")
+		english_flag = get("englishFlag")
 
 		if (type(usage_level) is not int) or not (0 <= usage_level <= 2): return BAD_REQUEST
 		
@@ -422,6 +423,8 @@ def register_internal_api_routes():
 		if (type(pickup_locations) is not list) or any(type(loc) is not str for loc in pickup_locations) or not (0 < len(pickup_locations) <= 5): return BAD_REQUEST
 
 		if (type(book_id) is not str): return BAD_REQUEST
+
+		if (type(english_flag) is not bool): return BAD_REQUEST
 
 		if isbnlib.is_isbn10(book_id):
 			book_id = isbnlib.to_isbn13(book_id)
@@ -435,7 +438,8 @@ def register_internal_api_routes():
 			notes=notes,
 			usage_level=usage_level,
 			author_id=author.id,
-			pickup_locations=[loc.strip() for loc in pickup_locations]
+			pickup_locations=[loc.strip() for loc in pickup_locations],
+			is_annotated_english_book=english_flag
 		)
 
 		author.stats.listings_made += 1
@@ -469,10 +473,13 @@ def register_internal_api_routes():
 		notes = get("notes", listing.notes)
 		pickup_locations = get("pickupLocations", listing.pickup_locations)
 		usage_level = get("usageLevel", listing.usage_level)
+		english_flag = get("englishFlag", listing.is_annotated_english_book)
 
 		if (type(usage_level) is not int) or not (0 <= usage_level <= 2): return BAD_REQUEST
 		
 		if (type(notes) is not str): return BAD_REQUEST
+
+		if (type(english_flag) is not bool): return BAD_REQUEST
 		
 		if (type(pickup_locations) is not list) or any(type(loc) is not str for loc in pickup_locations) or not (0 < len(pickup_locations) <= 5): return BAD_REQUEST
 
@@ -481,6 +488,7 @@ def register_internal_api_routes():
 		# update listing info
 		listing.notes = notes
 		listing.usage_level = usage_level
+		listing.is_annotated_english_book = english_flag
 		listing.pickup_locations = pickup_locations
 
 		db.session.commit()

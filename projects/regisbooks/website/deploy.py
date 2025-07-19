@@ -1,5 +1,4 @@
-import sys
-from sqlalchemy import text
+from logsetup import logger
 from waitress import serve
 from app import app, webpy_setup
 from json import load
@@ -15,6 +14,6 @@ with app.app_context():
 	app.sqlalchemy.db.create_all()
 
 # change this to logging once it is set up
-print("Setup complete, starting server...", file=sys.stderr)
+logger.info("Setup complete, starting server...")
 
 serve(app, host=config["host"], port=config["port"], threads=8)

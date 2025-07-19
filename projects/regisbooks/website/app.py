@@ -5,6 +5,7 @@ import httpx
 import isbnlib
 import secret_keys
 import badges
+from logsetup import logger
 from dataclasses import dataclass, field
 from json import JSONDecodeError
 from typing import TypeVar
@@ -226,9 +227,14 @@ def register_internal_api_routes():
 		try: ensure_user()
 		except PermissionError: return FORBIDDEN
 
-		user = User.by_id(request.args.get("id"), request.args.get("fallbackID"))
+		user_id = request.args.get("id")
+		fallback_id = request.args.get("fallbackID")
+		user = User.by_id(user_id, fallback_id)
 
-		if user is None: return BAD_REQUEST
+		if user is None:
+			logger.warning(f"Failure: get-user - User not found. user_id={user_id}, fallback_id={fallback_id}")
+			return BAD_REQUEST
+		logger.info(f"Success: get-user for user_id={user.id}")
 		return jsonify(user.as_dict)
 	
 	# for foreign profile viewing and badge achievement notification
@@ -239,13 +245,15 @@ def register_internal_api_routes():
 		except PermissionError: return FORBIDDEN
 
 		user_id = request.args.get("id", "")
-
 		user = User.by_id(user_id)
 
-		if user is None: return BAD_REQUEST
-
+		if user is None:
+			logger.warning(f"Failure: get-updated-achieved-badges - User not found. user_id={user_id}")
+			return BAD_REQUEST
+		
 		achieved_badges = [badge for badge in badges.badges if badge.achieved(user, Listing, Book)]
 
+		logger.info(f"Success: get-updated-achieved-badges for user_id={user_id}, badges_count={len(achieved_badges)}")
 		return jsonify([badge.as_dict for badge in achieved_badges])
 	
 	# supports badge achievement notification, can and should only be called from the current user
@@ -256,9 +264,9 @@ def register_internal_api_routes():
 		except PermissionError: return FORBIDDEN
 
 		user.badges = [badge.name for badge in badges.badges if badge.achieved(user, Listing, Book)]
-
 		db.session.commit()
 
+		logger.info(f"Success: update-achieved-badges for user_id={user.id}, badges_count={len(user.badges)}")
 		return RESP_OK
 	
 	@app.route("/api/internal/update-phone-number")
@@ -268,19 +276,22 @@ def register_internal_api_routes():
 		except PermissionError: return FORBIDDEN
 
 		phone_number: str | None = request.args.get("number", "")
-
 		if phone_number == "null":
 			user.phone_number = None
-
 			db.session.commit()
 
+			logger.info(f"Success: update-phone-number (removed) for user_id={user.id}")
+
 			return RESP_OK
-
-		if (type(phone_number) is not str) or (len(phone_number) != 10) or (not phone_number.isdigit()): return BAD_REQUEST
-
+		
+		if (type(phone_number) is not str) or (len(phone_number) != 10) or (not phone_number.isdigit()):
+			logger.warning(f"Failure: update-phone-number - Invalid phone number. user_id={user.id}, value={phone_number}")
+			return BAD_REQUEST
+		
 		user.phone_number = phone_number
-
 		db.session.commit()
+
+		logger.info(f"Success: update-phone-number for user_id={user.id}, phone_number={phone_number}")
 
 		return RESP_OK
 
@@ -292,6 +303,8 @@ def register_internal_api_routes():
 
 		users = User.get_all()
 
+		logger.info(f"Success: get-users, count={len(users)}")
+
 		return jsonify([user.id for user in users])
 	
 	@app.route("/api/internal/get-leaderboard")
@@ -301,6 +314,8 @@ def register_internal_api_routes():
 		except PermissionError: return FORBIDDEN
 
 		leaders: list[User] = User.query.order_by(User.aura.desc()).limit(10).all()
+
+		logger.info(f"Success: get-leaderboard, count={len(leaders)}")
 
 		return jsonify([
 			leader.as_dict for leader in leaders
@@ -312,9 +327,15 @@ def register_internal_api_routes():
 		try: ensure_user()
 		except PermissionError: return FORBIDDEN
 
-		listing = Listing.by_id(request.args.get("id"))
+		listing_id = request.args.get("id")
+		listing = Listing.by_id(listing_id)
 
-		if listing is None: return BAD_REQUEST
+		if listing is None:
+			logger.warning(f"Failure: get-listing - Listing not found. listing_id={listing_id}")
+			return BAD_REQUEST
+		
+		logger.info(f"Success: get-listing for listing_id={listing_id}")
+
 		return jsonify(listing.as_dict)
 	
 	@app.route("/api/internal/get-book")
@@ -323,9 +344,14 @@ def register_internal_api_routes():
 		try: ensure_user()
 		except PermissionError: return FORBIDDEN
 
-		book = Book.by_id(request.args.get("id"))
+		book_id = request.args.get("id")
+		book = Book.by_id(book_id)
 
-		if book is None: return BAD_REQUEST
+		if book is None:
+			logger.warning(f"Failure: get-book - Book not found. book_id={book_id}")
+			return BAD_REQUEST
+		
+		logger.info(f"Success: get-book for book_id={book_id}")
 
 		return jsonify(book.as_dict)
 
@@ -381,6 +407,8 @@ def register_internal_api_routes():
 			total_count = len(filtered_all)
 			filtered  = filtered_all[page_num*LISTINGS_PER_PAGE:(page_num+1)*LISTINGS_PER_PAGE]
 
+		logger.info(f"Success: get-listings, returned={len(filtered)}, total={total_count}")
+
 		return jsonify({ "listings": [listing.as_dict for listing in filtered], "totalCount": total_count })
 
 	@app.route("/api/internal/get-open-reqs")
@@ -391,6 +419,8 @@ def register_internal_api_routes():
 
 		requests = PreRequest.get_all()
 
+		logger.info(f"Success: get-open-reqs, count={len(requests)}")
+
 		return jsonify([request.as_dict for request in requests])
 
 	@app.route("/api/internal/get-books")
@@ -400,26 +430,45 @@ def register_internal_api_routes():
 		except PermissionError: return FORBIDDEN
 		
 		books = Book.get_all()
-
 		class_filter = request.args.get("class")
 
-		print(class_filter)
+		if class_filter is None:
+			logger.info(f"Success: get-books, count={len(books)} (no filter)")
 
-		if class_filter is None: return jsonify([book.as_dict for book in books])
-
-		if not class_filter.isdigit(): return BAD_REQUEST
-
+			return jsonify([book.as_dict for book in books])
+		if not class_filter.isdigit():
+			logger.warning(f"Failure: get-books - Invalid class filter. value={class_filter}")
+			return BAD_REQUEST
+		
 		class_filter = int(class_filter)
 
 		if class_filter == Book.Class.FRESHMAN:
-			return jsonify([book.as_dict for book in books if book.isbn in Book.Class.FRESHMAN_LIST])
+			filtered_books = [book.as_dict for book in books if book.isbn in Book.Class.FRESHMAN_LIST]
+
+			logger.info(f"Success: get-books, count={len(filtered_books)} (freshman)")
+
+			return jsonify(filtered_books)
 		elif class_filter == Book.Class.SOPHOMORE:
-			return jsonify([book.as_dict for book in books if book.isbn in Book.Class.SOPHOMORE_LIST])
+			filtered_books = [book.as_dict for book in books if book.isbn in Book.Class.SOPHOMORE_LIST]
+
+			logger.info(f"Success: get-books, count={len(filtered_books)} (sophomore)")
+
+			return jsonify(filtered_books)
 		elif class_filter == Book.Class.JUNIOR:
-			return jsonify([book.as_dict for book in books if book.isbn in Book.Class.JUNIOR_LIST])
+			filtered_books = [book.as_dict for book in books if book.isbn in Book.Class.JUNIOR_LIST]
+
+			logger.info(f"Success: get-books, count={len(filtered_books)} (junior)")
+
+			return jsonify(filtered_books)
 		elif class_filter == Book.Class.SENIOR:
-			return jsonify([book.as_dict for book in books if book.isbn in Book.Class.SENIOR_LIST])
+			filtered_books = [book.as_dict for book in books if book.isbn in Book.Class.SENIOR_LIST]
+
+			logger.info(f"Success: get-books, count={len(filtered_books)} (senior)")
+
+			return jsonify(filtered_books)
 		
+		logger.warning(f"Failure: get-books - Unknown class filter. value={class_filter}")
+
 		return BAD_REQUEST # unknown class filter
 	
 	@app.route("/api/internal/add-listing", methods=["POST"])
@@ -436,23 +485,34 @@ def register_internal_api_routes():
 		usage_level = get("usageLevel")
 		english_flag = get("englishFlag")
 
-		if (type(usage_level) is not int) or not (0 <= usage_level <= 2): return BAD_REQUEST
+		if (type(usage_level) is not int) or not (0 <= usage_level <= 2):
+			logger.warning(f"Failure: add-listing - Invalid usage_level. author_id={author.id}, value={usage_level}")
+			return BAD_REQUEST
 		
-		if (type(notes) is not str): return BAD_REQUEST
+		if (type(notes) is not str):
+			logger.warning(f"Failure: add-listing - Invalid notes. author_id={author.id}, value={notes}")
+			return BAD_REQUEST
 		
-		if (type(pickup_locations) is not list) or any(type(loc) is not str for loc in pickup_locations) or not (0 < len(pickup_locations) <= 5): return BAD_REQUEST
-
-		if (type(book_id) is not str): return BAD_REQUEST
-
-		if (type(english_flag) is not bool): return BAD_REQUEST
-
+		if (type(pickup_locations) is not list) or any(type(loc) is not str for loc in pickup_locations) or not (0 < len(pickup_locations) <= 5):
+			logger.warning(f"Failure: add-listing - Invalid pickup_locations. author_id={author.id}, value={pickup_locations}")
+			return BAD_REQUEST
+		
+		if (type(book_id) is not str):
+			logger.warning(f"Failure: add-listing - Invalid book_id. author_id={author.id}, value={book_id}")
+			return BAD_REQUEST
+		
+		if (type(english_flag) is not bool):
+			logger.warning(f"Failure: add-listing - Invalid english_flag. author_id={author.id}, value={english_flag}")
+			return BAD_REQUEST
+		
 		if isbnlib.is_isbn10(book_id):
 			book_id = isbnlib.to_isbn13(book_id)
 
-		if Book.by_id(book_id) is None: return BAD_REQUEST
-
+		if Book.by_id(book_id) is None:
+			logger.warning(f"Failure: add-listing - Book not found. author_id={author.id}, book_id={book_id}")
+			return BAD_REQUEST
+		
 		pickup_locations = [*set(pickup_locations)]
-
 		new_listing = Listing(
 			book_id=book_id,
 			notes=notes,
@@ -466,10 +526,11 @@ def register_internal_api_routes():
 		author.aura += AURA_PER_LISTING
 
 		flag_modified(author, "stats") # ensure stats is updated in db
-		
-		db.session.add(new_listing)
 
+		db.session.add(new_listing)
 		db.session.commit()
+
+		logger.info(f"Success: add-listing for author_id={author.id}, listing_id={new_listing.id}")
 
 		return RESP_OK
 	
@@ -482,27 +543,45 @@ def register_internal_api_routes():
 
 		listing_id = get("listingID")
 
-		if type(listing_id) is not str: return BAD_REQUEST
-
-		listing: Listing = Listing.by_id(listing_id)
+		if type(listing_id) is not str:
+			logger.warning(f"Failure: update-listing - Invalid listing_id. author_id={author.id}, value={listing_id}")
+			return BAD_REQUEST
 		
-		if listing is None: return BAD_REQUEST
-		if listing.author_id != author.id: return FORBIDDEN
-		if listing.status != Listing.Status.AVAILABLE: return BAD_REQUEST
+		listing: Listing = Listing.by_id(listing_id)
 
+		if listing is None:
+			logger.warning(f"Failure: update-listing - Listing not found. author_id={author.id}, listing_id={listing_id}")
+			return BAD_REQUEST
+		
+		if listing.author_id != author.id:
+			logger.warning(f"Failure: update-listing - Forbidden. author_id={author.id}, listing_id={listing_id}")
+			return FORBIDDEN
+		
+		if listing.status != Listing.Status.AVAILABLE:
+			logger.warning(f"Failure: update-listing - Listing not available. author_id={author.id}, listing_id={listing_id}")
+			return BAD_REQUEST
+		
 		notes = get("notes", listing.notes)
 		pickup_locations = get("pickupLocations", listing.pickup_locations)
 		usage_level = get("usageLevel", listing.usage_level)
 		english_flag = get("englishFlag", listing.is_annotated_english_book)
 
-		if (type(usage_level) is not int) or not (0 <= usage_level <= 2): return BAD_REQUEST
+		if (type(usage_level) is not int) or not (0 <= usage_level <= 2):
+			logger.warning(f"Failure: update-listing - Invalid usage_level. author_id={author.id}, listing_id={listing_id}, value={usage_level}")
+			return BAD_REQUEST
 		
-		if (type(notes) is not str): return BAD_REQUEST
-
-		if (type(english_flag) is not bool): return BAD_REQUEST
+		if (type(notes) is not str):
+			logger.warning(f"Failure: update-listing - Invalid notes. author_id={author.id}, listing_id={listing_id}, value={notes}")
+			return BAD_REQUEST
 		
-		if (type(pickup_locations) is not list) or any(type(loc) is not str for loc in pickup_locations) or not (0 < len(pickup_locations) <= 5): return BAD_REQUEST
-
+		if (type(english_flag) is not bool):
+			logger.warning(f"Failure: update-listing - Invalid english_flag. author_id={author.id}, listing_id={listing_id}, value={english_flag}")
+			return BAD_REQUEST
+		
+		if (type(pickup_locations) is not list) or any(type(loc) is not str for loc in pickup_locations) or not (0 < len(pickup_locations) <= 5):
+			logger.warning(f"Failure: update-listing - Invalid pickup_locations. author_id={author.id}, listing_id={listing_id}, value={pickup_locations}")
+			return BAD_REQUEST
+		
 		pickup_locations = [*set(pickup_locations)]
 
 		# update listing info
@@ -513,39 +592,7 @@ def register_internal_api_routes():
 
 		db.session.commit()
 
-		return RESP_OK
-
-	@app.route("/api/internal/add-pre-req", methods=["POST"])
-	@auth.require_user
-	def addprereq_internal():
-		try: ensure_user()
-		except PermissionError: return FORBIDDEN
-
-		get = request.json.get
-
-		book_id = get("bookID")
-		author_id = get("authorID")
-		preferred_pickup_locations = get("prefPickupLocations")
-
-		
-		if (type(preferred_pickup_locations) is not list) or any(type(loc) is not str for loc in preferred_pickup_locations): return BAD_REQUEST
-
-		if (type(book_id) is not str) or (type(author_id) is not str): return BAD_REQUEST
-
-		Book.ensure_in_db(book_id)
-		author = User.by_id(author_id)
-
-		if author is None: return BAD_REQUEST
-
-		req = PreRequest(
-			book_id=book_id,
-			author_id=author_id
-		)
-
-		req.preferred_pickup_locations = preferred_pickup_locations
-
-		db.session.add(req)
-		db.session.commit()
+		logger.info(f"Success: update-listing for author_id={author.id}, listing_id={listing_id}")
 
 		return RESP_OK
 
@@ -556,46 +603,34 @@ def register_internal_api_routes():
 		except PermissionError: return FORBIDDEN
 
 		listing_id = request.args.get("id")
-
-		if type(listing_id) is not str: return BAD_REQUEST
+		if type(listing_id) is not str:
+			logger.warning(f"Failure: rem-listing - Invalid listing_id. user_id={user.id}, value={listing_id}")
+			return BAD_REQUEST
 		
 		listing_query: Listing = Listing.query.filter(Listing.id == listing_id)
-
 		listing = listing_query.first()
 
-		if (listing.status != Listing.Status.AVAILABLE): return BAD_REQUEST
+		if listing is None:
+			logger.warning(f"Failure: rem-listing - Listing not found. user_id={user.id}, listing_id={listing_id}")
+			return BAD_REQUEST
 		
-		if (listing.author_id != user.id): return FORBIDDEN
-
+		if (listing.status != Listing.Status.AVAILABLE):
+			logger.warning(f"Failure: rem-listing - Listing not available. user_id={user.id}, listing_id={listing_id}")
+			return BAD_REQUEST
+		
+		if (listing.author_id != user.id):
+			logger.warning(f"Failure: rem-listing - Forbidden. user_id={user.id}, listing_id={listing_id}")
+			return FORBIDDEN
+		
 		user.stats.listings_made -= 1
 		user.aura -= AURA_PER_LISTING
-		
+
 		flag_modified(user, "stats") # ensure stats is updated in db
 
 		listing_query.delete()
 		db.session.commit()
 
-		return RESP_OK
-
-
-	@app.route("/api/internal/rem-pre-req")
-	@auth.require_user
-	def remprereq_internal():
-		try: user = ensure_user()
-		except PermissionError: return FORBIDDEN
-
-		req_id = request.args.get("id")
-
-		if type(req_id) is not str: return BAD_REQUEST
-		
-		req: PreRequest = PreRequest.query.filter(PreRequest.id == req_id).first()
-
-		if req is None: return BAD_REQUEST
-
-		if req.creator_id != user.id: return FORBIDDEN
-		
-		req.delete()
-		db.session.commit()
+		logger.info(f"Success: rem-listing for user_id={user.id}, listing_id={listing_id}")
 
 		return RESP_OK
 
@@ -607,53 +642,84 @@ def register_internal_api_routes():
 
 		isbn = request.args.get("isbn")
 
-		if type(isbn) is not str: return BAD_REQUEST
-		if not isbn.isdigit(): return BAD_REQUEST
+		if type(isbn) is not str:
+			logger.warning(f"Failure: add-book - Invalid isbn. value={isbn}")
+			return BAD_REQUEST
 		
-		try: return jsonify(Book.ensure_in_db(isbn).as_dict)
-		except JSONDecodeError: return BAD_REQUEST
+		if not isbn.isdigit():
+			logger.warning(f"Failure: add-book - Non-digit isbn. value={isbn}")
+			return BAD_REQUEST
+		try:
+			book = Book.ensure_in_db(isbn)
+			
+			logger.info(f"Success: add-book for isbn={isbn}")
+
+			return jsonify(book.as_dict)
+		except JSONDecodeError:
+			logger.warning(f"Failure: add-book - JSON decode error. isbn={isbn}")
+			return BAD_REQUEST
 	
-	# requesting existing listings
 	@app.route("/api/internal/req-listing")
 	@auth.require_user
 	def reqlisting_internal():
-		try: ensure_user()
+		try: user = ensure_user()
 		except PermissionError: return FORBIDDEN
 
 		listing_id = request.args.get("id")
 
-		if type(listing_id) is not str: return BAD_REQUEST
-
+		if type(listing_id) is not str:
+			logger.warning(f"Failure: req-listing - Invalid listing_id. user_id={user.id}, value={listing_id}")
+			return BAD_REQUEST
+		
 		listing: Listing = Listing.query.filter(Listing.id == listing_id).first()
 
-		if listing is None: return BAD_REQUEST
+		if listing is None:
+			logger.warning(f"Failure: req-listing - Listing not found. user_id={user.id}, listing_id={listing_id}")
+			return BAD_REQUEST
 		
-		if listing.is_requested and listing.requester_id != authoritative_id_of(current_user): return BAD_REQUEST
-		if listing.author_id == authoritative_id_of(current_user): return BAD_REQUEST
-
+		if listing.is_requested and listing.requester_id != user.id:
+			logger.warning(f"Failure: req-listing - Listing already requested by another user. user_id={user.id}, listing_id={listing_id}")
+			return BAD_REQUEST
+		
+		if listing.author_id == user.id:
+			logger.warning(f"Failure: req-listing - Author cannot request own listing. user_id={user.id}, listing_id={listing_id}")
+			return BAD_REQUEST
+		
 		listing.status = Listing.Status.REQUESTED
-		listing.requester_id = authoritative_id_of(current_user)
+		listing.requester_id = user.id
 
 		db.session.commit()
+
+		logger.info(f"Success: req-listing for user_id={user.id}, listing_id={listing_id}")
+
 		return RESP_OK
 
 	@app.route("/api/internal/fulfill-req")
 	@auth.require_user
 	def fulfilllisting_internal():
-		try: ensure_user()
+		try: user = ensure_user()
 		except PermissionError: return FORBIDDEN
 
 		listing_id = request.args.get("id")
 
-		if type(listing_id) is not str: return BAD_REQUEST
-
+		if type(listing_id) is not str:
+			logger.warning(f"Failure: fulfill-req - Invalid listing_id. user_id={user.id}, value={listing_id}")
+			return BAD_REQUEST
+		
 		listing: Listing = Listing.by_id(listing_id)
 
-		if listing is None: return BAD_REQUEST
-
-		if listing.author_id != authoritative_id_of(current_user): return FORBIDDEN
-		if listing.status != Listing.Status.REQUESTED: return BAD_REQUEST
-
+		if listing is None:
+			logger.warning(f"Failure: fulfill-req - Listing not found. user_id={user.id}, listing_id={listing_id}")
+			return BAD_REQUEST
+		
+		if listing.author_id != user.id:
+			logger.warning(f"Failure: fulfill-req - Forbidden. user_id={user.id}, listing_id={listing_id}")
+			return FORBIDDEN
+		
+		if listing.status != Listing.Status.REQUESTED:
+			logger.warning(f"Failure: fulfill-req - Listing not requested. user_id={user.id}, listing_id={listing_id}")
+			return BAD_REQUEST
+		
 		listing.status = Listing.Status.TAKEN
 		listing.author.stats.books_given += 1
 		listing.author.aura += AURA_PER_BOOK_GIVEN
@@ -666,29 +732,43 @@ def register_internal_api_routes():
 
 		db.session.commit()
 
+		logger.info(f"Success: fulfill-req for user_id={user.id}, listing_id={listing_id}")
+
 		return RESP_OK
 	
 	@app.route("/api/internal/reject-listing-req")
 	@auth.require_user
 	def rejectlistingreq_internal():
-		try: ensure_user()
+		try: user = ensure_user()
 		except PermissionError: return FORBIDDEN
 
 		listing_id = request.args.get("id")
 
-		if type(listing_id) is not str: return BAD_REQUEST
-
+		if type(listing_id) is not str:
+			logger.warning(f"Failure: reject-listing-req - Invalid listing_id. user_id={user.id}, value={listing_id}")
+			return BAD_REQUEST
+		
 		listing: Listing = Listing.query.filter(Listing.id == listing_id).first()
 
-		if listing is None: return BAD_REQUEST
-
-		if listing.status != Listing.Status.REQUESTED: return BAD_REQUEST
-		if listing.author_id != authoritative_id_of(current_user) and listing.requester_id != authoritative_id_of(current_user): return FORBIDDEN
-
+		if listing is None:
+			logger.warning(f"Failure: reject-listing-req - Listing not found. user_id={user.id}, listing_id={listing_id}")
+			return BAD_REQUEST
+		
+		if listing.status != Listing.Status.REQUESTED:
+			logger.warning(f"Failure: reject-listing-req - Listing not requested. user_id={user.id}, listing_id={listing_id}")
+			return BAD_REQUEST
+		
+		if listing.author_id != user.id and listing.requester_id != user.id:
+			logger.warning(f"Failure: reject-listing-req - Forbidden. user_id={user.id}, listing_id={listing_id}")
+			return FORBIDDEN
+		
 		listing.status = Listing.Status.AVAILABLE
 		listing.requester_id = None
 
 		db.session.commit()
+		
+		logger.info(f"Success: reject-listing-req for user_id={user.id}, listing_id={listing_id}")
+
 		return RESP_OK
 
 def init_db_api():	
@@ -707,6 +787,7 @@ def init_db_api():
 		
 		if user is None:
 			if not current_user.user.email.endswith("@regis.org") and (current_user.user.email not in secret_keys.EMAIL_WHITELIST):
+				logger.warning(f"Rejected user {current_user.user.email} (invalid email domain)")
 				auth.delete_user(current_user.user_id)
 				raise PermissionError()
 
@@ -722,6 +803,8 @@ def init_db_api():
 			db.session.add(user)
 
 			db.session.commit()
+
+			logger.info(f"Added user {current_user.user.email} to db")
 
 		return user
 
@@ -1016,6 +1099,8 @@ def init_db_api():
 
 				db.session.add(book)
 				db.session.commit()
+
+				logger.info(f"Added book {isbn} to db")
 
 				return book
 			

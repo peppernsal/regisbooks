@@ -407,7 +407,7 @@ def register_internal_api_routes():
 			total_count = len(filtered_all)
 			filtered  = filtered_all[page_num*LISTINGS_PER_PAGE:(page_num+1)*LISTINGS_PER_PAGE]
 
-		logger.info(f"Success: get-listings, returned={len(filtered)}, total={total_count}")
+		logger.info(f"Success: get-listings, returned={len(filtered)}, total={total_count}, name_full={name_filter}, isbn={isbn_filter}, locations={location_filters}, status={status_filter}, usage={usage_filter}, poster_id={poster_id}, page={page_num}")
 
 		return jsonify({ "listings": [listing.as_dict for listing in filtered], "totalCount": total_count })
 
@@ -671,7 +671,7 @@ def register_internal_api_routes():
 			logger.warning(f"Failure: req-listing - Invalid listing_id. user_id={user.id}, value={listing_id}")
 			return BAD_REQUEST
 		
-		listing: Listing = Listing.query.filter(Listing.id == listing_id).first()
+		listing: Listing = Listing.by_id(Listing.id == listing_id)
 
 		if listing is None:
 			logger.warning(f"Failure: req-listing - Listing not found. user_id={user.id}, listing_id={listing_id}")
@@ -748,7 +748,7 @@ def register_internal_api_routes():
 			logger.warning(f"Failure: reject-listing-req - Invalid listing_id. user_id={user.id}, value={listing_id}")
 			return BAD_REQUEST
 		
-		listing: Listing = Listing.query.filter(Listing.id == listing_id).first()
+		listing: Listing = Listing.by_id(listing_id)
 
 		if listing is None:
 			logger.warning(f"Failure: reject-listing-req - Listing not found. user_id={user.id}, listing_id={listing_id}")

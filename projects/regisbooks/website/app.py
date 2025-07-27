@@ -671,7 +671,7 @@ def register_internal_api_routes():
 			logger.warning(f"Failure: req-listing - Invalid listing_id. user_id={user.id}, value={listing_id}")
 			return BAD_REQUEST
 		
-		listing: Listing = Listing.by_id(Listing.id == listing_id)
+		listing: Listing = Listing.by_id(listing_id)
 
 		if listing is None:
 			logger.warning(f"Failure: req-listing - Listing not found. user_id={user.id}, listing_id={listing_id}")

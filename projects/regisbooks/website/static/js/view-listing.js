@@ -221,7 +221,7 @@ async function displayRequestInfo(book, listing, poster) {
 
 	document.getElementById("success-message").innerHTML = 'You have successfully requested this listing! <span class="text-danger">Please reach out to the lister via email or text.</span> They will <em>not</em> receive an automatic notification.';
 
-	document.getElementById("rem-listing-btn").onclick = () => {
+	document.getElementById("rem-listing-req").onclick = () => {
 		rejectListingReq(listingID).then((resp) => {
 			if (resp.status != 200) {
 				alert("Uh Oh! Something went wrong while trying to remove your request. Please try again later.");

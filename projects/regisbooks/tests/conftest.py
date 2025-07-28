@@ -1,8 +1,9 @@
 import os
 import subprocess
-import sys
 import pytest
 import selenium.webdriver as webdriver
+
+USER_DATA_DIR_BASE = os.path.join(os.path.dirname(__file__), "profiles")
 
 @pytest.fixture(scope="session")
 def driver():
@@ -31,10 +32,8 @@ def driver():
 
 	# setup webdriver instance
 
-	USER_DATA_DIR = os.path.join(os.path.dirname(__file__), "profiles")
-
 	options = webdriver.ChromeOptions()
-	options.add_argument(f"--user-data-dir={USER_DATA_DIR}")
+	options.add_argument(f"--user-data-dir={USER_DATA_DIR_BASE}")
 	options.add_argument("--profile-directory=Default")
 	options.add_argument("--headless")
 
@@ -59,3 +58,14 @@ def driver():
 	open("static/js/auth.js", "w").write(auth_js)
 
 	os.chdir("../tests")
+
+@pytest.fixture(scope="session")
+def driver_two():
+	options = webdriver.ChromeOptions()
+	options.add_argument(f"--user-data-dir={USER_DATA_DIR_BASE}2")
+	options.add_argument("--profile-directory=Default")
+	options.add_argument("--headless")
+
+	driver = webdriver.Chrome(options=options)
+
+	yield driver

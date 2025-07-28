@@ -6,5 +6,5 @@ obj
 *.egg-info
 *.env
 database.db
-profiles
+profiles*
 .pytest_cache

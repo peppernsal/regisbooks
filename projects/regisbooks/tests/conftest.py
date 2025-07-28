@@ -35,7 +35,7 @@ def driver():
 	options = webdriver.ChromeOptions()
 	options.add_argument(f"--user-data-dir={USER_DATA_DIR_BASE}")
 	options.add_argument("--profile-directory=Default")
-	options.add_argument("--headless")
+	# options.add_argument("--headless")
 
 	driver = webdriver.Chrome(options=options)
 
@@ -64,7 +64,7 @@ def driver_two():
 	options = webdriver.ChromeOptions()
 	options.add_argument(f"--user-data-dir={USER_DATA_DIR_BASE}2")
 	options.add_argument("--profile-directory=Default")
-	options.add_argument("--headless")
+	# options.add_argument("--headless")
 
 	driver = webdriver.Chrome(options=options)
 

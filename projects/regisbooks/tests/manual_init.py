@@ -1,5 +1,5 @@
 import asyncio
-from server_url import SERVER_URL
+from utils import SERVER_URL
 import os
 import zendriver
 

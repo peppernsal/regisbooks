@@ -334,7 +334,7 @@ if (isNaN(listingsPageNumber) || listingsPageNumber < 0) {
 nameFilter.value = searchParams.get("name") || "";
 isbnFilter.value = searchParams.get("isbn") || "";
 classFilter.value = searchParams.get("usage") || "";
-statusFilter.value = searchParams.get("status") || "";
+statusFilter.value = searchParams.get("status") || "0";
 myListingsCheckbox.checked = searchParams.get("myListings") === "true";
 const locationFilterString = searchParams.get("locations") || "";
 const locationFilterArray = locationFilterString.split(",").map(loc => loc.trim()).filter(loc => loc !== "");

@@ -12,39 +12,42 @@ const loaderAnimation = setInterval(() => {
 if (!listingID) location.href = "/view-listings";
 
 document.addEventListener("DOMContentLoaded", async () => {
+	let bookInfo;
+	let listingInfo;
+	
 	try {
 		const userID = await getUserID();
-		const listingInfo = await getListingInfo(listingID);
-		const bookInfo = await getBookInfo(listingInfo.bookID);
+		listingInfo = await getListingInfo(listingID);
+		bookInfo = await getBookInfo(listingInfo.bookID);
 
 		if (listingInfo.authorID != userID) {
 			alert("You do not have permission to edit this listing!");
 			location.href = `/view-listing?id=${listingID}`;
 		}
-
-		document.getElementById("book-title").textContent = bookInfo.title;
-		document.getElementById("book-author").textContent = bookInfo.author;
-		document.getElementById("book-isbn").textContent = `ISBN: ${bookInfo.id}`;
-		document.getElementById("book-publishing-info").textContent = `Published by ${bookInfo.publisher}, ${bookInfo.publishDate}`;
-		
-		document.getElementById("book-cover-img").src = bookInfo.coverImageURL;
-		document.getElementById("cover-disclaimer").textContent = "Note: cover image and publisher may not match physical book. Check ISBN to match versions.";
-	
-
-		document.getElementById("usage-level").value = listingInfo.usageLevel;
-		document.getElementById("notes").value = listingInfo.notes;
-		document.getElementById("english-flag").checked = listingInfo.isAnnotatedEnglishBook;
-		
-		for (const location of listingInfo.pickupLocations) {
-			const inputElem = addPickupLocation();
-			inputElem.value = location;
-		}
-
-		clearInterval(loaderAnimation);
-		waitingMessage.remove();
 	} catch (err) {		
 		location.href = `/view-listing?id=${listingID}`;
 	}
+
+	document.getElementById("book-title").textContent = bookInfo.title;
+	document.getElementById("book-author").textContent = bookInfo.author;
+	document.getElementById("book-isbn").textContent = `ISBN: ${bookInfo.id}`;
+	document.getElementById("book-publishing-info").textContent = `Published by ${bookInfo.publisher}, ${bookInfo.publishDate}`;
+	
+	document.getElementById("book-cover-img").src = bookInfo.coverImageURL;
+	document.getElementById("cover-disclaimer").textContent = "Note: cover image and publisher may not match physical book. Check ISBN to match versions.";
+
+
+	document.getElementById("usage-level").value = listingInfo.usageLevel;
+	document.getElementById("notes").value = listingInfo.notes;
+	document.getElementById("english-flag").checked = listingInfo.isAnnotatedEnglishBook;
+	
+	for (const location of listingInfo.pickupLocations) {
+		const inputElem = addPickupLocation();
+		inputElem.value = location;
+	}
+
+	clearInterval(loaderAnimation);
+	waitingMessage.remove();
 });
 
 function editListing() {

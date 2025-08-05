@@ -113,3 +113,7 @@ def test_request_listing(driver: webdriver.Chrome, driver_two: webdriver.Chrome)
 	req_listing_btn.click()
 
 	assert timeout(driver_two, EC.text_to_be_present_in_element((By.ID, "email-info"), TEST_USER_ONE_EMAIL))
+
+@pytest.mark.order(5)
+def test_fulfill_request(driver: webdriver.Chrome, driver_two: webdriver.Chrome):
+	pass

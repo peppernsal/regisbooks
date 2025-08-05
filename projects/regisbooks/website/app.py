@@ -220,23 +220,31 @@ def register_external_api_routes(): # TODO, also have an efficient system to man
 
 		return RESP_OK
 
-	@app.route("/api/external/set-listing-status", methods=["POST"])
-	def setlistingstatus_external():
+	@app.route("/api/external/undo-fulfill", methods=["POST"])
+	def undofulfill_external():
 		admin_key = request.json.get("key")
 
 		if not check_admin_key(admin_key): return FORBIDDEN
 
 		listing_id = request.json.get("listingID")
-		status = request.json.get("status")
 
 		if type(listing_id) is not str: return BAD_REQUEST
-		if type(status) is not int or not (Listing.Status.AVAILABLE <= status <= Listing.Status.TAKEN): return BAD_REQUEST
 
 		listing = Listing.by_id(listing_id)
 
 		if listing is None: return BAD_REQUEST
+		if listing.status != Listing.Status.TAKEN: return BAD_REQUEST
 
-		listing.status = status
+		listing.status = Listing.Status.REQUESTED
+		listing.author.stats.books_given -= 1
+		listing.author.aura -= AURA_PER_BOOK_GIVEN
+
+		requester = listing.requester
+		requester.stats.books_received -= 1
+
+		flag_modified(listing.author, "stats") # ensure stats is updated in db
+		flag_modified(requester, "stats")
+
 
 		db.session.commit()
 

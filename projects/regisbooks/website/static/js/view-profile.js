@@ -271,6 +271,13 @@ document.addEventListener("DOMContentLoaded", async () => {
 		alertInner.className = 'alert alert-warning';
 		alert.appendChild(alertInner);
 		listingsContainer.appendChild(alert);
+	} else { // add a placeholder alert for foreign profiles with no listings
+		const alert = document.createElement('div');
+		alert.className = 'col-md-12 text-center';
+		const alertInner = textElem('div', `${userInfo.firstName} hasn't made any listings yet!`);
+		alertInner.className = 'alert alert-secondary';
+		alert.appendChild(alertInner);
+		listingsContainer.appendChild(alert);
 	}
 });
 

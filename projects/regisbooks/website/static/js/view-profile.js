@@ -263,7 +263,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 		alertInner.className = 'alert alert-secondary';
 		alert.appendChild(alertInner);
 		listingsContainer.appendChild(alert);
-	} else { // no listings were ever made, encourage the user to make some...
+	} else if (selfProfile) { // no listings were ever made, encourage the user to make some...
 		const alert = document.createElement('div');
 		alert.className = 'col-md-12 text-center';
 		const alertInner = document.createElement('div');

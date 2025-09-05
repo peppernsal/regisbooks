@@ -11,7 +11,7 @@ async function populateBooks() {
 	const books = await getBooks(classFilter.value);
 
 	for (const book of books) {
-		const listingCount = (await getListings({ isbn: book.isbn})).totalCount;
+		const listingCount = (await getListings({ isbn: book.isbn })).totalCount;
 
 		if (listingCount === 0) continue;
 

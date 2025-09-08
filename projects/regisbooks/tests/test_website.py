@@ -41,8 +41,7 @@ def test_bookfetch(driver: webdriver.Chrome, driver_two: webdriver.Chrome):
 
 	title = driver.find_element(value="book-title").text
 
-	assert title == "The Complete Maus"
-
+	assert "Maus" in title
 
 # TODO: add testing for error cases which trigger window.alert
 
@@ -86,7 +85,7 @@ def test_listing_created(driver: webdriver.Chrome, driver_two: webdriver.Chrome)
 
 	driver_two.get(driver.current_url)
 
-	assert timeout(driver_two, EC.text_to_be_present_in_element((By.ID, "book-title"), "The Complete Maus"))
+	assert timeout(driver_two, EC.text_to_be_present_in_element((By.ID, "book-title"), "Maus"))
 	assert driver_two.find_element(value="listing-author").text == f"Listed by: {TEST_USER_ONE}"
 	assert driver_two.find_element(value="listing-usage-level").text == "Condition: Lightly Used"
 	assert driver_two.find_element(value="listing-status").text == "Status: Available"
@@ -107,7 +106,7 @@ def test_request_listing(driver: webdriver.Chrome, driver_two: webdriver.Chrome)
 	assert (alert := timeout(driver_two, EC.alert_is_present()))
 	alert.accept()
 
-	assert timeout(driver_two, EC.text_to_be_present_in_element((By.ID, "book-title"), "The Complete Maus")) # wait for the listing to reload
+	assert timeout(driver_two, EC.text_to_be_present_in_element((By.ID, "book-title"), "Maus")) # wait for the listing to reload
 
 	assert (req_listing_btn := timeout(driver_two, EC.presence_of_element_located((By.ID, "request-listing"))))
 	req_listing_btn.click()

@@ -1,5 +1,7 @@
 import re
 import hashlib
+
+import flask
 import genid
 import httpx
 import isbnlib
@@ -41,7 +43,7 @@ def webpy_setup(app: App):
 	init_db_api()
 	register_internal_api_routes()
 	register_external_api_routes()
-	reigster_404_handler()
+	reigster_error_handlers()
 
 
 def register_external_api_routes(): # TODO, also have an efficient system to manage verification of API keys (research) |||| extract & reuse logic from register_internal_api_routes
@@ -1169,8 +1171,23 @@ def init_db_api():
 				publish_date=book_info["publish_date"],
 				cover_image_url=cover_url
 			)
-		
-def reigster_404_handler():
+
+def reigster_error_handlers():
 	@app.errorhandler(404)
 	def not_found(e):
 		return render_template("404.html"), 404
+	
+def register_middleware():
+	@app.after_request
+	def apply_csp(response: flask.Response):
+		if request.path.startswith("/api"): return response # API routes don't need CSP
+
+		response.headers["Content-Security-Policy"] = (
+			"script-src 'self' https://cdn.jsdelivr.net https://www.unpkg.com",
+			"style-src 'self' https://cdn.jsdelivr.net",
+			"img-src 'self' data: https://covers.openlibrary.org https://books.google.com",
+			"object-src 'none';",
+			"base-uri 'self';"
+		)
+
+		return response

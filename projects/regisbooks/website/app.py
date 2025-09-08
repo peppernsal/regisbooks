@@ -1183,10 +1183,10 @@ def register_middleware():
 		if request.path.startswith("/api"): return response # API routes don't need CSP
 
 		response.headers["Content-Security-Policy"] = (
-			"script-src 'self' https://cdn.jsdelivr.net https://www.unpkg.com",
-			"style-src 'self' https://cdn.jsdelivr.net",
-			"img-src 'self' data: https://covers.openlibrary.org https://books.google.com",
-			"object-src 'none';",
+			"script-src 'self' https://cdn.jsdelivr.net https://www.unpkg.com;"
+			"style-src 'self' https://cdn.jsdelivr.net;"
+			"img-src 'self' data: https://covers.openlibrary.org https://books.google.com;"
+			"object-src 'none';"
 			"base-uri 'self';"
 		)
 

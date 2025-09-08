@@ -19,7 +19,7 @@ def profile_loaded(driver: webdriver.Chrome, username: str):
 		signin_btn = driver.find_element(By.CSS_SELECTOR, "#__next > div > div > main > div.mantine-MediaQuery-media.mantine-zcpb3y > div > div.mantine-b6zkvl.mantine-ScrollArea-viewport > div > div > div > div.mantine-Paper-root.mantine-sowdty > div > button")
 		signin_btn.click()
 
-	assert driver.current_url == page(f"view-profile/")
+	assert timeout(driver, EC.url_to_be(page(f"view-profile/")))
 
 	assert timeout(driver, EC.text_to_be_present_in_element((By.ID, "full-name"), username))
 

@@ -43,8 +43,6 @@ def test_bookfetch(driver: webdriver.Chrome, driver_two: webdriver.Chrome):
 
 	assert "Maus" in title
 
-# TODO: add testing for error cases which trigger window.alert
-
 @pytest.mark.order(2)
 def test_add_listing(driver: webdriver.Chrome, driver_two: webdriver.Chrome):
 	# the add-listing page should already be loaded from the previous test

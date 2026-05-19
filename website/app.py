@@ -46,7 +46,7 @@ def webpy_setup(app: App):
 	reigster_error_handlers()
 
 
-def register_external_api_routes(): # TODO, also have an efficient system to manage verification of API keys (research) |||| extract & reuse logic from register_internal_api_routes
+def register_external_api_routes():
 	def check_admin_key(key: str) -> bool:
 		key_hash = hashlib.sha512(key.encode()).hexdigest()
 
@@ -1139,7 +1139,7 @@ def init_db_api():
 			return already
 
 		@staticmethod
-		def from_isbn(isbn: str) -> "Book": # TODO: add validation for isbns, add logging to this method
+		def from_isbn(isbn: str) -> "Book":
 			if isbnlib.is_isbn10(isbn):
 				isbn = isbnlib.to_isbn13(isbn)
 
@@ -1154,7 +1154,6 @@ def init_db_api():
 			author: str = httpx.get(f"https://openlibrary.org{author_path}.json", follow_redirects=True).json()["name"]
 
 			# first try to get cover from google, then openlib, then give up
-			# TODO: use OLID rather than ISBN for cover-fetching
 
 			try:
 				google_info = httpx.get(f"https://www.googleapis.com/books/v1/volumes?q=isbn:{isbn}", follow_redirects=True).json()

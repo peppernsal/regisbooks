@@ -1139,7 +1139,7 @@ def init_db_api():
 			return already
 
 		@staticmethod
-		def from_isbn(isbn: str) -> "Book": # TODO: add validation for isbns
+		def from_isbn(isbn: str) -> "Book": # TODO: add validation for isbns, add logging to this method
 			if isbnlib.is_isbn10(isbn):
 				isbn = isbnlib.to_isbn13(isbn)
 
@@ -1154,13 +1154,19 @@ def init_db_api():
 			author: str = httpx.get(f"https://openlibrary.org{author_path}.json", follow_redirects=True).json()["name"]
 
 			# first try to get cover from google, then openlib, then give up
-			google_info = httpx.get(f"https://www.googleapis.com/books/v1/volumes?q=isbn:{isbn}", follow_redirects=True).json()
+			# TODO: use OLID rather than ISBN for cover-fetching
 
-			try: cover_url = google_info["items"][0]["volumeInfo"]["imageLinks"]["thumbnail"]
-			except KeyError:
+			try:
+				google_info = httpx.get(f"https://www.googleapis.com/books/v1/volumes?q=isbn:{isbn}", follow_redirects=True).json()
+
+				cover_url = google_info["items"][0]["volumeInfo"]["imageLinks"]["thumbnail"]
+			except (KeyError, httpx.HTTPError):
 				cover_url = f"https://covers.openlibrary.org/b/isbn/{isbn}-L.jpg"
 
-				if httpx.get(cover_url, follow_redirects=True).is_error:
+				try:
+					if httpx.get(cover_url, follow_redirects=True).is_error:
+						cover_url = "/static/images/no-cover.png"
+				except httpx.HTTPError:
 					cover_url = "/static/images/no-cover.png"
 
 			return Book(

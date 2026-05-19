@@ -12,7 +12,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 	const leaderboardContent = document.getElementById("leaderboard-content");
 	try {
 		const topUsers = await getLeaderboard();
-		
+
 		topUsers.forEach((user, index) => {
 			const userRow = document.createElement("div");
 			userRow.className = "d-flex justify-content-between align-items-center border-bottom py-2";
@@ -28,7 +28,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 			usernameLink.href = `/view-profile?id=${user.id}`;
 			usernameLink.textContent = `@${user.username}`;
 			nameSpan.appendChild(usernameLink);
-			
+
 			const pointsSpan = document.createElement("span");
 			pointsSpan.className = "text-warning";
 			pointsSpan.textContent = `${user.aura} Aura`;

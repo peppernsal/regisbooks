@@ -78,7 +78,7 @@ def test_listing_created(driver: webdriver.Chrome, driver_two: webdriver.Chrome)
 	assert timeout(driver, EC.url_contains(page("view-listings/")))
 
 	assert (listing_anchor := timeout(driver, EC.presence_of_element_located((By.CSS_SELECTOR, "#listings-container > div:nth-child(1) > div:nth-child(1) > a"))))
-	
+
 	listing_anchor.click()
 
 	# now switch to the other user

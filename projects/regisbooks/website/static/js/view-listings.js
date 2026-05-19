@@ -53,7 +53,7 @@ function clearFilters() {
 	statusFilter.value = "";
 	myListingsCheckbox.checked = false;
 	locationTags.innerHTML = "";
-	
+
 	populateListings();
 }
 
@@ -141,7 +141,7 @@ async function newSearch() {
 async function populateListings() {
 	disableFilters();
 	listingsContainer.innerHTML = ""; // Clear previous listings
-	
+
 	const usageLevel = parseInt(document.getElementById("filter-usage").value);
 	const statusLevel = parseInt(document.getElementById("filter-status").value);
 	const locationTags = document.getElementById("location-tags");
@@ -167,7 +167,7 @@ async function populateListings() {
 
 	const start = listingsPageNumber*LISTINGS_PER_PAGE;
 	const end = start+listings.length;
-	
+
 	for (let i = 0; i < listings.length; i+=2) {
 		const group = listings.slice(i, i+2);
 

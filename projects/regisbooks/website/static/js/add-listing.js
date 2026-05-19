@@ -18,7 +18,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 		document.getElementById("book-author").textContent = bookInfo.author;
 		document.getElementById("book-isbn").textContent = `ISBN: ${bookISBN}`;
 		document.getElementById("book-publishing-info").textContent = `Published by ${bookInfo.publisher}, ${bookInfo.publishDate}`;
-		
+
 		document.getElementById("book-cover-img").src = bookInfo.coverImageURL;
 		document.getElementById("cover-disclaimer").textContent = "Note: cover image and publisher may not match physical book. Check ISBN to match versions.";
 
@@ -41,7 +41,7 @@ function createListing() {
 		).map((el) => el.value).filter((el) => el !== "")
 	);
 	const pickupLocations = [...pickupLocationsUnique];
-	
+
 	if (usageLevel === "") {
 		alert("Please fill the usage level field!");
 		return;
@@ -64,7 +64,7 @@ function createListing() {
 		pickupLocations,
 		englishFlag
 	}
-	
+
 	addListing(listingInfo).then(() => location.href = "/view-listings");
 }
 
@@ -74,7 +74,7 @@ function addPickupLocation() {
 	const numberOfPickupLocations = document.querySelectorAll(".pickup-location").length;
 
 	if (numberOfPickupLocations >= 4) { document.getElementById("add-pickup-location").disabled = true; }
-	
+
 	const innerDiv = document.createElement("div");
 	innerDiv.className = "row pt-3 justify-content-center";
 
@@ -87,7 +87,7 @@ function addPickupLocation() {
 	inputDiv.className = "col-5 offset-1";
 
 	const inputElem = document.createElement("input");
-	
+
 	inputElem.type = "text";
 	inputElem.placeholder = "ex. Fairfield, CT";
 
@@ -140,7 +140,7 @@ function addPickupLocation() {
 
 	const removeDiv = document.createElement("div");
 	removeDiv.className = "col-2";
-	
+
 	const removeBtn = document.createElement("button");
 	removeBtn.textContent = "Remove";
 	removeBtn.className = "btn btn-danger";
@@ -160,7 +160,7 @@ function addPickupLocation() {
 	locationsContainer.append(innerDiv);
 
 	window.scrollTo({
-		top: document.body.scrollHeight, 
+		top: document.body.scrollHeight,
 		behavior: 'smooth'
 	});
 }

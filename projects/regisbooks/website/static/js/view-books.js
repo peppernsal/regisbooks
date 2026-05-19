@@ -65,7 +65,7 @@ async function populateBooks() {
 		} else {
 			listingsCountDisplay.textContent = `${listings.length} listings available`;
 		}
-		
+
 		rightContent.appendChild(listingsCountDisplay);
 
 		if (listings.length !== 0) {

@@ -5,7 +5,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 	const selfProfile = userID === null || userID === selfUserID;
 
 	let userInfo;
-	
+
 	try {
 		userInfo = await getUserInfo(userID);
 	} catch (err) {
@@ -39,7 +39,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 			const phone = userInfo.phoneNumber;
 
 			phoneElem.textContent = `(${phone.slice(0, 3)}) ${phone.slice(3, 6)}-${phone.slice(6, 10)}`;
-		
+
 			const removeBtn = document.createElement("button");
 			removeBtn.className = "btn btn-danger btn-sm ms-2";
 			removeBtn.innerHTML = '<i class="bi bi-trash"></i>';
@@ -68,13 +68,13 @@ document.addEventListener("DOMContentLoaded", async () => {
 			addPhoneBtn.setAttribute("title", "Adding a phone number makes it easier for users to contact you when they request your listings. Your number will not be shown to other users when they view your profile.");
 			addPhoneBtn.setAttribute("data-bs-toggle", "tooltip");
 			addPhoneBtn.setAttribute("data-bs-placement", "top");
-			
+
 			const tooltip = new window.bootstrap.Tooltip(addPhoneBtn);
 
 			addPhoneBtn.onclick = () => {
 				const inputDiv = document.createElement("div");
 				inputDiv.className = "d-inline-flex align-items-center";
-			
+
 
 				const input = document.createElement("input");
 				input.type = "text";
@@ -90,7 +90,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 						submitBtn.click();
 					}
 				});
-				
+
 				input.addEventListener("input", (e) => {
 					let value = input.value.replace(/\D/g, "");
 					if (value.length > 10) value = value.slice(0, 10);
@@ -105,7 +105,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 				submitBtn.className = "btn btn-success";
 				submitBtn.type = "button";
 				submitBtn.textContent = "Update";
-				
+
 				submitBtn.onclick = async () => {
 					const value = input.value.trim();
 					const phonePattern = /^\(\d{3}\) \d{3}-\d{4}$/;
@@ -117,13 +117,13 @@ document.addEventListener("DOMContentLoaded", async () => {
 						alert("Please make sure that your phone number is ten digits!");
 						return;
 					}
-					
+
 					input.classList.remove("is-invalid");
 
 					try {
 						const digitsOnly = value.replace(/\D/g, "");
 						await updatePhoneNumber(digitsOnly);
-						
+
 						tooltip.dispose();
 
 						alert("Phone number successfully updated!");
@@ -147,7 +147,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 	document.getElementById('aura').textContent = userInfo.aura;
 
 	const statsContainerLabel = document.getElementById('stats-container-label-text');
-	
+
 	if (selfProfile) {
 		statsContainerLabel.textContent = 'Your Stats';
 	} else {
@@ -173,7 +173,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 	document.getElementById('stat-listings-made').textContent = userInfo.stats.listingsMade;
 	document.getElementById('stat-books-given').textContent = userInfo.stats.booksGiven;
 	document.getElementById('stat-books-received').textContent = userInfo.stats.booksReceived;
-	
+
 	// fill badges and notify if needed
 	const displayBadges = await getUpdatedAchievedBadges(userInfo.id);
 
@@ -194,7 +194,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 	const badgesDisplayContainer = document.getElementById("badges-display-container");
 
 	badgesDisplayContainer.innerHTML = '';
-	
+
 	let row;
 
 	displayBadges.forEach((badge, i) => {
@@ -222,7 +222,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 		badgeWrapper.appendChild(caption);
 		row.appendChild(badgeWrapper);
 	});
-	
+
 	const listingsContainer = document.getElementById('user-listings');
 	listingsContainer.textContent = '';
 
@@ -235,21 +235,21 @@ document.addEventListener("DOMContentLoaded", async () => {
 			const book = await getBookInfo(listing.bookID);
 			const container = document.createElement('div');
 			container.className = 'col-12 mb-2';
-			
+
 			const link = document.createElement('a');
 			link.href = `/view-listing?id=${listing.id}`;
 			link.className = 'text-decoration-none';
-			
+
 			const summary = document.createElement('div');
 			summary.className = 'p-3 rounded border border-success bg-light d-flex justify-content-between align-items-center';
-			
+
 			const title = textElem('span', book.title);
 			title.className = 'text-success';
-			
+
 			const status = listingStatusRepr[listing.status];
 			const badge = textElem('span', status);
 			badge.className = `badge bg-${listing.status === STATUS_AVAILABLE ? 'success' : 'warning'} ms-2`;
-			
+
 			summary.appendChild(title);
 			summary.appendChild(badge);
 			link.appendChild(summary);

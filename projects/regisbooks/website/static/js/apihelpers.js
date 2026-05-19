@@ -96,7 +96,7 @@ function getListings(options) {
 
 async function getListingsPaginateFully(options) {
 	const listings = [];
-	
+
 	let page = 0;
 	while (true) {
 		const res = (await getListings({ ...options, page }));

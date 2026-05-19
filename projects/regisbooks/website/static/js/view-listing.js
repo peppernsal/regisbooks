@@ -13,7 +13,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 		document.getElementById("book-publishing-info").textContent = `${book.publisher}, ${book.publishDate}`;
 
 		const authorElement = document.getElementById("listing-author");
-		
+
 		if (author.id != currUserId) {
 			authorElement.innerHTML = 'Listed by: ';
 			authorElement.appendChild(createUserLink(author));
@@ -45,7 +45,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 		} else {
 			document.getElementById("english-alert").remove();
 		}
-	
+
 		if (author.id != currUserId) {
 			if (listing.status == STATUS_REQUESTED) {
 				const reqBtn = document.getElementById("request-listing");
@@ -76,7 +76,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 				replacementDiv.classList.add("row", "align-items-center", "text-center");
 
 				const remBtn = document.createElement("button");
-				
+
 				remBtn.className = "btn btn-danger btn-lg fw-bold my-2 col-md-4";
 				remBtn.textContent = "Delete this Listing";
 				remBtn.onclick = () => {
@@ -116,7 +116,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
 				const replacementDiv = document.createElement("div");
 				replacementDiv.classList.add("row", "align-items-center", "text-center")
-				
+
 				const reqInfoDiv = document.createElement("div");
 				reqInfoDiv.classList.add("col-md-7");
 
@@ -151,7 +151,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 				}
 
 				actionsDiv.appendChild(fulfillBtn);
-			
+
 				const rejectBtn = document.createElement("button");
 				rejectBtn.appendChild(textElem("h4", `Reject Request`));
 				rejectBtn.classList.add("btn", "btn-danger", "m-2");
@@ -167,8 +167,8 @@ document.addEventListener("DOMContentLoaded", async () => {
 					}
 				};
 
-				actionsDiv.appendChild(rejectBtn);			
-			
+				actionsDiv.appendChild(rejectBtn);
+
 				replacementDiv.appendChild(reqInfoDiv);
 				replacementDiv.appendChild(actionsDiv);
 
@@ -228,7 +228,7 @@ async function displayRequestInfo(book, listing, poster) {
 				location.reload();
 				return;
 			}
-			
+
 			alert("You have successfully removed your request!");
 			location.reload();
 		});

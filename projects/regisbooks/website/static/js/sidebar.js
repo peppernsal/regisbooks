@@ -6,8 +6,8 @@ function toggleSidebar() {
 		sidebar.classList.remove('collapsed');
 		content.classList.remove('centered');
 		localStorage.setItem('sidebarState', 'expanded');
-		
-		
+
+
 	} else {
 		sidebar.classList.add('collapsed');
 		content.classList.add('centered');

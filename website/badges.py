@@ -74,7 +74,7 @@ badges: list[BadgeInfo] = [
 	),
 	BadgeInfo(
 		"Stacking",
-		"List a book that at least two other listings already posted",
+		"List a book that has at least two other listings already posted",
 		lambda user, Listing, Book: any(
 			True for listing in user.listings if len(listing.book.listings) >= 3
 		)

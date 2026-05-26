@@ -104,6 +104,17 @@ const nextPageButton = document.getElementById("next-page");
 const prevPageButton = document.getElementById("prev-page");
 const pageInfo = document.getElementById("page-info");
 
+async function disablePaginationButtonsForListingPopulation() {
+	nextPageButton.disabled = true;
+	prevPageButton.disabled = true;
+
+	const pageButtonContainer = document.getElementById("page-buttons-container");
+
+	for (const button of pageButtonContainer.children) {
+		button.disabled = true;
+	}
+}
+
 async function updatePaginationButtonStates(startingNumber, endingNumber, totalListings) {
 	if (listingsPageNumber === 0) {
 		prevPageButton.disabled = true;
@@ -140,6 +151,8 @@ async function newSearch() {
 
 async function populateListings() {
 	disableFilters();
+	disablePaginationButtonsForListingPopulation();
+
 	listingsContainer.innerHTML = ""; // Clear previous listings
 
 	const usageLevel = parseInt(document.getElementById("filter-usage").value);
@@ -290,8 +303,6 @@ async function populateListings() {
 	window.history.replaceState({}, '', `${location.pathname}?${searchParams.toString()}`);
 
 	enableFilters();
-
-
 }
 
 function createPageJumpButton(pageNum) {

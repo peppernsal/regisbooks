@@ -24,8 +24,8 @@ document.addEventListener("DOMContentLoaded", async () => {
 
 		clearInterval(loaderAnimation);
 		waitingMessage.remove();
-	} catch { // book doesn't exist
-		alert("Invalid ISBN!");
+	} catch { // book doesn't exist or the API call failed
+		alert("Could not load a book from that ISBN!");
 		location.href = "/enter-isbn";
 	}
 });

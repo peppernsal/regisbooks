@@ -687,7 +687,7 @@ def register_internal_api_routes():
 			logger.info(f"Success: add-book for isbn={isbn}")
 
 			return jsonify(book.as_dict)
-		except JSONDecodeError:
+		except JSONDecodeError as e:
 			logger.warning(f"Failure: add-book - JSON decode error. isbn={isbn}")
 			return BAD_REQUEST
 
@@ -1143,37 +1143,23 @@ def init_db_api():
 			if isbnlib.is_isbn10(isbn):
 				isbn = isbnlib.to_isbn13(isbn)
 
-			book_info = httpx.get(f"https://openlibrary.org/isbn/{isbn}.json", follow_redirects=True).json()
+			book_info: dict = httpx.get(
+				f"https://www.googleapis.com/books/v1/volumes?q=isbn:{isbn}&key={secret_keys.GOOGLE_BOOKS_API_KEY}",\
+				follow_redirects=True
+			).json()["items"][0]["volumeInfo"]
 
-			work_path: str = book_info["works"][0]["key"]
-
-			work_info = httpx.get(f"https://openlibrary.org{work_path}.json", follow_redirects=True).json()
-
-			author_path: str = work_info["authors"][0]["author"]["key"]
-
-			author: str = httpx.get(f"https://openlibrary.org{author_path}.json", follow_redirects=True).json()["name"]
-
-			# first try to get cover from google, then openlib, then give up
-
-			try:
-				google_info = httpx.get(f"https://www.googleapis.com/books/v1/volumes?q=isbn:{isbn}", follow_redirects=True).json()
-
-				cover_url = google_info["items"][0]["volumeInfo"]["imageLinks"]["thumbnail"]
-			except (KeyError, httpx.HTTPError):
-				cover_url = f"https://covers.openlibrary.org/b/isbn/{isbn}-L.jpg"
-
-				try:
-					if httpx.get(cover_url, follow_redirects=True).is_error:
-						cover_url = "/static/images/no-cover.png"
-				except httpx.HTTPError:
-					cover_url = "/static/images/no-cover.png"
+			title: str = book_info["title"]
+			author: str = book_info["authors"][0]
+			publisher: str = book_info["publisher"]
+			publish_date: str = book_info["publishedDate"]
+			cover_url: str = book_info.get("imageLinks", {}).get("thumbnail", "/static/images/no-cover.png")
 
 			return Book(
 				id=isbn,
-				title=work_info["title"],
+				title=title,
 				author=author,
-				publisher=book_info["publishers"][0],
-				publish_date=book_info["publish_date"],
+				publisher=publisher,
+				publish_date=publish_date,
 				cover_image_url=cover_url
 			)
 

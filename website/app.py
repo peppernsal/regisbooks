@@ -1144,16 +1144,41 @@ def init_db_api():
 			if isbnlib.is_isbn10(isbn):
 				isbn = isbnlib.to_isbn13(isbn)
 
-			book_info: dict = httpx.get(
-				f"https://www.googleapis.com/books/v1/volumes?q=isbn:{isbn}&key={secret_keys.GOOGLE_BOOKS_API_KEY}",\
-				follow_redirects=True
-			).json()["items"][0]["volumeInfo"]
+			try:
+				book_info: dict = httpx.get(
+					f"https://www.googleapis.com/books/v1/volumes?q=isbn:{isbn}&key={secret_keys.GOOGLE_BOOKS_API_KEY}",\
+					follow_redirects=True
+				).json()["items"][0]["volumeInfo"]
 
-			title: str = book_info["title"]
-			author: str = book_info["authors"][0]
-			publisher: str = book_info["publisher"]
-			publish_date: str = book_info["publishedDate"]
-			cover_url: str = book_info.get("imageLinks", {}).get("thumbnail", "/static/images/no-cover.png")
+				title: str = book_info["title"]
+				author: str = book_info["authors"][0]
+				publisher: str = book_info["publisher"]
+				publish_date: str = book_info["publishedDate"]
+				cover_url: str = book_info.get("imageLinks", {}).get("thumbnail", "/static/images/no-cover.png")
+			except KeyError: # Google Books API returned zero items, use openlib as fallback
+				book_info = httpx.get(f"https://openlibrary.org/isbn/{isbn}.json", follow_redirects=True).json()
+
+				work_path: str = book_info["works"][0]["key"]
+
+				work_info = httpx.get(f"https://openlibrary.org{work_path}.json", follow_redirects=True).json()
+
+				author_path: str = work_info["authors"][0]["author"]["key"]
+
+				author: str = httpx.get(f"https://openlibrary.org{author_path}.json", follow_redirects=True).json()["name"]
+
+				# try to get cover from openlib, if we can't reach it, give up
+
+				cover_url = f"https://covers.openlibrary.org/b/isbn/{isbn}-L.jpg"
+
+				try:
+					if httpx.get(cover_url, follow_redirects=True).is_error:
+						cover_url = "/static/images/no-cover.png"
+				except httpx.HTTPError:
+					cover_url = "/static/images/no-cover.png"
+
+				title = work_info["title"]
+				publisher = book_info["publishers"][0]
+				publish_date = book_info["publish_date"]
 
 			return Book(
 				id=isbn,
@@ -1195,7 +1220,7 @@ def register_middleware():
 			f"script-src 'strict-dynamic' 'nonce-{request.csp_nonce}';"
 			"connect-src 'self' https://cdn.jsdelivr.net https://www.unpkg.com/ https://*.propelauth.com https://*.regisbooks.org"+(" https://*.propelauthtest.com;" if app.debug else ";")+
 			"style-src 'self' https://cdn.jsdelivr.net;"
-			"img-src 'self' data: https://covers.openlibrary.org https://books.google.com;"
+			"img-src 'self' data: https://covers.openlibrary.org https://books.google.com https://archive.org https://*.archive.org;"
 			"font-src 'self' https://cdn.jsdelivr.net;"
 			"object-src 'none';"
 			"base-uri 'self';"

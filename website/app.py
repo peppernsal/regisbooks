@@ -1178,6 +1178,16 @@ def register_middleware():
 
 	@app.after_request
 	def apply_csp(response: flask.Response):
+		if request.path.startswith("/static/js/auth.js") and app.debug:
+			response.direct_passthrough = False
+
+			js = response.get_data(as_text=True)
+			js = js.replace("const DEBUG = false", "const DEBUG = true")
+			response.set_data(js)
+
+			return response
+
+
 		if request.path.startswith(("/api/", "/static/")): return response # API routes & assets don't need CSP
 
 		response.headers["Content-Security-Policy"] = (

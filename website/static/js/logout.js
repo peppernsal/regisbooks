@@ -5,5 +5,8 @@ function confirmLogout() {
 }
 
 function cancelLogout() {
-	window.location.href = '/';
+	window.location.href = '/view-profile';
 }
+
+document.getElementById("confirm-logout").addEventListener("click", confirmLogout);
+document.getElementById("cancel-logout").addEventListener("click", cancelLogout);

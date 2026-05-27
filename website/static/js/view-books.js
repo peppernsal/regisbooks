@@ -108,4 +108,4 @@ async function populateBooks() {
 	classFilter.disabled = false;
 }
 
-document.addEventListener("DOMContentLoaded", populateBooks);
+populateBooks();

@@ -1,6 +1,7 @@
+import posixpath
 import re
 import hashlib
-
+import secrets
 import flask
 import genid
 import httpx
@@ -44,7 +45,7 @@ def webpy_setup(app: App):
 	register_internal_api_routes()
 	register_external_api_routes()
 	reigster_error_handlers()
-
+	register_middleware()
 
 def register_external_api_routes():
 	def check_admin_key(key: str) -> bool:
@@ -1109,7 +1110,7 @@ def init_db_api():
 				"publisher": self.publisher,
 				"publishDate": self.publish_date,
 				"isbn": self.isbn,
-				"coverImageURL": self.cover_image_url
+				"coverImageURL": self.cover_image_url.replace("http://", "https://") # force HTTPS cover image URLS, use this replace hack because some books in db are already stored with HTTP URLs
 			}
 
 		@staticmethod
@@ -1166,19 +1167,37 @@ def init_db_api():
 def reigster_error_handlers():
 	@app.errorhandler(404)
 	def not_found(e):
-		return render_template("404.html"), 404
+		return render_template("404.html", csp_nonce=request.csp_nonce), 404
 
 def register_middleware():
+	@app.before_request
+	def generate_csp_nonce():
+		if request.path.startswith(("/api/", "/static/")): return # API routes & assets don't need CSP
+
+		request.csp_nonce = secrets.token_urlsafe(16)
+
 	@app.after_request
 	def apply_csp(response: flask.Response):
-		if request.path.startswith("/api"): return response # API routes don't need CSP
+		if request.path.startswith(("/api/", "/static/")): return response # API routes & assets don't need CSP
 
 		response.headers["Content-Security-Policy"] = (
-			"script-src 'self' https://cdn.jsdelivr.net https://www.unpkg.com;"
+			"default-src 'self';"
+			f"script-src 'strict-dynamic' 'nonce-{request.csp_nonce}';"
+			"connect-src 'self' https://cdn.jsdelivr.net https://www.unpkg.com/ https://*.propelauth.com https://*.regisbooks.org"+(" https://*.propelauthtest.com;" if app.debug else ";")+
 			"style-src 'self' https://cdn.jsdelivr.net;"
 			"img-src 'self' data: https://covers.openlibrary.org https://books.google.com;"
+			"font-src 'self' https://cdn.jsdelivr.net;"
 			"object-src 'none';"
 			"base-uri 'self';"
 		)
+
+		# only apply CSP to raw static HTML served, and not to routes that might contain user content from SSR (which we don't have right now; this is a redundant security measure)
+		if posixpath.normpath(request.path) not in secret_keys.SAFE_STATIC_HTML_ROUTES: return response
+
+		html = response.get_data(as_text=True)
+
+		with_nonce = html.replace("@CSP_NONCE_REQUIRED", request.csp_nonce)
+
+		response.set_data(with_nonce)
 
 		return response

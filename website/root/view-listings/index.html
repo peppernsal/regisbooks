@@ -6,35 +6,36 @@
 
 		<link rel="manifest" href="/static/manifest.json"/>
 
-		<link rel="preload" href="/static/js/view-listings.js" as="script">
-		<link rel="preload" href="/static/js/auth.js" as="script">
+		<link nonce="@CSP_NONCE_REQUIRED" rel="preload" href="/static/js/view-listings.js" as="script">
+		<link nonce="@CSP_NONCE_REQUIRED" rel="preload" href="/static/js/auth.js" as="script">
 		<link rel="preload" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" as="style" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
-		<link rel="preload" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" as="style">
-		<link rel="preload" href="https://www.unpkg.com/@propelauth/javascript@2.0.11/dist/javascript.min.js" as="script" integrity="sha384-FENNH2f7QuQvkZJBL7jebLr0OtYKgTA2iq+C5g3VXXX7SBwWmeMMoc+pBBtcn76G" crossorigin="anonymous">
-		<link rel="preload" href="https://cdn.jsdelivr.net/npm/js-cookie@3.0.5/dist/js.cookie.min.js" as="script">
+		<link rel="preload" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" as="style" crossorigin="anonymous">
+		<link nonce="@CSP_NONCE_REQUIRED" rel="preload" href="https://www.unpkg.com/@propelauth/javascript@2.0.11/dist/javascript.min.js" as="script" integrity="sha384-FENNH2f7QuQvkZJBL7jebLr0OtYKgTA2iq+C5g3VXXX7SBwWmeMMoc+pBBtcn76G" crossorigin="anonymous">
+		<link nonce="@CSP_NONCE_REQUIRED" rel="preload" href="https://cdn.jsdelivr.net/npm/js-cookie@3.0.5/dist/js.cookie.min.js" as="script" crossorigin="anonymous">
 
 		<link rel="icon" type="image/png" href="/static/images/favicon.png">
 
 		<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
-		<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+		<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" crossorigin="anonymous">
 		<script
+			nonce="@CSP_NONCE_REQUIRED"
 			src="https://www.unpkg.com/@propelauth/javascript@2.0.11/dist/javascript.min.js"
 			integrity="sha384-FENNH2f7QuQvkZJBL7jebLr0OtYKgTA2iq+C5g3VXXX7SBwWmeMMoc+pBBtcn76G"
 			crossorigin="anonymous"></script>
-		<script src="https://cdn.jsdelivr.net/npm/js-cookie@3.0.5/dist/js.cookie.min.js"></script>
+		<script nonce="@CSP_NONCE_REQUIRED" src="https://cdn.jsdelivr.net/npm/js-cookie@3.0.5/dist/js.cookie.min.js" crossorigin="anonymous"></script>
 
-		<script src="/static/js/auth.js"></script>
-		<script src="/static/js/apihelpers.js"></script>
-		<script src="/static/js/element.js"></script>
-		<script src="/static/js/sidebar.js"></script>
-		<script src="/static/js/view-listings.js" defer></script>
+		<script nonce="@CSP_NONCE_REQUIRED" src="/static/js/auth.js"></script>
+		<script nonce="@CSP_NONCE_REQUIRED" src="/static/js/apihelpers.js" defer></script>
+		<script nonce="@CSP_NONCE_REQUIRED" src="/static/js/element.js" defer></script>
+		<script nonce="@CSP_NONCE_REQUIRED" src="/static/js/sidebar.js" defer></script>
+		<script nonce="@CSP_NONCE_REQUIRED" src="/static/js/view-listings.js" defer></script>
 
 		<link rel="stylesheet" href="/static/css/theme.css">
 		<link rel="stylesheet" href="/static/css/view-listings.css">
 	</head>
 	<body class="bg-light text-dark d-flex flex-column min-vh-100">
 		<div class="sidebar bg-primary text-white py-4">
-			<button class="sidebar-toggle btn btn-primary" onclick="toggleSidebar()" aria-label="Toggle sidebar">
+			<button class="sidebar-toggle btn btn-primary" aria-label="Toggle sidebar">
 				<i class="bi bi-list"></i>
 			</button>
 
@@ -59,9 +60,9 @@
 				<a id="new-listing" href="/enter-isbn" class="btn body-btn-primary btn-primary mb-4 d-block text-center">List a New Book</a>
 
 				<button id="toggle-filters" class="btn body-btn-primary btn-primary mb-4">Show Filters/Search</button>
-				<button id="clear-filters" class="btn body-btn-primary btn-primary mb-4 mx-3" style="display: none;" onclick="clearFilters()">Clear Filters</button>
+				<button id="clear-filters" class="btn body-btn-primary btn-primary mb-4 mx-3 d-none">Clear Filters</button>
 
-				<div class="filters mb-4" style="display: none;">
+				<div class="filters mb-4 d-none">
 					<div class="form-check form-switch mb-3">
 						<input class="form-check-input" type="checkbox" id="show-my-listings">
 						<label class="form-check-label" for="show-my-listings">Show only my listings</label>
@@ -75,7 +76,7 @@
 							<div class="col-md-6 d-flex">
 								<input type="text" class="form-control me-2" id="filter-isbn" placeholder="Search by ISBN">
 
-								<button class="btn body-btn-primary btn-primary" id="search-btn" onclick="newSearch()">
+								<button class="btn body-btn-primary btn-primary" id="search-btn">
 									<i class="bi bi-search"></i>
 								</button>
 							</div>
@@ -101,7 +102,7 @@
 
 							<div class="col-md-4 d-flex">
 								<input type="text" class="form-control me-2" id="location-input" placeholder="Add Location Filter">
-								<button class="btn body-btn-primary btn-primary" id="add-location" onclick="addLocation()">+</button>
+								<button class="btn body-btn-primary btn-primary" id="add-location">+</button>
 							</div>
 						</div>
 
@@ -113,9 +114,9 @@
 				</div>
 
 				<div class="d-flex justify-content-between align-items-center mt-4">
-					<button id="prev-page" class="btn body-btn-primary btn-primary" onclick="decPage()" disabled>Previous</button>
+					<button id="prev-page" class="btn body-btn-primary btn-primary" disabled>Previous</button>
 					<div id="page-buttons-container" class="d-flex align-items-center"></div>
-					<button id="next-page" class="btn body-btn-primary btn-primary" onclick="incPage()" disabled>Next</button>
+					<button id="next-page" class="btn body-btn-primary btn-primary" disabled>Next</button>
 				</div>
 				<div id="page-info" class="mt-3 text-center">Page 1</div>
 			</div>

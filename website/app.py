@@ -46,6 +46,7 @@ def webpy_setup(app: App):
 	register_external_api_routes()
 	reigster_error_handlers()
 	register_middleware()
+	register_csp_reporter()
 
 def register_external_api_routes():
 	def check_admin_key(key: str) -> bool:
@@ -1224,7 +1225,10 @@ def register_middleware():
 			"font-src 'self' https://cdn.jsdelivr.net;"
 			"object-src 'none';"
 			"base-uri 'self';"
+			"report-to csp-endpoint;"
 		)
+
+		response.headers["Reporting-Endpoints"] = f'csp-endpoint="https://regisbooks.org/csp-report"'
 
 		# only apply CSP to raw static HTML served, and not to routes that might contain user content from SSR (which we don't have right now; this is a redundant security measure)
 		if posixpath.normpath(request.path) not in secret_keys.SAFE_STATIC_HTML_ROUTES: return response
@@ -1236,3 +1240,12 @@ def register_middleware():
 		response.set_data(with_nonce)
 
 		return response
+
+def register_csp_reporter():
+	@app.route("/csp-report", methods=["POST"])
+	def csp_report():
+		report = request.json
+
+		logger.warning(f"CSP Violation: {report}")
+
+		return RESP_OK

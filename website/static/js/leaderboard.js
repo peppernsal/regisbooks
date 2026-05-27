@@ -1,5 +1,4 @@
-
-document.addEventListener("DOMContentLoaded", async () => {
+(async () => {
 	const waitingMessage = document.getElementById("waiting-message");
 	waitingMessage.textContent = "Loading the leaderboard";
 
@@ -47,4 +46,4 @@ document.addEventListener("DOMContentLoaded", async () => {
 
 	clearInterval(loaderAnimation);
 	waitingMessage.remove();
-});
+})();

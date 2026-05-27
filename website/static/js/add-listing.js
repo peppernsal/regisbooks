@@ -11,25 +11,6 @@ const loaderAnimation = setInterval(() => {
 
 if (!bookISBN) location.href = "/enter-isbn";
 
-document.addEventListener("DOMContentLoaded", async () => {
-	try {
-		const bookInfo = await addBook(bookISBN);
-		document.getElementById("book-title").textContent = bookInfo.title;
-		document.getElementById("book-author").textContent = bookInfo.author;
-		document.getElementById("book-isbn").textContent = `ISBN: ${bookISBN}`;
-		document.getElementById("book-publishing-info").textContent = `Published by ${bookInfo.publisher}, ${bookInfo.publishDate}`;
-
-		document.getElementById("book-cover-img").src = bookInfo.coverImageURL;
-		document.getElementById("cover-disclaimer").textContent = "Note: cover image and publisher may not match physical book. Check ISBN to match versions.";
-
-		clearInterval(loaderAnimation);
-		waitingMessage.remove();
-	} catch { // book doesn't exist or the API call failed
-		alert("Could not load a book from that ISBN!");
-		location.href = "/enter-isbn";
-	}
-});
-
 function createListing() {
 	const usageLevel = document.getElementById("usage-level").value;
 	const notes = document.getElementById("notes").value;
@@ -164,3 +145,25 @@ function addPickupLocation() {
 		behavior: 'smooth'
 	});
 }
+
+document.getElementById("add-pickup-location").addEventListener("click", addPickupLocation);
+document.getElementById("create-listing-btn").addEventListener("click", createListing);
+
+(async () => {
+	try {
+		const bookInfo = await addBook(bookISBN);
+		document.getElementById("book-title").textContent = bookInfo.title;
+		document.getElementById("book-author").textContent = bookInfo.author;
+		document.getElementById("book-isbn").textContent = `ISBN: ${bookISBN}`;
+		document.getElementById("book-publishing-info").textContent = `Published by ${bookInfo.publisher}, ${bookInfo.publishDate}`;
+
+		document.getElementById("book-cover-img").src = bookInfo.coverImageURL;
+		document.getElementById("cover-disclaimer").textContent = "Note: cover image and publisher may not match physical book. Check ISBN to match versions.";
+
+		clearInterval(loaderAnimation);
+		waitingMessage.remove();
+	} catch { // book doesn't exist or the API call failed
+		alert("Could not load a book from that ISBN!");
+		location.href = "/enter-isbn";
+	}
+})();

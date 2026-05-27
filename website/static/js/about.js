@@ -1,4 +1,4 @@
-document.addEventListener("DOMContentLoaded", async () => {
+(async () => {
 	const impactPara = document.getElementById("impact-paragraph");
 
 	const impact = await getImpact();
@@ -28,12 +28,12 @@ document.addEventListener("DOMContentLoaded", async () => {
 	if (impact.available > 0) {
 		let noun = "more";
 
-		// we can't say just "more" because the previous paragraph won't exist, we must use distribution/distributions
+		// we can't say just "more" because the previous paragraph won't exist, we must use giveaway/giveaways
 		if (impact.requested == 0) {
-			noun = "more distributions";
+			noun = "more giveaways";
 
 			if (impact.available == 1) {
-				noun = "more distribution";
+				noun = "more giveaway";
 			}
 		}
 
@@ -51,4 +51,4 @@ document.addEventListener("DOMContentLoaded", async () => {
 		<div>${requestedInfo}</div>
 		<div>${availableInfo}</div>
 	`;
-});
+})();

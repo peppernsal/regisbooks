@@ -15,16 +15,16 @@ function toggleSidebar() {
 	}
 }
 
-document.addEventListener('DOMContentLoaded', () => {
-	const sidebar = document.querySelector('.sidebar');
-	const content = document.querySelector('.content');
-	const savedState = localStorage.getItem('sidebarState');
+const sidebar = document.querySelector('.sidebar');
+const content = document.querySelector('.content');
+const savedState = localStorage.getItem('sidebarState');
 
-	if (savedState === 'collapsed') {
-		sidebar.classList.add('collapsed');
-		content.classList.add('centered');
-	} else {
-		sidebar.classList.remove('collapsed');
-		content.classList.remove('centered');
-	}
-});
+if (savedState === 'collapsed') {
+	sidebar.classList.add('collapsed');
+	content.classList.add('centered');
+} else {
+	sidebar.classList.remove('collapsed');
+	content.classList.remove('centered');
+}
+
+document.getElementsByClassName("sidebar-toggle")[0].addEventListener("click", toggleSidebar);

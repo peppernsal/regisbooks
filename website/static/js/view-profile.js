@@ -1,6 +1,47 @@
 const userID = new URLSearchParams(location.search).get('id');
 
-document.addEventListener("DOMContentLoaded", async () => {
+function displayBadgeAchievementModal(newBadges) {
+	const existingModal = document.getElementById('badge-achievement-modal');
+	if (existingModal) existingModal.remove();
+
+	const modal = document.createElement('div');
+	modal.className = 'modal fade';
+	modal.id = 'badge-achievement-modal';
+	modal.tabIndex = -1;
+	modal.setAttribute('aria-labelledby', 'badge-achievement-modal-label');
+	modal.setAttribute('aria-hidden', 'true');
+
+	// XSS-safe because badge data is static and unsettable by users on the server side
+	modal.innerHTML = `
+		<div class="modal-dialog modal-dialog-centered">
+		<div class="modal-content">
+			<div class="modal-header bg-success text-white">
+			<h5 class="modal-title" id="badge-achievement-modal-label">New Badge${newBadges.length > 1 ? 's' : ''} Unlocked!</h5>
+			<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+			</div>
+			<div class="modal-body text-center">
+			<div class="mb-3">${newBadges.map(badge => `
+				<div class="d-inline-block m-2 text-center">
+				<img src="${badge.imageURL}" alt="${badge.name}" class="badge-img mb-1">
+				<div class="fw-bold">${badge.name}</div>
+				<div class="small text-muted">${badge.description}</div>
+				</div>
+			`).join('')}</div>
+			<div class="alert alert-success">Congratulations! You have unlocked ${newBadges.length} new badge${newBadges.length > 1 ? 's' : ''}.</div>
+			</div>
+			<div class="modal-footer">
+			<button type="button" class="btn btn-success" data-bs-dismiss="modal">OK</button>
+			</div>
+		</div>
+		</div>
+	`;
+	document.body.appendChild(modal);
+
+	const modalInstance = new window.bootstrap.Modal(modal);
+	modalInstance.show();
+}
+
+(async () => {
 	const selfUserID = await getUserID();
 	const selfProfile = userID === null || userID === selfUserID;
 
@@ -279,45 +320,4 @@ document.addEventListener("DOMContentLoaded", async () => {
 		alert.appendChild(alertInner);
 		listingsContainer.appendChild(alert);
 	}
-});
-
-function displayBadgeAchievementModal(newBadges) {
-	const existingModal = document.getElementById('badge-achievement-modal');
-	if (existingModal) existingModal.remove();
-
-	const modal = document.createElement('div');
-	modal.className = 'modal fade';
-	modal.id = 'badge-achievement-modal';
-	modal.tabIndex = -1;
-	modal.setAttribute('aria-labelledby', 'badge-achievement-modal-label');
-	modal.setAttribute('aria-hidden', 'true');
-
-	// XSS-safe because badge data is static and unsettable by users on the server side
-	modal.innerHTML = `
-		<div class="modal-dialog modal-dialog-centered">
-		<div class="modal-content">
-			<div class="modal-header bg-success text-white">
-			<h5 class="modal-title" id="badge-achievement-modal-label">New Badge${newBadges.length > 1 ? 's' : ''} Unlocked!</h5>
-			<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-			</div>
-			<div class="modal-body text-center">
-			<div class="mb-3">${newBadges.map(badge => `
-				<div class="d-inline-block m-2 text-center">
-				<img src="${badge.imageURL}" alt="${badge.name}" class="badge-img mb-1">
-				<div class="fw-bold">${badge.name}</div>
-				<div class="small text-muted">${badge.description}</div>
-				</div>
-			`).join('')}</div>
-			<div class="alert alert-success">Congratulations! You have unlocked ${newBadges.length} new badge${newBadges.length > 1 ? 's' : ''}.</div>
-			</div>
-			<div class="modal-footer">
-			<button type="button" class="btn btn-success" data-bs-dismiss="modal">OK</button>
-			</div>
-		</div>
-		</div>
-	`;
-	document.body.appendChild(modal);
-
-	const modalInstance = new window.bootstrap.Modal(modal);
-	modalInstance.show();
-}
+})();

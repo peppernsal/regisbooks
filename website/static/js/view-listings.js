@@ -354,4 +354,10 @@ for (const loc of locationFilterArray) {
 	addLocationFromString(loc);
 }
 
+document.getElementById("clear-filters").addEventListener("click", clearFilters);
+document.getElementById("search-btn").addEventListener("click", newSearch);
+document.getElementById("add-location").addEventListener("click", addLocation);
+document.getElementById("prev-page").addEventListener("click", decPage);
+document.getElementById("next-page").addEventListener("click", incPage);
+
 populateListings();

@@ -5,3 +5,5 @@ function acknowledge() {
 
 	location.href = "/goto-auth";
 }
+
+document.getElementById("acknowledge-btn").addEventListener("click", acknowledge);

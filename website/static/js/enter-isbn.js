@@ -36,3 +36,5 @@ setInterval(() => {
 		button.classList.add("btn", "body-btn-primary", "btn-primary");
 	});
 }, 1000);
+
+document.getElementById("propagate-isbn").addEventListener("click", propagateISBN);

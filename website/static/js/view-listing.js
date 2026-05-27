@@ -1,6 +1,55 @@
 const listingID = new URLSearchParams(location.search).get("id");
 
-document.addEventListener("DOMContentLoaded", async () => {
+function requestThisListing() {
+	reqListing(listingID).then((resp) => {
+		if (resp.status != 200) {
+			alert("Uh Oh! Something went wrong while trying to request this listing. Please try again later.");
+			return;
+		}
+		location.reload();
+	});
+}
+
+async function displayRequestInfo(book, listing, poster) {
+	const emailLink = document.getElementById("email-info");
+
+	emailLink.textContent = poster.email;
+	emailLink.href = `mailto:${poster.email}?subject=RegisBooks: Request for ${book.title}`;
+
+	const phoneLink = document.getElementById("phone-info");
+
+	if (!poster.phoneNumber) {
+		phoneLink.parentElement.parentElement.remove();
+
+		emailLink.parentElement.parentElement.className = "col-md-8";
+	} else {
+		const phone = poster.phoneNumber;
+
+		phoneLink.textContent = `(${phone.slice(0, 3)}) ${phone.slice(3, 6)}-${phone.slice(6, 10)}`;
+		phoneLink.href = `tel:+1${phone}`
+	}
+
+	document.getElementById("success-message").innerHTML = 'You have successfully requested this listing! <span class="text-danger">Please reach out to the lister via email or text.</span> They will <em>not</em> receive an automatic notification.';
+
+	document.getElementById("rem-listing-req").onclick = () => {
+		rejectListingReq(listingID).then((resp) => {
+			if (resp.status != 200) {
+				alert("Uh Oh! Something went wrong while trying to remove your request. Please try again later.");
+				location.reload();
+				return;
+			}
+
+			alert("You have successfully removed your request!");
+			location.reload();
+		});
+	};
+
+	document.getElementById("req-info").classList.remove("d-none");
+}
+
+document.getElementById("request-listing").addEventListener("click", requestThisListing);
+
+(async () => {
 	try {
 		const listing = await getListingInfo(listingID);
 		const book = await getBookInfo(listing.bookID);
@@ -188,51 +237,4 @@ document.addEventListener("DOMContentLoaded", async () => {
 		alert("Invalid listing!");
 		location.href = "/view-listings";
 	}
-});
-
-function requestThisListing() {
-	reqListing(listingID).then((resp) => {
-		if (resp.status != 200) {
-			alert("Uh Oh! Something went wrong while trying to request this listing. Please try again later.");
-			return;
-		}
-		location.reload();
-	});
-}
-
-async function displayRequestInfo(book, listing, poster) {
-	const emailLink = document.getElementById("email-info");
-
-	emailLink.textContent = poster.email;
-	emailLink.href = `mailto:${poster.email}?subject=RegisBooks: Request for ${book.title}`;
-
-	const phoneLink = document.getElementById("phone-info");
-
-	if (!poster.phoneNumber) {
-		phoneLink.parentElement.parentElement.remove();
-
-		emailLink.parentElement.parentElement.className = "col-md-8";
-	} else {
-		const phone = poster.phoneNumber;
-
-		phoneLink.textContent = `(${phone.slice(0, 3)}) ${phone.slice(3, 6)}-${phone.slice(6, 10)}`;
-		phoneLink.href = `tel:+1${phone}`
-	}
-
-	document.getElementById("success-message").innerHTML = 'You have successfully requested this listing! <span class="text-danger">Please reach out to the lister via email or text.</span> They will <em>not</em> receive an automatic notification.';
-
-	document.getElementById("rem-listing-req").onclick = () => {
-		rejectListingReq(listingID).then((resp) => {
-			if (resp.status != 200) {
-				alert("Uh Oh! Something went wrong while trying to remove your request. Please try again later.");
-				location.reload();
-				return;
-			}
-
-			alert("You have successfully removed your request!");
-			location.reload();
-		});
-	};
-
-	document.getElementById("req-info").classList.remove("d-none");
-}
+})();

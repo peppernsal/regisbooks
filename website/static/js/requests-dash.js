@@ -1,4 +1,4 @@
-document.addEventListener("DOMContentLoaded", async () => {
+(async () => {
 	const userInfo = await getUserInfo(await getUserID());
 
 	const outgoingContainer = document.getElementById("outgoing-requests");
@@ -101,4 +101,4 @@ document.addEventListener("DOMContentLoaded", async () => {
 		alert.appendChild(alertInner);
 		incomingContainer.appendChild(alert);
 	}
-});
+})();

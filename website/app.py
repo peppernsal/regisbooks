@@ -290,8 +290,7 @@ def register_internal_api_routes():
 		logger.info(f"Success: get-updated-achieved-badges for user_id={user_id}, badges_count={len(achieved_badges)}")
 		return jsonify([badge.as_dict for badge in achieved_badges])
 
-	# supports badge achievement notification, can and should only be called from the current user
-	@app.route("/api/internal/update-achieved-badges")
+	@app.route("/api/internal/update-achieved-badges", methods=["POST"])
 	@auth.require_user
 	def updateachievedbadges_internal():
 		try: user = ensure_user()
@@ -303,7 +302,7 @@ def register_internal_api_routes():
 		logger.info(f"Success: update-achieved-badges for user_id={user.id}, badges_count={len(user.badges)}")
 		return RESP_OK
 
-	@app.route("/api/internal/update-phone-number")
+	@app.route("/api/internal/update-phone-number", methods=["POST"])
 	@auth.require_user
 	def updatephonenumber_internal():
 		try: user = ensure_user()
@@ -404,7 +403,7 @@ def register_internal_api_routes():
 
 		return jsonify(book.as_dict)
 
-	@app.route("/api/internal/get-listings", methods=["GET", "POST"])
+	@app.route("/api/internal/get-listings", methods=["POST"])
 	@auth.require_user
 	def getlistings_internal():
 		try: ensure_user()
@@ -671,7 +670,7 @@ def register_internal_api_routes():
 
 		return RESP_OK
 
-	@app.route("/api/internal/rem-listing")
+	@app.route("/api/internal/rem-listing", methods=["POST"])
 	@auth.require_user
 	def remlisting_internal():
 		try: user = ensure_user()
@@ -709,7 +708,7 @@ def register_internal_api_routes():
 
 		return RESP_OK
 
-	@app.route("/api/internal/add-book")
+	@app.route("/api/internal/add-book", methods=["POST"])
 	@auth.require_user
 	def addbook_internal():
 		try: ensure_user()
@@ -734,7 +733,7 @@ def register_internal_api_routes():
 			logger.warning(f"Failure: add-book - JSON decode error. isbn={isbn}")
 			return BAD_REQUEST
 
-	@app.route("/api/internal/req-listing")
+	@app.route("/api/internal/req-listing", methods=["POST"])
 	@auth.require_user
 	def reqlisting_internal():
 		try: user = ensure_user()
@@ -769,7 +768,7 @@ def register_internal_api_routes():
 
 		return RESP_OK
 
-	@app.route("/api/internal/fulfill-req")
+	@app.route("/api/internal/fulfill-req", methods=["POST"])
 	@auth.require_user
 	def fulfilllisting_internal():
 		try: user = ensure_user()
@@ -811,7 +810,7 @@ def register_internal_api_routes():
 
 		return RESP_OK
 
-	@app.route("/api/internal/reject-listing-req")
+	@app.route("/api/internal/reject-listing-req", methods=["POST"])
 	@auth.require_user
 	def rejectlistingreq_internal():
 		try: user = ensure_user()

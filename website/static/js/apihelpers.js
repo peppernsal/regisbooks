@@ -60,7 +60,7 @@ function getUpdatedAchievedBadges(userID) {
 }
 
 function updateAchievedBadges() {
-	return makeAPICall(`/api/internal/update-achieved-badges`);
+	return makeAPICall(`/api/internal/update-achieved-badges`, undefined, "POST");
 }
 
 function getAllUsers() {
@@ -137,11 +137,11 @@ function updateListing(listingInfo) {
 }
 
 function updatePhoneNumber(phoneNumber) {
-	return makeAPICall(`/api/internal/update-phone-number?number=${phoneNumber}`);
+	return makeAPICall(`/api/internal/update-phone-number?number=${phoneNumber}`, undefined, "POST");
 }
 
 function addBook(bookISBN) {
-	return getJSONInfoFromAPICall(`/api/internal/add-book?isbn=${bookISBN}`);
+	return getJSONInfoFromAPICall(`/api/internal/add-book?isbn=${bookISBN}`, undefined, "POST");
 }
 
 function addPreReq(preReqInfo) {
@@ -151,7 +151,7 @@ function addPreReq(preReqInfo) {
 }
 
 function remListing(listingID) {
-	return makeAPICall(`/api/internal/rem-listing?id=${listingID}`);
+	return makeAPICall(`/api/internal/rem-listing?id=${listingID}`, undefined, "POST");
 }
 
 function remPreReq(preReqID) {
@@ -163,15 +163,15 @@ function remBook(bookID) {
 }
 
 function reqListing(listingID) {
-	return makeAPICall(`/api/internal/req-listing?id=${listingID}`);
+	return makeAPICall(`/api/internal/req-listing?id=${listingID}`, undefined, "POST");
 }
 
 function rejectListingReq(listingID) {
-	return makeAPICall(`/api/internal/reject-listing-req?id=${listingID}`);
+	return makeAPICall(`/api/internal/reject-listing-req?id=${listingID}`, undefined, "POST");
 }
 
 function fulfillRequestFor(listingID) {
-	return makeAPICall(`/api/internal/fulfill-req?id=${listingID}`);
+	return makeAPICall(`/api/internal/fulfill-req?id=${listingID}`, undefined, "POST");
 }
 
 async function getImpact() {

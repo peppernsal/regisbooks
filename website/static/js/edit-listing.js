@@ -156,7 +156,7 @@ function addPickupLocation() {
 }
 
 document.getElementById("add-pickup-location").addEventListener("click", addPickupLocation);
-document.getElementById("create-listing-btn").addEventListener("click", editListing);
+document.getElementById("edit-listing-btn").addEventListener("click", editListing);
 
 (async () => {
 	let bookInfo;

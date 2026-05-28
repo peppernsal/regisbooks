@@ -51,4 +51,9 @@
 		<div>${requestedInfo}</div>
 		<div>${availableInfo}</div>
 	`;
+
+	// circumvent cloudflare email obfuscation & email harvesting
+	const emailAnchor = document.getElementById("contact-email");
+
+	emailAnchor.href = "mailto:cfurtado26@regis.org?subject=Contributing to RegisSuite";
 })();

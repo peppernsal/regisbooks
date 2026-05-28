@@ -323,13 +323,13 @@ function createPageJumpButton(pageNum) {
 
 document.getElementById('toggle-filters').addEventListener('click', function() {
 	const filters = document.querySelector('.filters');
-	if (filters.style.display === 'none' || filters.style.display === '') {
-		filters.style.display = 'block';
-		clearFiltersBtn.style.display = null;
+	if (filters.classList.contains('d-none')) {
+		filters.classList.replace('d-none', 'd-block');
+		clearFiltersBtn.classList.remove('d-none');
 		this.textContent = 'Hide Filters/Search';
 	} else {
-		filters.style.display = 'none';
-		clearFiltersBtn.style.display = 'none';
+		filters.classList.replace('d-block', 'd-none');
+		clearFiltersBtn.classList.add('d-none');
 		this.textContent = 'Show Filters/Search';
 	}
 });

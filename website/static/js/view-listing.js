@@ -51,9 +51,9 @@ document.getElementById("request-listing").addEventListener("click", requestThis
 
 (async () => {
 	try {
-		const listing = await getListingInfo(listingID);
-		const book = await getBookInfo(listing.bookID);
-		const author = await getUserInfo(listing.authorID);
+		const listing = await getRichListingInfo(listingID);
+		const book = listing.book;
+		const author = listing.author;
 		const currUserId = await getUserID();
 
 		document.getElementById("book-title").textContent = book.title;
@@ -160,7 +160,7 @@ document.getElementById("request-listing").addEventListener("click", requestThis
 
 				reqBtn.replaceWith(replacementDiv);
 			} else if (listing.status == STATUS_REQUESTED) {
-				const listingRequester = await getUserInfo(listing.requesterID);
+				const listingRequester = listing.requester;
 				const reqBtn = document.getElementById("request-listing");
 
 				const replacementDiv = document.createElement("div");
@@ -223,7 +223,7 @@ document.getElementById("request-listing").addEventListener("click", requestThis
 
 				reqBtn.replaceWith(replacementDiv);
 			} else { // listing.status == STATUS_GIVEN
-				const listingRequester = await getUserInfo(listing.requesterID);
+				const listingRequester = listing.requester;
 
 				const reqBtn = document.getElementById("request-listing");
 				reqBtn.replaceWith(

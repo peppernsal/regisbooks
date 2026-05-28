@@ -267,13 +267,13 @@ function displayBadgeAchievementModal(newBadges) {
 	const listingsContainer = document.getElementById('user-listings');
 	listingsContainer.textContent = '';
 
-	const listings = await getListingsPaginateFully({ posterID: userInfo.id });
+	const [listings, bookRef] = await getListingsPaginateFully({ posterID: userInfo.id });
 	// sort listings with status 1 (requested) to the front
 	const userListings = listings.sort((a, b) => (b.status === STATUS_REQUESTED ? 1 : 0) - (a.status === STATUS_REQUESTED ? 1 : 0));
 
 	if (userListings.length > 0) {
 		for (const listing of userListings) {
-			const book = await getBookInfo(listing.bookID);
+			const book = bookRef[listing.bookID];
 			const container = document.createElement('div');
 			container.className = 'col-12 mb-2';
 

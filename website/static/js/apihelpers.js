@@ -79,6 +79,9 @@ function getBookInfo(bookID) {
 	return getJSONInfoFromAPICall(`/api/internal/get-book?id=${bookID}`);
 }
 
+function getRichListingInfo(listingID) {
+	return getJSONInfoFromAPICall(`/api/internal/get-listing?id=${listingID}&rich=true`);
+}
 
 function getBooks(classFilter) {
 	if (classFilter !== undefined && classFilter !== "") {
@@ -96,6 +99,7 @@ function getListings(options) {
 
 async function getListingsPaginateFully(options) {
 	const listings = [];
+	let bookRef = {};
 
 	let page = 0;
 	while (true) {
@@ -103,12 +107,13 @@ async function getListingsPaginateFully(options) {
 
 		if (res.listings.length > 0) {
 			listings.push(...res.listings);
+			bookRef = { ...bookRef, ...res.bookRef };
 		} else break;
 
 		page++;
 	}
 
-	return listings;
+	return [listings, bookRef];
 }
 
 function getMyListings() {

@@ -115,20 +115,20 @@ async function disablePaginationButtonsForListingPopulation() {
 	}
 }
 
-async function updatePaginationButtonStates(startingNumber, endingNumber, totalListings) {
+async function updatePaginationButtonStates(startingNumber, endingNumber, totalCount) {
 	if (listingsPageNumber === 0) {
 		prevPageButton.disabled = true;
 	} else {
 		prevPageButton.disabled = false;
 	}
 
-	if (endingNumber < totalListings) {
+	if (endingNumber < totalCount) {
 		nextPageButton.disabled = false;
 	} else {
 		nextPageButton.disabled = true;
 	}
 
-	pageInfo.textContent = `Page ${listingsPageNumber + 1} (showing ${startingNumber}-${endingNumber} of ${totalListings} filtered listings)`;
+	pageInfo.textContent = `Page ${listingsPageNumber + 1} (showing ${startingNumber}-${endingNumber} of ${totalCount} filtered listings)`;
 }
 
 async function incPage() {
@@ -173,10 +173,9 @@ async function populateListings() {
 		page: listingsPageNumber
 	};
 
-	const res = await getListings(options);
-
-	const listings = res.listings;
-	const totalListings = res.totalCount;
+	const {
+		listings, bookRef, totalCount
+	} = await getListings(options);
 
 	const start = listingsPageNumber*LISTINGS_PER_PAGE;
 	const end = start+listings.length;
@@ -191,7 +190,7 @@ async function populateListings() {
 			const summaryDiv = document.createElement("div");
 			summaryDiv.className = "col-md-6 listing-preview-parent";
 
-			const bookInfo = await getBookInfo(listingInfo.bookID);
+			const bookInfo = bookRef[listingInfo.bookID];
 
 			const titleContainer = document.createElement("h4");
 			titleContainer.append(
@@ -259,9 +258,9 @@ async function populateListings() {
 		listingsContainer.appendChild(row);
 	}
 
-	await updatePaginationButtonStates(end == 0 ? 0 : start+1, end, totalListings);
+	await updatePaginationButtonStates(end == 0 ? 0 : start+1, end, totalCount);
 
-	const numberOfPages = Math.ceil(totalListings/10);
+	const numberOfPages = Math.ceil(totalCount/10);
 	const pageButtonContainer = document.getElementById("page-buttons-container");
 	pageButtonContainer.innerHTML = "";
 

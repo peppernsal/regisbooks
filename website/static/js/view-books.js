@@ -8,12 +8,14 @@ async function populateBooks() {
 
 	booksContainer.innerHTML = '';
 
-	const books = await getBooks(classFilter.value);
+	const {
+		books, listingsMap
+	} = await getBooks(classFilter.value);
 
 	for (const book of books) {
-		const listingCount = (await getListings({ isbn: book.isbn })).totalCount;
+		const listings = listingsMap[book.id];
 
-		if (listingCount === 0) continue;
+		if (listings.length == 0) continue;
 
 		const bookCard = document.createElement('a');
 		bookCard.className = 'card mb-3 text-decoration-none';
@@ -55,8 +57,6 @@ async function populateBooks() {
 		rightContainer.className = 'col-md-4 text-end';
 		const rightContent = document.createElement('div');
 		rightContent.className = 'card-body';
-
-		const listings = await getListingsPaginateFully({ isbn: book.isbn, status: STATUS_AVAILABLE });
 
 		const listingsCountDisplay = document.createElement('h6');
 		listingsCountDisplay.className = 'text-muted';

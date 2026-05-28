@@ -368,9 +368,24 @@ def register_internal_api_routes():
 			logger.warning(f"Failure: get-listing - Listing not found. listing_id={listing_id}")
 			return BAD_REQUEST
 
-		logger.info(f"Success: get-listing for listing_id={listing_id}")
 
-		return jsonify(listing.as_dict)
+		if not request.args.get("rich", "").lower() == "true":
+			logger.info(f"Success: get-listing for listing_id={listing_id}")
+
+			return jsonify(listing.as_dict)
+
+		book: Book = listing.book
+		author: User = listing.author
+		requester: User | None = User.by_id(listing.requester_id) if listing.requester_id is not None else None
+
+		logger.info(f"Success: get-listing (rich) for listing_id={listing_id}")
+
+		return jsonify({
+			**listing.as_dict,
+			"book": book.as_dict,
+			"author": author.as_dict,
+			"requester": requester.as_dict if requester is not None else None
+		})
 
 	@app.route("/api/internal/get-book")
 	@auth.require_user
@@ -404,6 +419,8 @@ def register_internal_api_routes():
 		usage_filter: int = options.get("usage")
 		poster_id: str = options.get("posterID")
 		page_num: int = options.get("page", 0)
+		resolve_author: bool = options.get("resolveAuthor", False)
+		resolve_requester: bool = options.get("resolveRequester", False)
 
 		query = Listing.query
 
@@ -441,9 +458,33 @@ def register_internal_api_routes():
 			total_count = len(filtered_all)
 			filtered  = filtered_all[page_num*LISTINGS_PER_PAGE:(page_num+1)*LISTINGS_PER_PAGE]
 
-		logger.info(f"Success: get-listings, returned={len(filtered)}, total={total_count}, name_full={name_filter}, isbn={isbn_filter}, locations={location_filters}, status={status_filter}, usage={usage_filter}, poster_id={poster_id}, page={page_num}")
 
-		return jsonify({ "listings": [listing.as_dict for listing in filtered], "totalCount": total_count })
+		book_ref = {
+			book.id: book.as_dict for book in Book.query.filter(Book.id.in_({listing.book_id for listing in filtered})).all()
+		}
+
+		listings_dicts = []
+
+		for listing in filtered:
+			info_dict = listing.as_dict
+
+			if resolve_author:
+				author: User = listing.author
+				info_dict["author"] = author.as_dict
+
+			if resolve_requester:
+				requester: User | None = User.by_id(listing.requester_id) if listing.requester_id is not None else None
+				info_dict["requester"] = requester.as_dict if requester is not None else None
+
+			listings_dicts.append(info_dict)
+
+		logger.info(f"Success: get-listings, returned={len(filtered)}, total={total_count}, name_full={name_filter}, isbn={isbn_filter}, locations={location_filters}, status={status_filter}, usage={usage_filter}, poster_id={poster_id}, page={page_num} resolve_author={resolve_author} resolve_requester={resolve_requester}")
+
+		return jsonify({
+			"listings": listings_dicts,
+			"totalCount": total_count,
+			"bookRef": book_ref
+		})
 
 	@app.route("/api/internal/get-open-reqs")
 	@auth.require_user
@@ -463,47 +504,47 @@ def register_internal_api_routes():
 		try: ensure_user()
 		except PermissionError: return FORBIDDEN
 
-		books = Book.get_all()
 		class_filter = request.args.get("class")
 
 		if class_filter is None:
-			logger.info(f"Success: get-books, count={len(books)} (no filter)")
-
-			return jsonify([book.as_dict for book in books])
-		if not class_filter.isdigit():
+			filtered_books = Book.get_all()
+			class_filter_name = "no filter"
+		elif not class_filter.isdigit():
 			logger.warning(f"Failure: get-books - Invalid class filter. value={class_filter}")
 			return BAD_REQUEST
+		else:
+			class_filter = int(class_filter)
 
-		class_filter = int(class_filter)
+			if class_filter == Book.Class.FRESHMAN:
+				filtered_books = Book.query.filter(Book.id.in_(Book.Class.FRESHMAN_LIST)).all()
 
-		if class_filter == Book.Class.FRESHMAN:
-			filtered_books = [book.as_dict for book in books if book.isbn in Book.Class.FRESHMAN_LIST]
+				class_filter_name = "freshman"
+			elif class_filter == Book.Class.SOPHOMORE:
+				filtered_books = Book.query.filter(Book.id.in_(Book.Class.SOPHOMORE_LIST)).all()
 
-			logger.info(f"Success: get-books, count={len(filtered_books)} (freshman)")
+				class_filter_name = "sophomore"
+			elif class_filter == Book.Class.JUNIOR:
+				filtered_books = Book.query.filter(Book.id.in_(Book.Class.JUNIOR_LIST)).all()
 
-			return jsonify(filtered_books)
-		elif class_filter == Book.Class.SOPHOMORE:
-			filtered_books = [book.as_dict for book in books if book.isbn in Book.Class.SOPHOMORE_LIST]
+				class_filter_name = "junior"
+			elif class_filter == Book.Class.SENIOR:
+				filtered_books = Book.query.filter(Book.id.in_(Book.Class.SENIOR_LIST)).all()
 
-			logger.info(f"Success: get-books, count={len(filtered_books)} (sophomore)")
+				class_filter_name = "senior"
+			else:
+				logger.warning(f"Failure: get-books - Unknown class filter. value={class_filter}")
 
-			return jsonify(filtered_books)
-		elif class_filter == Book.Class.JUNIOR:
-			filtered_books = [book.as_dict for book in books if book.isbn in Book.Class.JUNIOR_LIST]
+				return BAD_REQUEST # unknown class filter
 
-			logger.info(f"Success: get-books, count={len(filtered_books)} (junior)")
+		logger.info(f"Success: get-books, count={len(filtered_books)} ({class_filter_name})")
 
-			return jsonify(filtered_books)
-		elif class_filter == Book.Class.SENIOR:
-			filtered_books = [book.as_dict for book in books if book.isbn in Book.Class.SENIOR_LIST]
-
-			logger.info(f"Success: get-books, count={len(filtered_books)} (senior)")
-
-			return jsonify(filtered_books)
-
-		logger.warning(f"Failure: get-books - Unknown class filter. value={class_filter}")
-
-		return BAD_REQUEST # unknown class filter
+		return jsonify({
+			"books": [book.as_dict for book in filtered_books],
+			"listingsMap": {
+				book_id: [listing.as_dict for listing in Listing.query.filter(Listing.book_id == book_id, Listing.status == Listing.Status.AVAILABLE).all()]
+				for book_id in { book.id for book in filtered_books }
+			}
+		})
 
 	@app.route("/api/internal/add-listing", methods=["POST"])
 	@auth.require_user

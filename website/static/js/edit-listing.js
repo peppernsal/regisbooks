@@ -164,8 +164,8 @@ document.getElementById("create-listing-btn").addEventListener("click", editList
 
 	try {
 		const userID = await getUserID();
-		listingInfo = await getListingInfo(listingID);
-		bookInfo = await getBookInfo(listingInfo.bookID);
+		listingInfo = await getRichListingInfo(listingID);
+		bookInfo = listingInfo.book;
 
 		if (listingInfo.authorID != userID) {
 			alert("You do not have permission to edit this listing!");

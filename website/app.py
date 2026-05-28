@@ -368,9 +368,24 @@ def register_internal_api_routes():
 			logger.warning(f"Failure: get-listing - Listing not found. listing_id={listing_id}")
 			return BAD_REQUEST
 
-		logger.info(f"Success: get-listing for listing_id={listing_id}")
 
-		return jsonify(listing.as_dict)
+		if not request.args.get("rich", "").lower() == "true":
+			logger.info(f"Success: get-listing for listing_id={listing_id}")
+
+			return jsonify(listing.as_dict)
+
+		book: Book = listing.book
+		author: User = listing.author
+		requester: User | None = User.by_id(listing.requester_id) if listing.requester_id is not None else None
+
+		logger.info(f"Success: get-listing (rich) for listing_id={listing_id}")
+
+		return jsonify({
+			**listing.as_dict,
+			"book": book.as_dict,
+			"author": author.as_dict,
+			"requester": requester.as_dict if requester is not None else None
+		})
 
 	@app.route("/api/internal/get-book")
 	@auth.require_user

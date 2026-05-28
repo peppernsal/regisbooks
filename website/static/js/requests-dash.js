@@ -1,5 +1,5 @@
 (async () => {
-	const userInfo = await getUserInfo(await getUserID());
+	const userInfo = await getUserInfo(await getUserID()); // we must use this pattern of userInfo.id to support legacy user ID
 
 	const outgoingContainer = document.getElementById("outgoing-requests");
 	const incomingContainer = document.getElementById("incoming-requests");

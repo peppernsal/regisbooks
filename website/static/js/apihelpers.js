@@ -79,6 +79,9 @@ function getBookInfo(bookID) {
 	return getJSONInfoFromAPICall(`/api/internal/get-book?id=${bookID}`);
 }
 
+function getRichListingInfo(listingID) {
+	return getJSONInfoFromAPICall(`/api/internal/get-listing?id=${listingID}&rich=true`);
+}
 
 function getBooks(classFilter) {
 	if (classFilter !== undefined && classFilter !== "") {

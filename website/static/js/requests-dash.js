@@ -7,12 +7,14 @@
 	outgoingContainer.innerHTML = "";
 	incomingContainer.innerHTML = "";
 
-	const outgoingRequests = (await getListingsPaginateFully({ status: STATUS_REQUESTED })).filter((listing) => listing.requesterID == userInfo.id);
+	const [requests, outgoingBookRef] = (await getListingsPaginateFully({ status: STATUS_REQUESTED, resolveAuthor: true }));
+
+	const outgoingRequests = requests.filter((listing) => listing.requesterID == userInfo.id)
 
 	if (outgoingRequests.length > 0) {
 
 		for (const listing of outgoingRequests) {
-			const bookInfo = await getBookInfo(listing.bookID);
+			const bookInfo = outgoingBookRef[listing.bookID];
 
 			const card = document.createElement("a");
 			card.className = "card mb-3 text-decoration-none";
@@ -32,7 +34,7 @@
 			title.className = "card-title";
 			title.textContent = bookInfo.title;
 
-			const listerInfo = await getUserInfo(listing.authorID);
+			const listerInfo = listing.author;
 
 			const listerName = document.createElement("h6");
 			listerName.className = "card-subtitle text-muted";
@@ -55,11 +57,11 @@
 		outgoingContainer.appendChild(alert);
 	}
 
-	const incomingRequests = (await getListingsPaginateFully({ posterID: userInfo.id, status: STATUS_REQUESTED }));
+	const [incomingRequests, incomingBookRef] = (await getListingsPaginateFully({ posterID: userInfo.id, status: STATUS_REQUESTED, resolveRequester: true }));
 
 	if (incomingRequests.length > 0) {
 		for (const listing of incomingRequests) {
-			const bookInfo = await getBookInfo(listing.bookID);
+			const bookInfo = incomingBookRef[listing.bookID];
 
 			const card = document.createElement("a");
 			card.className = "card mb-3 text-decoration-none";
@@ -79,7 +81,7 @@
 			title.className = "card-title";
 			title.textContent = bookInfo.title;
 
-			const requesterInfo = await getUserInfo(listing.requesterID);
+			const requesterInfo = listing.requester;
 
 			const listerName = document.createElement("h6");
 			listerName.className = "card-subtitle text-muted";

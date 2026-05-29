@@ -27,14 +27,4 @@ function onScanSuccess(decodedText, decodedResult) {
 	}
 }
 
-setInterval(() => {
-	const barcodeButtons = document.getElementById("barcode-reader").querySelectorAll("button");
-
-	barcodeButtons.forEach(button => {
-		if (button.classList.contains("btn")) return;
-
-		button.classList.add("btn", "body-btn-primary", "btn-primary");
-	});
-}, 1000);
-
 document.getElementById("propagate-isbn").addEventListener("click", propagateISBN);

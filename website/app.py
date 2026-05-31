@@ -1238,9 +1238,9 @@ def reigster_error_handlers():
 def register_middleware():
 	@app.before_request
 	def generate_csp_nonce():
-		if request.path.startswith(("/api/", "/static/")): return # API routes & assets don't need CSP
-
 		request.csp_nonce = secrets.token_urlsafe(16)
+
+		if request.path.startswith(("/api/", "/static/")): return # API routes & assets don't need CSP
 
 	@app.after_request
 	def apply_csp(response: flask.Response):

@@ -144,6 +144,17 @@ website/admtools/.env
 ADMIN_KEY=556b3e6e8bdf31cae74f6e09b666eb72
 ```
 
+Hash the key and place it in `website/instance/.env` for verification:
+
+```sh
+python -c "import hashlib;print(hashlib.sha512(b'{ADMIN_KEY_HERE}').hexdigest())"
+```
+
+```sh
+website/instance/.env
+ADMIN_KEY_HASH=f0e60e6f0b520046e16235f8f8919daeebdeb24e9107e02db737b2e1a3ca0437de759f6b37881b3bb390e473e92845da9eb2a4592ab8daf96e3a6afc9512a86b
+```
+
 The second key will be the app's secret key. Set this in `website/instance/.env` and name it `REGISBOOKS_SECRET_KEY`.
 ```sh
 website/admtools/.env
@@ -160,7 +171,8 @@ REGISBOOKS_AUTH_API_KEY= # this will only be provided to maintainers, leave it e
 REGISBOOKS_AUTH_URL=https://auth.regisbooks.org
 TEST_REGISBOOKS_AUTH_API_KEY= # this will be provided to you by a maintainer, please ask them for the information.
 TEST_REGISBOOKS_AUTH_URL=https://228794087.propelauthtest.com
-REGISBOOKS_SECRET_KEY=cf032604fbdbca19303d2e2a063ac356 # you set this in the previous step
+REGISBOOKS_SECRET_KEY=cf032604fbdbca19303d2e2a063ac356 # you set this in the previous steps
+ADMIN_KEY_HASH=f0e60e6f0b520046e16235f8f8919daeebdeb24e9107e02db737b2e1a3ca0437de759f6b37881b3bb390e473e92845da9eb2a4592ab8daf96e3a6afc9512a86b # you set this in the previous steps
 GOOGLE_BOOKS_API_KEY= # this will be provided to you by a maintainer, please ask them for the information.
 ```
 

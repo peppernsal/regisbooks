@@ -178,7 +178,7 @@ GOOGLE_BOOKS_API_KEY= # this will be provided to you by a maintainer, please ask
 
 Once you have all of that, you can finally run the development server locally. `cd` into `website` and run `webpy run --force-debug`. The server information should be displayed. Follow the localhost link to access the website. If you run into any problems during setup, please follow the [question reporting procedures above](#i-have-a-question) or talk to a maintainer.
 
-When you have thoroughly tested your changes and pushed all your commits to your fork, you may open up a [Pull Request](https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/proposing-changes-to-your-work-with-pull-requests/creating-a-pull-request) to the main repository that closes the intended issue. A maintainer will then review and approve your changes or requeste edits.
+When you have thoroughly tested your changes and pushed all your commits to your fork, you may open up a [Pull Request](https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/proposing-changes-to-your-work-with-pull-requests/creating-a-pull-request) to the main repository that closes the intended issue. A maintainer will then review and approve your changes or request edits.
 
 ## Styleguides
 
